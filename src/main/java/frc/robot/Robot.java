@@ -2,23 +2,38 @@ package frc.robot;
 
 
 import edu.wpi.first.wpilibj.TimedRobot;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.drive.DifferentialDrive;
-import edu.wpi.first.wpilibj.motorcontrol.PWMSparkMax;
+import edu.wpi.first.wpilibj.motorcontrol.Victor;
+import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
+import edu.wpi.first.wpilibj.drive.MecanumDrive;
+import edu.wpi.first.wpilibj.Timer;
 
 
 public class Robot extends TimedRobot {
-  private final PWMSparkMax m_leftDrive = new PWMSparkMax(0);
-  private final PWMSparkMax m_rightDrive = new PWMSparkMax(1);
-  private final DifferentialDrive m_robotDrive = new DifferentialDrive(m_leftDrive, m_rightDrive);
+  // Xbox Controller
   private final XboxController m_controller = new XboxController(0);
-  private final Timer m_timer = new Timer();
 
+  // Motors
+  private final Victor backLeftMotor = new Victor(0);
+  private final Victor backRightMotor = new Victor(1);
+  private final Victor frontLeftMotor = new Victor(2);
+  private final Victor frontRightMotor = new Victor(3);
+
+  // Motor groups
+  private final MotorControllerGroup leftMotors = new MotorControllerGroup(frontLeftMotor, backLeftMotor);
+  private final MotorControllerGroup rightMotors = new MotorControllerGroup(frontRightMotor, backRightMotor);
+  
+  // Mecanum Drive
+  public final MecanumDrive m_drive = new MecanumDrive(frontLeftMotor, backLeftMotor, frontRightMotor, backRightMotor);
+
+  // Timer
+  private final Timer m_timer = new Timer();
 
   @Override
   public void robotInit() {
-    m_rightDrive.setInverted(true);
+    // Disable safety for mecanum drive
+    m_drive.setSafetyEnabled(false);
+    m_drive.feed();
   }
 
 
@@ -28,6 +43,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void autonomousInit() {
+    // Reset timer once autonomous enabled
     m_timer.reset();
     m_timer.start();
   }
@@ -35,21 +51,22 @@ public class Robot extends TimedRobot {
 
   @Override
   public void autonomousPeriodic() {
-    if (m_timer.get() < 2.0) {
-      m_robotDrive.arcadeDrive(0.5, 0.0, false);
-    } else {
-      m_robotDrive.stopMotor(); // stop robot
-    }
   }
 
 
   @Override
-  public void teleopInit() {}
+  public void teleopInit() {
+    m_drive.setSafetyEnabled(false);
+    m_drive.feed();
+  }
 
 
   @Override
   public void teleopPeriodic() {
-    m_robotDrive.arcadeDrive(-m_controller.getLeftY(), -m_controller.getRightX());
+    // Drive using xbox controller
+    m_drive.driveCartesian(
+      m_controller.getLeftX(), m_controller.getLeftY(), m_controller.getPOV()
+    );
   }
 
 
@@ -75,4 +92,6 @@ public class Robot extends TimedRobot {
 
   @Override
   public void simulationPeriodic() {}
+
+
 }
