@@ -9,6 +9,7 @@ import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.motorcontrol.Victor;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.interfaces.Gyro;
 import edu.wpi.first.wpilibj.Timer;
 
 
@@ -18,14 +19,14 @@ public class Robot extends TimedRobot {
   private final XboxController m_controller = new XboxController(0);
 
   // Gyro
-  private final ADXRS450_Gyro gyro = new ADXRS450_Gyro();
+  private final Gyro gyro = new ADXRS450_Gyro();
 
   // Limelight
-  NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight");
-  NetworkTableEntry limelightTv = table.getEntry("tv");
-  NetworkTableEntry limelightTx = table.getEntry("tx"); 
-  NetworkTableEntry limelightTy = table.getEntry("ty");
-  NetworkTableEntry limelightTa = table.getEntry("ta");
+  private final NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight");
+  private final NetworkTableEntry limelightTv = table.getEntry("tv");
+  private final NetworkTableEntry limelightTx = table.getEntry("tx"); 
+  private final NetworkTableEntry limelightTy = table.getEntry("ty");
+  private final NetworkTableEntry limelightTa = table.getEntry("ta");
 
   // Motors
   private final Victor rearLeftMotor = new Victor(0);
@@ -44,9 +45,8 @@ public class Robot extends TimedRobot {
     // Invert neccessary motors
     rearRightMotor.setInverted(true);
 
-    // Set up gyro
+    // Calibrate gyroscope
     gyro.calibrate();
-    gyro.reset();
   }
 
 
