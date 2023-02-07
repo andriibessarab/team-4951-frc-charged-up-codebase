@@ -3,28 +3,28 @@ package frc.robot.subsystems;
 import edu.wpi.first.wpilibj.motorcontrol.Victor;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
+import frc.robot;
+import frc.robot.RobotMap;
 
-public class Drivetrain {
+
+public final class Drivetrain {
     // Motors
-    private static final Victor rearLeftMotor = new Victor(0);
-    private static final Victor rearRightMotor = new Victor(1);
-    private static final Victor frontLeftMotor = new Victor(2);
-    private static final Victor frontRightMotor = new Victor(3);
-
+    private static final Victor rearLeftMotor = new Victor(RobotMap.REAR_LEFT_MOTOR);
+    private static final Victor rearRightMotor = new Victor(RobotMap.REAR_RIGHT_MOTOR);
+    private static final Victor frontLeftMotor = new Victor(RobotMap.FRONT_LEFT_MOTOR);
+    private static final Victor frontRightMotor = new Victor(RobotMap.FRONT_RIGHT_MOTOR);
 
     // Variables
-    private static double speedMultiplier = 1;
-
+    private final static double speedMultiplier = 1;
 
     // Initialize motors(i.o. invert neccessary motors, etc.)
-    public static void initializeMotors() {
+    public final static void initializeMotors() {
         // Invert neccessary motors
         rearRightMotor.setInverted(true);
     } 
 
-
     // Set speed multiplier for motors
-    public static void setSpeed(double speed) {
+    public final static void setSpeed(double speed) {
         // Check that 0 < speed <= 1
         if (speed > 1)
             speedMultiplier = 1;
@@ -34,9 +34,8 @@ public class Drivetrain {
             speedMultiplier = speed;
     }
 
-
     // Move motors
-    public static void drive(double xSpeed,double ySpeed, double zRot, double gyroAngle) {
+    public final static void drive(double xSpeed,double ySpeed, double zRot, double gyroAngle) {
         ySpeed = ySpeed * 1.1; // Counteract imperfect strafing
 
         // Calculate denominator
@@ -69,26 +68,3 @@ public class Drivetrain {
         SmartDashboard.putNumber("Front Right Motor Power", frontRightPower);
     }
 }
-
-/*if(rx<0.2&&rx>0.2){
-        // Calculate motor power
-
-        double botHeading = (Math.PI / 180) * gyro.getAngle();
-
-        // Rotate the movement direction counter to the bot's rotation
-        double rotX = x * Math.cos(-botHeading) - y * Math.sin(-botHeading);
-        double rotY = x * Math.sin(-botHeading) + y * Math.cos(-botHeading);
-        denominator = Math.max(Math.abs(rotY) + Math.abs(rotX) + Math.abs(rx), 1);
-        rearLeftPower = (rotY - rotX + rx) / denominator;
-        frontLeftPower = (rotY + rotX + rx) / denominator;
-        frontRightPower = (rotY - rotX - rx) / denominator;
-        rearRightPower = (rotY + rotX - rx) / denominator;
-        } else {
-        // Calculate motor power
-        denominator = Math.max(Math.abs(y) + Math.abs(x) + Math.abs(rx), 1);
-        rearLeftPower = (y - x + rx) / denominator;
-        frontLeftPower = (y + x + rx) / denominator;
-        frontRightPower = (y - x - rx) / denominator;
-        rearRightPower = (y + x - rx) / denominator;
-        gyro.reset();
-        }*/

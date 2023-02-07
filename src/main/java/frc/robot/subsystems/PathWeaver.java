@@ -8,10 +8,10 @@ import edu.wpi.first.math.trajectory.TrajectoryUtil;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
 
-
 public class PathWeaver {
     private static final String trajectoryJSON = "paths/Test.wpilib.json";
 
+    // Test trajectory
     public static Trajectory getTrajectory(){
         try {
             Path trajectoryPath = Filesystem.getDeployDirectory().toPath().resolve(trajectoryJSON);

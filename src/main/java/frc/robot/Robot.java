@@ -1,33 +1,19 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.TimedRobot;
-import edu.wpi.first.wpilibj.ADIS16470_IMU;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.Timer;
 
+// Subsystems
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Limelight;
-import frc.robot.subsystems.PathWeaver;
+
+// Utils
+import frc.robot.utils.TimerUtil;
+import frc.robot.utils.Gyroscope;
+import frc.robot.utils.Controller;
 
 
 public class Robot extends TimedRobot {
-    // This will fix all your problems!!!
-    public static final String Jason = "Jason wrote this line of code";
-    
-    // Xbox Controller
-    private final XboxController mController = new XboxController(0);
-    
-    // Gyro
-    private final ADIS16470_IMU gyro = new ADIS16470_IMU();
-
-    // Timer
-    private final Timer mTimer = new Timer();
-
-    // Variables
-    //private double angle = 0; 
-
-
     @Override
     public void robotInit() {
         // Set up drivetrain
@@ -35,7 +21,7 @@ public class Robot extends TimedRobot {
         Drivetrain.setSpeed(1);
 
         // Calibrate gyroscope
-        gyro.calibrate();
+        Gyroscope.calibrate();
     }
 
 
@@ -52,8 +38,8 @@ public class Robot extends TimedRobot {
     @Override
     public void autonomousInit() {
         // Reset timer before starting autonomous
-        mTimer.reset();
-        mTimer.start();
+        TimerUtil.reset();
+        TimerUtil.start();
     }
 
 
@@ -69,10 +55,10 @@ public class Robot extends TimedRobot {
     public void teleopPeriodic() {
         // Drive robot
         Drivetrain.drive(
-          mController.getLeftX(),
-          mController.getLeftY(),
-          mController.getRightX(),
-          gyro.getAngle()
+          Controller.getLeftX(),
+          Controller.getLeftY(),
+          Controller.getRightX(),
+          Gyroscope.getAngle()
         );
     }
 
