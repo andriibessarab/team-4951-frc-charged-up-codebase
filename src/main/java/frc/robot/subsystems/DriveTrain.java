@@ -1,41 +1,38 @@
 package frc.robot.subsystems;
 
-import edu.wpi.first.wpilibj.motorcontrol.Victor;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-
-import frc.robot;
-import frc.robot.RobotMap;
+import frc.robot.utils.Motors;
 
 
 public final class Drivetrain {
-    // Motors
-    private static final Victor rearLeftMotor = new Victor(RobotMap.REAR_LEFT_MOTOR);
-    private static final Victor rearRightMotor = new Victor(RobotMap.REAR_RIGHT_MOTOR);
-    private static final Victor frontLeftMotor = new Victor(RobotMap.FRONT_LEFT_MOTOR);
-    private static final Victor frontRightMotor = new Victor(RobotMap.FRONT_RIGHT_MOTOR);
 
-    // Variables
-    private final static double speedMultiplier = 1;
+    public final static void drive(double x, double y, double z) {
+        if (Math.abs(y) > Math.abs(x) && Math.abs(y) > Math.abs(z)) { // Y-Axis Motion
+            Motors.setPower(y, y, y, y);
+        } else if (Math.abs(x) > Math.abs(y) && Math.abs(x) > Math.abs(z)) { // X-Axis Motion
+            if(x > 0) {
+                Motors.setPower(x*1.1, x*-0.95, x*-1.1, x);
+                if(Math.abs(x) >= 0.5) {
+                    Motors.setPower(x*1.1, x*-0.95, x*-1.1, x);
+                } else if(Math.abs(x) > 0.35) {
+                    Motors.setPower(x*0.9, x*-0.9, x*-1.1, x);
 
-    // Initialize motors(i.o. invert neccessary motors, etc.)
-    public final static void initializeMotors() {
-        // Invert neccessary motors
-        rearRightMotor.setInverted(true);
-    } 
-
-    // Set speed multiplier for motors
-    public final static void setSpeed(double speed) {
-        // Check that 0 < speed <= 1
-        if (speed > 1)
-            speedMultiplier = 1;
-        else if (speed < 0)
-            speedMultiplier = 0;
-        else
-            speedMultiplier = speed;
+                }
+            } else if(x < 0) {
+                if(Math.abs(x) >= 0.5) {
+                    Motors.setPower(x*1.05, x*-1, x*-1, x);
+                } else if(Math.abs(x) > 0.35) {
+                    Motors.setPower(x*1.1, x*-1, x*-1.1, x);
+                }
+            }
+        } else if (Math.abs(z) > Math.abs(y) && Math.abs(z) > Math.abs(x)) { // Z-Axis Movement
+            Motors.setPower(z, -z, z, -z);
+        } else {
+            Motors.setPower(0, 0, 0, 0);
+        }
     }
 
-    // Move motors
-    public final static void drive(double xSpeed,double ySpeed, double zRot, double gyroAngle) {
+    // Field oriented drive (w/ gyroscope)
+    public final static void driveFieldOriented(double xSpeed,double ySpeed, double zRot, double gyroAngle) {
         ySpeed = ySpeed * 1.1; // Counteract imperfect strafing
 
         // Calculate denominator
@@ -55,16 +52,23 @@ public final class Drivetrain {
         double rearRightPower = (yRot + xRot - zRot) / denominator;
 
         // Send power to motors
-        rearLeftMotor.set(rearLeftPower * speedMultiplier);
-        rearRightMotor.set(rearRightPower * speedMultiplier);
-        frontLeftMotor.set(frontLeftPower * speedMultiplier);
-        frontRightMotor.set(frontRightPower * speedMultiplier);
+        Motors.setPower(frontLeftPower, frontRightPower, rearLeftPower, rearRightPower);
+    }
 
-        // DEBUG - Update smart dashboard periodically
-        SmartDashboard.putNumber("Gyro Angle", gyroAngle);
-        SmartDashboard.putNumber("Rear Left Motor Power", rearLeftPower);
-        SmartDashboard.putNumber("Rear Right Motor Power", rearRightPower);
-        SmartDashboard.putNumber("Front Left Motor Power", frontLeftPower);
-        SmartDashboard.putNumber("Front Right Motor Power", frontRightPower);
+    // Field oriented drive (w/ gyroscope)
+    public final static void driveRobotOriented(double xSpeed,double ySpeed, double zRot) {
+        ySpeed = ySpeed * 1.1; // Counteract imperfect strafing
+    
+        // Calculate deniminator
+        double denominator = Math.max(Math.abs(ySpeed) + Math.abs(xSpeed) + Math.abs(zRot), 1);
+    
+        // Calculate motors power
+        double rearLeftPower = (ySpeed - xSpeed + zRot) / denominator;
+        double frontLeftPower = (ySpeed + xSpeed + zRot) / denominator;
+        double frontRightPower = (ySpeed - xSpeed - zRot) / denominator;
+        double rearRightPower = (ySpeed + xSpeed - zRot) / denominator;
+    
+        // Send power to motors
+        Motors.setPower(frontLeftPower, frontRightPower, rearLeftPower, rearRightPower);
     }
 }

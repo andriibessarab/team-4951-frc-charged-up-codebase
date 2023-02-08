@@ -4,21 +4,35 @@ import edu.wpi.first.wpilibj.XboxController;
 import frc.robot.RobotMap;
 
 public final class Controller {
+
     private final static XboxController mController = new XboxController(RobotMap.XBOX_CONTROLLER);
 
-    public final static double getLeftX() {
-        return mController.getLeftX();
+
+    // Left stick - X Value
+    public final static double getLeftX(boolean thresholded) {
+        return thresholded ? getThresholdedValue(mController.getLeftX()) : mController.getLeftX();
     }
 
-    public final static double getLeftY() {
-        return mController.getLeftY();
+    // Left stick - Y Value
+    public final static double getLeftY(boolean thresholded) {
+        return thresholded ? getThresholdedValue(mController.getLeftY()) : mController.getLeftY();
     }
 
-    public final static double getRightX() {
-        return mController.getRightX();
+    // Right stick - X Value
+    public final static double getRightX(boolean thresholded) {
+        return thresholded ? getThresholdedValue(mController.getRightX()) : mController.getRightX();
     }
 
-    public final static double getRightY() {
-        return mController.getRightY();
+    // Right Stick - Y Value
+    public final static double getRightY(boolean thresholded) {
+        return thresholded ? getThresholdedValue(mController.getRightY()) : mController.getRightY();
+    }
+
+    /* THRESHOLD
+     * Threshold is the value below which the parameter will be automatically set to zero.
+     * You can change this value in frc.robot.RobotMap class
+     */
+    private static final double getThresholdedValue(double v) {
+        return Math.abs(v) > RobotMap.CONTROLLER_THRESHOLD ? v : 0;
     }
 }

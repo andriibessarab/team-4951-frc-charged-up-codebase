@@ -10,6 +10,7 @@ import frc.robot.subsystems.Limelight;
 // Utils
 import frc.robot.utils.TimerUtil;
 import frc.robot.utils.Gyroscope;
+import frc.robot.utils.Motors;
 import frc.robot.utils.Controller;
 
 
@@ -17,8 +18,8 @@ public class Robot extends TimedRobot {
     @Override
     public void robotInit() {
         // Set up drivetrain
-        Drivetrain.initializeMotors();
-        Drivetrain.setSpeed(1);
+        Motors.initialize();
+        Motors.setSpeed(0.5);
 
         // Calibrate gyroscope
         Gyroscope.calibrate();
@@ -32,6 +33,7 @@ public class Robot extends TimedRobot {
         SmartDashboard.putNumber("Limelight Horizontal Offset", Limelight.getHorizontalOffset());
         SmartDashboard.putNumber("Limelight Vertical Offset", Limelight.getVerticalOffset());
         SmartDashboard.putNumber("Limelight Target Area", Limelight.getTargetArea());
+
     }
 
 
@@ -53,12 +55,18 @@ public class Robot extends TimedRobot {
 
     @Override
     public void teleopPeriodic() {
-        // Drive robot
+        double x = 0; // x-axis motion-right (+), left (-)
+        double y = 0; // y-axis motion-forward (+), backward (-)
+        double z = 0; // z-axis motion-clockwise (+), counterclockwise (-)
+
+        /* Pushing the right stick on it’s x-axis give a x-value (+ = right, - = left)
+         * Pushing the left stick on it’s y-axis gives a y-value (+ = forward, - = backward)
+         * Pushing the left stick on it’s x-axis gives a z-value (+ = clockwise, - = backward)
+         */
         Drivetrain.drive(
-          Controller.getLeftX(),
-          Controller.getLeftY(),
-          Controller.getRightX(),
-          Gyroscope.getAngle()
+            Controller.getRightX(true),
+            Controller.getLeftY(true),
+            Controller.getLeftX(true)
         );
     }
 
