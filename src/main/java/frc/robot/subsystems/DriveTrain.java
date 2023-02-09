@@ -5,7 +5,8 @@ import frc.robot.utils.Motors;
 
 public final class Drivetrain {
 
-    public final static void drive(double x, double y, double z) {
+    // Robot oriented drive(w/ single axis control)
+    public final static void driveSingleAxis(double x, double y, double z) {
         if (Math.abs(y) > Math.abs(x) && Math.abs(y) > Math.abs(z)) { // Y-Axis Motion
             Motors.setPower(y, y, y, y);
         } else if (Math.abs(x) > Math.abs(y) && Math.abs(x) > Math.abs(z)) { // X-Axis Motion
@@ -55,7 +56,7 @@ public final class Drivetrain {
         Motors.setPower(frontLeftPower, frontRightPower, rearLeftPower, rearRightPower);
     }
 
-    // Field oriented drive (w/ gyroscope)
+    // Field oriented drive (multi-axis)
     public final static void driveRobotOriented(double xSpeed,double ySpeed, double zRot) {
         ySpeed = ySpeed * 1.1; // Counteract imperfect strafing
     

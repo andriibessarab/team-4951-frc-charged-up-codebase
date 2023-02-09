@@ -15,7 +15,7 @@ public final class Controller {
 
     // Left stick - Y Value
     public final static double getLeftY(boolean thresholded) {
-        return thresholded ? getThresholdedValue(mController.getLeftY()) : mController.getLeftY();
+        return thresholded ? -getThresholdedValue(mController.getLeftY()) : -mController.getLeftY();
     }
 
     // Right stick - X Value

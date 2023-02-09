@@ -55,18 +55,14 @@ public class Robot extends TimedRobot {
 
     @Override
     public void teleopPeriodic() {
-        double x = 0; // x-axis motion-right (+), left (-)
-        double y = 0; // y-axis motion-forward (+), backward (-)
-        double z = 0; // z-axis motion-clockwise (+), counterclockwise (-)
-
         /* Pushing the right stick on it’s x-axis give a x-value (+ = right, - = left)
          * Pushing the left stick on it’s y-axis gives a y-value (+ = forward, - = backward)
          * Pushing the left stick on it’s x-axis gives a z-value (+ = clockwise, - = backward)
          */
-        Drivetrain.drive(
-            Controller.getRightX(true),
-            Controller.getLeftY(true),
-            Controller.getLeftX(true)
+        Drivetrain.driveRobotOriented(
+                Controller.getLeftX(true),
+                Controller.getLeftY(true),
+                Controller.getRightX(true)
         );
     }
 
