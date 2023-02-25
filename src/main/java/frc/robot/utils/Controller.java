@@ -1,36 +1,112 @@
+/**
+ * The Controller class provides methods to retrieve values from an XboxController object and apply a controller threshold.
+ */
+
 package frc.robot.utils;
 
 import edu.wpi.first.wpilibj.XboxController;
+
 import frc.robot.RobotMap;
 
-public final class Controller {
 
-    private final static XboxController mController = new XboxController(RobotMap.XBOX_CONTROLLER);
+public class Controller {
+    private XboxController controller;
 
 
-    // Left stick - X Value
-    public final static double getLeftX(boolean thresholded) {
-        return thresholded ? getThresholdedValue(mController.getLeftX()) : mController.getLeftX();
+    /**
+     * Constructs a new Controller object with the specified PWM pin number.
+     *
+     * @param pwmPin the PWM pin number that the controller is connected to
+     */
+    public Controller(int pwmPin) {
+        this.controller = new XboxController(pwmPin);
     }
 
-    // Left stick - Y Value
-    public final static double getLeftY(boolean thresholded) {
-        return thresholded ? -getThresholdedValue(mController.getLeftY()) : -mController.getLeftY();
+
+    /**
+     * Returns the raw value of the left stick X-axis of the controller.
+     *
+     * @return the raw value of the left stick X-axis
+     */
+    public final double getLeftX() {
+        return controller.getLeftX();
     }
 
-    // Right stick - X Value
-    public final static double getRightX(boolean thresholded) {
-        return thresholded ? getThresholdedValue(mController.getRightX()) : mController.getRightX();
+
+    /**
+    * Returns the thresholded value of the left stick X-axis of the controller.
+    *
+    * @return the thresholded value of the left stick X-axis
+    */
+    public final double getThresholdedLeftX() {
+        return getThresholdedValue(controller.getLeftX());
     }
 
-    // Right Stick - Y Value
-    public final static double getRightY(boolean thresholded) {
-        return thresholded ? getThresholdedValue(mController.getRightY()) : mController.getRightY();
+
+    /**
+     * Returns the raw value of the left stick Y-axis of the controller.
+     *
+     * @return the raw value of the left stick Y-axis
+     */
+    public final double getLeftY() {
+        return -controller.getLeftY();
     }
 
-    /* THRESHOLD
-     * Threshold is the value below which the parameter will be automatically set to zero.
-     * You can change this value in frc.robot.RobotMap class
+
+    /**
+    * Returns the thresholded value of the left stick Y-axis of the controller.
+    *
+    * @return the thresholded value of the left stick Y-axis
+    */
+    public final double getThresholdedLeftY() {
+        return getThresholdedValue(-controller.getLeftY());
+    }
+
+        /**
+     * Returns the raw value of the right stick X-axis of the controller.
+     *
+     * @return the raw value of the right stick X-axis
+     */
+    public final double getRightX() {
+        return controller.getRightX();
+    }
+
+
+    /**
+    * Returns the thresholded value of the right stick X-axis of the controller.
+    *
+    * @return the thresholded value of the right stick X-axis
+    */
+    public final double getThresholdedRightX() {
+        return getThresholdedValue(controller.getRightX());
+    }
+
+
+    /**
+     * Returns the raw value of the right stick Y-axis of the controller.
+     *
+     * @return the raw value of the right stick Y-axis
+     */
+    public final double getRightY() {
+        return -controller.getRightY();
+    }
+
+
+    /**
+    * Returns the thresholded value of the right stick Y-axis of the controller.
+    *
+    * @return the thresholded value of the right stick Y-axis
+    */
+    public final double getThresholdedRightY() {
+        return getThresholdedValue(-controller.getRightY());
+    }
+
+
+    /**
+     * Applies a controller threshold to the input value.
+     *
+     * @param v the input value
+     * @return the thresholded or raw input value
      */
     private static final double getThresholdedValue(double v) {
         return Math.abs(v) > RobotMap.CONTROLLER_THRESHOLD ? v : 0;
