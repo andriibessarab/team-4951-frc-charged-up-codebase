@@ -29,16 +29,30 @@ import frc.robot.utils.Motor;
  * @see MecanumDriveOdometry
  */
 public final class DrivetrainSubsystem {
-    // Constants
-	public static double ksVolts;
-	public static double kvVoltSecondsPerMinuite;
-	public static double kaVoltSecondsSquaredPerMinuite;
-	public static double kpDriveVel;
-	public static double kTrackWidthMeters; // horizontal distance between two wheels
-	public static double kGearRatioInches;
-	public static double kWheelRadiusInches; // radius of a wheel in inches
-	public static final double kLinearDistanceConversionFactor = Units.inchesToMeters(1 / (kGearRatioInches*2*Math.PI*Units.inchesToMeters(kWheelRadiusInches)) * 10);
+    /**
+     * This class defines constants that are used in drivetrain.
+     */
+    public static final class Constants {
+        // Constants for Trajecotories (need to obtain them through sysid and measurements)
+        private static double ksVolts;
+        private static double kvVoltSecondsPerMinuite;
+        private static double kaVoltSecondsSquaredPerMinuite;
+        private static double kpDriveVel;
+        private static double kTrackWidthMeters; // horizontal distance between two wheels
+        private static double kGearRatioInches;
+        private static double kWheelRadiusInches; // radius of a wheel in inches
+        private static final double kLinearDistanceConversionFactor = Units.inchesToMeters(1 / (kGearRatioInches*2*Math.PI*Units.inchesToMeters(kWheelRadiusInches)) * 10);
 
+        // Constants & variables for balancing
+        private static final double kProportionalGain = 0.03; // Proportional gain
+        private static final double kIntegralGain = 0.00; // Integral gain
+        private static final double kDerivativeGain = 0.00; // Derivative gain
+        private static final double kToleranceDegrees = 2.0f; // Tolerance for gyro angle
+        private static final double kMaxOutput = 0.5; // Maximum output
+        private static final double kMinOutput = -0.5; // Minimum output
+    }
+
+    
     // The gyroscope object used for detecting and measuring the robot's rotation.
 	public Gyroscope gyro;
 
@@ -48,11 +62,19 @@ public final class DrivetrainSubsystem {
 	public Motor frontLeftMotor;
 	public Motor frontRightMotor;
     
-	public MecanumDriveKinematics kinematics;  // Create mecanum drive kinematics object based on motor location
-	public MecanumDriveOdometry odometry;  // Mecanum drive odometry object based on kinematics and initial conditions
+	private MecanumDriveKinematics kinematics;  // Create mecanum drive kinematics object based on motor location
+	private MecanumDriveOdometry odometry;  // Mecanum drive odometry object based on kinematics and initial conditions
+
+    // PID Controller Variables
+    private double integralError = 0.0f; // Integral error
+    private double previousError = 0.0f; // Previous error
+    public boolean isBalancing = false; /** true if balanceOnStation currently running */
     
 
-    // Constructor
+    /**
+     * Constructor for the DrivetrainSubsystem class.
+     *
+     */
     public DrivetrainSubsystem() {
         gyro = new Gyroscope();
 
@@ -71,20 +93,42 @@ public final class DrivetrainSubsystem {
 
         resetEncoders();
 
-        frontLeftMotor.setEncoderPositionConversionFactor(kLinearDistanceConversionFactor);
-        frontRightMotor.setEncoderPositionConversionFactor(kLinearDistanceConversionFactor);
-        rearLeftMotor.setEncoderPositionConversionFactor(kLinearDistanceConversionFactor);
-        rearRightMotor.setEncoderPositionConversionFactor(kLinearDistanceConversionFactor);
+        frontLeftMotor.setEncoderPositionConversionFactor(Constants.kLinearDistanceConversionFactor);
+        frontRightMotor.setEncoderPositionConversionFactor(Constants.kLinearDistanceConversionFactor);
+        rearLeftMotor.setEncoderPositionConversionFactor(Constants.kLinearDistanceConversionFactor);
+        rearRightMotor.setEncoderPositionConversionFactor(Constants.kLinearDistanceConversionFactor);
 
-        frontLeftMotor.setEncoderVelocityConversionFactor(kLinearDistanceConversionFactor / 60);
-        frontRightMotor.setEncoderVelocityConversionFactor(kLinearDistanceConversionFactor / 60);
-        rearLeftMotor.setEncoderVelocityConversionFactor(kLinearDistanceConversionFactor / 60);
-        rearRightMotor.setEncoderVelocityConversionFactor(kLinearDistanceConversionFactor / 60);
+        frontLeftMotor.setEncoderVelocityConversionFactor(Constants.kLinearDistanceConversionFactor / 60);
+        frontRightMotor.setEncoderVelocityConversionFactor(Constants.kLinearDistanceConversionFactor / 60);
+        rearLeftMotor.setEncoderVelocityConversionFactor(Constants.kLinearDistanceConversionFactor / 60);
+        rearRightMotor.setEncoderVelocityConversionFactor(Constants.kLinearDistanceConversionFactor / 60);
 
         kinematics = new MecanumDriveKinematics(frontLeftMotor.getLocation(), frontRightMotor.getLocation(), rearLeftMotor.getLocation(), rearRightMotor.getLocation());
         odometry = new MecanumDriveOdometry(kinematics, gyro.getRotation2D(), getMecanumDriveWheelPositions());
     
         resetOdometry(new Pose2d());
+    }
+
+
+    /**
+     * Resets the encoder counts of a given motor to zero.
+     * @param motor the motor to reset the encoder counts of
+     */
+    public final void resetEncoders() {
+        frontLeftMotor.resetEncoder();
+        frontRightMotor.resetEncoder();
+        rearLeftMotor.resetEncoder();
+        rearRightMotor.resetEncoder();
+    }
+
+
+    /**
+     * Resets the robot's odometry to a specified starting pose.
+     * @param startingPose the pose to set the robot's odometry to
+     */
+    public final void resetOdometry(Pose2d pose) {
+        resetEncoders();
+        odometry.resetPosition(gyro.getRotation2D(), getMecanumDriveWheelPositions(), pose);
     }
 
 
@@ -102,27 +146,23 @@ public final class DrivetrainSubsystem {
     }
 
 
+    /**
+     * Gets the current pose of the robot.
+     *
+     * @return The current pose of the robot.
+     */
     public final Pose2d getPose() {
         return odometry.getPoseMeters();
     }
 
 
+    /**
+     * Gets the positions of the mecanum drive wheels.
+     *
+     * @return The positions of the mecanum drive wheels.
+     */
     public final MecanumDriveWheelPositions getMecanumDriveWheelPositions() {
         return new MecanumDriveWheelPositions(frontLeftMotor.getEncoderPosition(), frontRightMotor.getEncoderPosition(), rearLeftMotor.getEncoderPosition(), rearRightMotor.getEncoderPosition());
-    }
-
-
-    public final void resetEncoders() {
-        frontLeftMotor.resetEncoder();
-        frontRightMotor.resetEncoder();
-        rearLeftMotor.resetEncoder();
-        rearRightMotor.resetEncoder();
-    }
-
-
-    public final void resetOdometry(Pose2d pose) {
-        resetEncoders();
-        odometry.resetPosition(gyro.getRotation2D(), getMecanumDriveWheelPositions(), pose);
     }
 
 
@@ -233,4 +273,27 @@ public final class DrivetrainSubsystem {
         // Send power to motors
         setMotorSpeeds(frontLeftPower, frontRightPower, rearLeftPower, rearRightPower);
     }
+
+
+    /**
+     * Balances the robot on a balancing station using a PID controller.
+     */
+    public final void balanceOnStation() {
+        isBalancing = true;
+        while (true) {
+          double angle = gyro.getPitch();
+          double error = -angle; // Negative because we want to balance on the opposite side of the gyro angle
+          if (Math.abs(error) < Constants.kToleranceDegrees) { // If within tolerance, stop
+            setMotorSpeeds(0, 0, 0, 0);
+            break;
+          }
+          double output = Constants.kProportionalGain * error + Constants.kIntegralGain * integralError + Constants.kDerivativeGain * (error - previousError); // PID calculation
+          output = Math.max(Constants.kMinOutput, Math.min(Constants.kMaxOutput, output)); // Clamp output to within limits
+          setMotorSpeeds(output, output, output, output); // Set the motor speeds based on the PID output
+          // Possible add delay to wait a short amount of time before checking again
+          integralError += error; // Update integral error
+          previousError = error; // Update previous error
+        }
+        isBalancing = false;
+      }
 }

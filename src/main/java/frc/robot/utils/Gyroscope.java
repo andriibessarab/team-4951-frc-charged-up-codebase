@@ -63,7 +63,21 @@ public final class Gyroscope {
     }
 
 
+    /**
+     * Returns the current rate of rotation of the gyro.
+     * @return The current rate of rotation in degrees per second.
+     */
     public final double getRate() {
         return -gyro.getRate();
+    }
+
+
+    /**
+     * Calculates and returns the current pitch angle of the robot using the arctangent function and data from the gyro's accelerometer.
+     * @return The current pitch angle in degrees.
+     */
+    public final double getPitch() {
+        // Calculate the pitch angle 
+        return Math.atan2(gyro.getAccelY(), gyro.getAccelZ()) * 180 / Math.PI;
     }
 }

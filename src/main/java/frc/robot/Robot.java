@@ -3,6 +3,7 @@ package frc.robot;
 import edu.wpi.first.wpilibj.TimedRobot;
 
 import frc.robot.subsystems.DrivetrainSubsystem;
+import frc.robot.utils.Controller;
 
 
 /**
@@ -17,6 +18,11 @@ public class Robot extends TimedRobot {
 
     private DrivetrainSubsystem drivetrain;
 
+    
+	/** The Xbox controller objects used for driving the robot. */
+	public Controller mController1;
+    public Controller mController2;
+
     /**
      * This method is called once when the robot is first powered on. It sets the rear right
      * motor to be inverted.
@@ -24,6 +30,8 @@ public class Robot extends TimedRobot {
     @Override
     public void robotInit() {
         drivetrain = new DrivetrainSubsystem();
+        mController1 = new Controller(RobotMap.XBOX_CONTROLLER_1_ID);
+        mController2 = new Controller(RobotMap.XBOX_CONTROLLER_2_ID);
     }
 
 
@@ -40,7 +48,17 @@ public class Robot extends TimedRobot {
      * This method is called once when autonomous mode is first started.
      */
     @Override
-    public void autonomousInit() {}
+    public void autonomousInit() {
+        // Put current/cone/cube in place
+    
+        // Follow trajectory to charging station
+
+        // Balanve on charging station
+        drivetrain.balanceOnStation();
+        while (drivetrain.isBalancing) {
+            // Wait for the robot to finish balancing
+        }
+    }
 
 
     /**
@@ -65,10 +83,20 @@ public class Robot extends TimedRobot {
     @Override
     public void teleopPeriodic() {
         drivetrain.driveRobotOriented(
-                RobotMap.mController1.getThresholdedLeftX(),
-                RobotMap.mController1.getThresholdedLeftY(),
-                RobotMap.mController1.getThresholdedRightX()
+                mController1.getThresholdedLeftX(),
+                mController1.getThresholdedLeftY(),
+                mController1.getThresholdedRightX()
         );
+
+        // Start balancing robot on charging station, if B is pressed
+        if(mController1.getBButtonPressed()) {
+            drivetrain.balanceOnStation();
+            while (drivetrain.isBalancing) {
+                // Wait for the robot to finish balancing
+            }
+        }
+    
+    
     }
 
 

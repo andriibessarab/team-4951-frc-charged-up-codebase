@@ -1,5 +1,7 @@
 package frc.robot;
 
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.utils.Controller;
 
 
@@ -27,4 +29,7 @@ public final class RobotMap {
 	/** The Xbox controller objects used for driving the robot. */
 	public final static Controller mController1 = new Controller(XBOX_CONTROLLER_1_ID);
     public final static Controller mController2 = new Controller(XBOX_CONTROLLER_2_ID);
+
+	SendableChooser<Command> trajectories = new SendableChooser();
+
 }

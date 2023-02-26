@@ -2,13 +2,14 @@ package frc.robot.utils;
 
 import edu.wpi.first.wpilibj.XboxController;
 
-import frc.robot.RobotMap;
-
 
 /**
  * The Controller class provides methods to retrieve values from an XboxController object and apply a controller threshold.
  */
 public class Controller {
+    /** The threshold value of the controller movement below which the movement is ignored. */
+	public static final double CONTROLLER_THRESHOLD = 0.2;
+
     private XboxController controller;
 
 
@@ -102,12 +103,120 @@ public class Controller {
 
 
     /**
+     * Returns the current state of the A button on the game controller.
+     * @return True if the A button is currently being pressed, false otherwise.
+     */
+    public final boolean getAButtonState() {
+        return controller.getAButton();
+    }
+
+
+    /**
+     * Returns true if the A button on the game controller was just pressed during the current cycle.
+     * @return True if the A button was just pressed, false otherwise.
+     */
+    public final boolean getAButtonPressed() {
+        return controller.getAButtonPressed();
+    }
+
+
+    /**
+     * Returns true if the A button on the game controller was just released during the current cycle.
+     * return True if the A button was just released, false otherwise.
+     */
+    public final boolean getAButtonReleased() {
+        return controller.getAButtonReleased();
+    }
+
+
+    /**
+     * Returns the current state of the B button on the game controller.
+     * @return True if the B button is currently being pressed, false otherwise.
+     */
+    public final boolean getBButtonState() {
+        return controller.getBButton();
+    }
+
+
+    /**
+     * Returns true if the B button on the game controller was just pressed during the current cycle.
+     * @return True if the B button was just pressed, false otherwise.
+     */
+    public final boolean getBButtonPressed() {
+        return controller.getBButtonPressed();
+    }
+
+
+    /**
+     * Returns true if the B button on the game controller was just released during the current cycle.
+     * return True if the B button was just released, false otherwise.
+     */
+    public final boolean getBButtonReleased() {
+        return controller.getBButtonReleased();
+    }
+
+
+    /**
+     * Returns the current state of the X button on the game controller.
+     * @return True if the X button is currently being pressed, false otherwise.
+     */
+    public final boolean getXButtonState() {
+        return controller.getXButton();
+    }
+
+
+    /**
+     * Returns true if the X button on the game controller was just pressed during the current cycle.
+     * @return True if the X button was just pressed, false otherwise.
+     */
+    public final boolean getXButtonPressed() {
+        return controller.getXButtonPressed();
+    }
+
+
+    /**
+     * Returns true if the X button on the game controller was just released during the current cycle.
+     * return True if the X button was just released, false otherwise.
+     */
+    public final boolean getXButtonReleased() {
+        return controller.getXButtonReleased();
+    }
+
+
+    /**
+     * Returns the current state of the Y button on the game controller.
+     * @return True if the Y button is currently being pressed, false otherwise.
+     */
+    public final boolean getYButtonState() {
+        return controller.getYButton();
+    }
+
+
+    /**
+     * Returns true if the Y button on the game controller was just pressed during the current cycle.
+     * @return True if the Y button was just pressed, false otherwise.
+     */
+    public final boolean getYButtonPressed() {
+        return controller.getYButtonPressed();
+    }
+
+
+    /**
+     * Returns true if the Y button on the game controller was just released during the current cycle.
+     * return True if the Y button was just released, false otherwise.
+     */
+    public final boolean getYButtonReleased() {
+        return controller.getYButtonReleased();
+    }
+
+
+    /**
      * Applies a controller threshold to the input value.
      *
      * @param v the input value
-     * @return the thresholded or raw input value
+     * @return the thresholded input value
      */
     private static final double getThresholdedValue(double v) {
-        return Math.abs(v) > RobotMap.CONTROLLER_THRESHOLD ? v : 0;
+        return Math.abs(v) > CONTROLLER_THRESHOLD ? v : 0;
     }
 }
