@@ -1,20 +1,21 @@
 package frc.robot;
 
 
-// All inpupts & variables
-public class RobotMap {
-    // Controls
-	public static final int XBOX_CONTROLLER = 0; // Xbox Conntroller
+/**
+ *This class holds all the inputs and constants used in the robot's code.
+ */
+public final class RobotMap {
 
-	// Motors
-	public static final int REAR_LEFT_MOTOR = 0; // VEX Robotics Victor 888 Rear Left Motor
-    public static final int REAR_RIGHT_MOTOR = 1; // VEX Robotics Victor 888 Rear Right Motor
-    public static final int FRONT_LEFT_MOTOR = 2; // VEX Robotics Victor 888 Front Left Motor
-    public static final int FRONT_RIGHT_MOTOR = 3; // VEX Robotics Victor 888 Front Right Motor
+	/** The IDs of the Xbox controllers used for driving the robot. */
+	public static final int XBOX_CONTROLLER_1_ID = 0;
+	public static final int XBOX_CONTROLLER_2_ID = 1;
 
-	// Sensors
-	public static final int LIMELIGHT = 4; // Limelight Sensor
+	/** The PWM pins number of SPARK MAX motor controllers. */
+	public static final int REAR_LEFT_MOTOR_PWM_PIN = 0;
+	public static final int REAR_RIGHT_MOTOR_PWM_PIN = 1;
+	public static final int FRONT_LEFT_MOTOR_PWM_PIN = 2;
+	public static final int FRONT_RIGHT_MOTOR_PWM_PIN = 3;
 
-	// Constants
-	public static final double CONTROLLER_THRESHOLD = 0.2; // Ignore any movement of controller below this value
+	/** The PWM pin number of the Limelight sensor.*/
+	public static int LIMELIGHT_PWM_PIN; // undefined
 }
