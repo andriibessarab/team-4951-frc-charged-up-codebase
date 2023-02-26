@@ -1,7 +1,3 @@
-/**
- * The Controller class provides methods to retrieve values from an XboxController object and apply a controller threshold.
- */
-
 package frc.robot.utils;
 
 import edu.wpi.first.wpilibj.XboxController;
@@ -9,6 +5,9 @@ import edu.wpi.first.wpilibj.XboxController;
 import frc.robot.RobotMap;
 
 
+/**
+ * The Controller class provides methods to retrieve values from an XboxController object and apply a controller threshold.
+ */
 public class Controller {
     private XboxController controller;
 

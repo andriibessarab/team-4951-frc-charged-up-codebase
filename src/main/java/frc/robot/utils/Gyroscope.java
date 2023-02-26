@@ -1,22 +1,22 @@
-/**
- *This class represents a gyroscope and provides methods to interact with it.
- */
-
 package frc.robot.utils;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.ADIS16470_IMU;
 import edu.wpi.first.wpilibj.ADIS16470_IMU.IMUAxis;
 
+
+/**
+ *This class represents a gyroscope and provides methods to interact with it.
+ */
 public final class Gyroscope {
     private ADIS16470_IMU gyro;
 
+    
     /**
      * Constructs a new gyroscope object.
      */
     public Gyroscope() {
         this.gyro = new ADIS16470_IMU();
-
     }
 
 
@@ -60,5 +60,10 @@ public final class Gyroscope {
      */
     public final Rotation2d getRotation2D() {
         return Rotation2d.fromDegrees(-gyro.getAngle());
+    }
+
+
+    public final double getRate() {
+        return -gyro.getRate();
     }
 }

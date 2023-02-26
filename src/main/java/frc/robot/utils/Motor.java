@@ -1,8 +1,3 @@
-/**
- *The Motor class represents a motor in the FRC robot. It provides methods for controlling the motor's speed,
- *direction, and position.
- */
-
 package frc.robot.utils;
 
 import com.revrobotics.CANSparkMax;
@@ -10,7 +5,10 @@ import com.revrobotics.CANSparkMaxLowLevel;
 import com.revrobotics.RelativeEncoder;
 import edu.wpi.first.math.geometry.Translation2d;
 
-
+/**
+ *The Motor class represents a motor in the FRC robot. It provides methods for controlling the motor's speed,
+ *direction, and position.
+ */
 public class Motor {
     private CANSparkMax motor;
     private RelativeEncoder motorEncoder;
@@ -29,6 +27,16 @@ public class Motor {
         this.motor = new CANSparkMax(pwmPin, CANSparkMaxLowLevel.MotorType.kBrushless);
         this.motorEncoder = motor.getEncoder();
         this.motorLocation = new Translation2d(xFromCenter, yFromCenter);
+    }
+
+
+    public final void restoreMotorToFactoryDefaults() {
+        this.motor.restoreFactoryDefaults();
+    }
+
+
+    public final void resetEncoder() {
+        this.motorEncoder.setPosition(0);
     }
 
 
@@ -67,6 +75,21 @@ public class Motor {
     }
 
 
+    public final void setEncoderPosition(double p) {
+        this.motorEncoder.setPosition(p);
+    }
+
+
+    public final void setEncoderPositionConversionFactor(double f) {
+        this.motorEncoder.setPositionConversionFactor(f);
+    }
+
+
+    public final void setEncoderVelocityConversionFactor(double f) {
+        this.motorEncoder.setVelocityConversionFactor(f);
+    }
+
+
     /**
      * Returns the location of the motor relative to the center of the robot.
      *
@@ -84,5 +107,10 @@ public class Motor {
      */
     public final double getEncoderPosition() {
         return this.motorEncoder.getPosition();
+    }
+
+
+    public final double getEncoderVelocity() {
+        return this.motorEncoder.getVelocity();
     }
 }

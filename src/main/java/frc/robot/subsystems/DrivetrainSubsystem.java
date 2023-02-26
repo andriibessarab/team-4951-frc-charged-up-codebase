@@ -1,3 +1,16 @@
+package frc.robot.subsystems;
+
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.kinematics.MecanumDriveKinematics;
+import edu.wpi.first.math.kinematics.MecanumDriveOdometry;
+import edu.wpi.first.math.kinematics.MecanumDriveWheelPositions;
+import edu.wpi.first.math.util.Units;
+
+import frc.robot.RobotMap;
+import frc.robot.utils.Gyroscope;
+import frc.robot.utils.Motor;
+
+
 /**
  * This class represents the subsystem responsible for controlling the robot's drivetrain.
  * It uses a mecanum drive to allow for multi-axis and omnidirectional movement.
@@ -15,29 +28,102 @@
  * @see MecanumDriveKinematics
  * @see MecanumDriveOdometry
  */
+public final class DrivetrainSubsystem {
+    // Constants
+	public static double ksVolts;
+	public static double kvVoltSecondsPerMinuite;
+	public static double kaVoltSecondsSquaredPerMinuite;
+	public static double kpDriveVel;
+	public static double kTrackWidthMeters; // horizontal distance between two wheels
+	public static double kGearRatioInches;
+	public static double kWheelRadiusInches; // radius of a wheel in inches
+	public static final double kLinearDistanceConversionFactor = Units.inchesToMeters(1 / (kGearRatioInches*2*Math.PI*Units.inchesToMeters(kWheelRadiusInches)) * 10);
 
-package frc.robot.subsystems;
+    // The gyroscope object used for detecting and measuring the robot's rotation.
+	public Gyroscope gyro;
 
-import edu.wpi.first.math.kinematics.MecanumDriveKinematics;
-import edu.wpi.first.math.kinematics.MecanumDriveOdometry;
-import edu.wpi.first.math.kinematics.MecanumDriveWheelPositions;
-
-import frc.robot.RobotMap;
-
-
-public final class Drivetrain {
-    // Create mecanum drive kinematics object based on motor location
-    private final static MecanumDriveKinematics kenamatics = new MecanumDriveKinematics(RobotMap.frontLeftMotor.getLocation(), RobotMap.frontRightMotor.getLocation(), RobotMap.rearLeftMotor.getLocation(), RobotMap.rearRightMotor.getLocation());
+	// The motor objects used for controlling the robot's drivetrain
+	public Motor rearLeftMotor;
+	public Motor rearRightMotor;
+	public Motor frontLeftMotor;
+	public Motor frontRightMotor;
     
-    // Create mecanum drive odometry object based on kinematics and initial conditions
-    private final static MecanumDriveOdometry odometry = new MecanumDriveOdometry(
-        kenamatics,
-        RobotMap.gyro.getRotation2D(),
-        new MecanumDriveWheelPositions(
-            RobotMap.frontLeftMotor.getEncoderPosition(), RobotMap.frontRightMotor.getEncoderPosition(),
-            RobotMap.rearLeftMotor.getEncoderPosition(), RobotMap.rearRightMotor.getEncoderPosition()
-        )
-    );
+	public MecanumDriveKinematics kinematics;  // Create mecanum drive kinematics object based on motor location
+	public MecanumDriveOdometry odometry;  // Mecanum drive odometry object based on kinematics and initial conditions
+    
+
+    // Constructor
+    public DrivetrainSubsystem() {
+        gyro = new Gyroscope();
+
+        gyro.reset();
+        gyro.calibrate();
+
+        rearLeftMotor = new Motor(RobotMap.REAR_LEFT_MOTOR_PWM_PIN, 0, 0);
+        rearRightMotor = new Motor(RobotMap.REAR_RIGHT_MOTOR_PWM_PIN, 0, 0);
+        frontLeftMotor = new Motor(RobotMap.FRONT_LEFT_MOTOR_PWM_PIN, 0, 0);
+        frontRightMotor = new Motor(RobotMap.FRONT_RIGHT_MOTOR_PWM_PIN, 0, 0);
+
+        frontLeftMotor.restoreMotorToFactoryDefaults();
+        frontRightMotor.restoreMotorToFactoryDefaults();
+        rearLeftMotor.restoreMotorToFactoryDefaults();
+        rearRightMotor.restoreMotorToFactoryDefaults();
+
+        resetEncoders();
+
+        frontLeftMotor.setEncoderPositionConversionFactor(kLinearDistanceConversionFactor);
+        frontRightMotor.setEncoderPositionConversionFactor(kLinearDistanceConversionFactor);
+        rearLeftMotor.setEncoderPositionConversionFactor(kLinearDistanceConversionFactor);
+        rearRightMotor.setEncoderPositionConversionFactor(kLinearDistanceConversionFactor);
+
+        frontLeftMotor.setEncoderVelocityConversionFactor(kLinearDistanceConversionFactor / 60);
+        frontRightMotor.setEncoderVelocityConversionFactor(kLinearDistanceConversionFactor / 60);
+        rearLeftMotor.setEncoderVelocityConversionFactor(kLinearDistanceConversionFactor / 60);
+        rearRightMotor.setEncoderVelocityConversionFactor(kLinearDistanceConversionFactor / 60);
+
+        kinematics = new MecanumDriveKinematics(frontLeftMotor.getLocation(), frontRightMotor.getLocation(), rearLeftMotor.getLocation(), rearRightMotor.getLocation());
+        odometry = new MecanumDriveOdometry(kinematics, gyro.getRotation2D(), getMecanumDriveWheelPositions());
+    
+        resetOdometry(new Pose2d());
+    }
+
+
+    /**
+     * Updates the robot's odometry information using the current sensor readings.
+     * This method calculates the robot's position and orientation based on readings from the
+     * gyro and the mecanum drive motor encoders.
+     * @see <a href="https://docs.wpilib.org/en/stable/docs/software/wpilib-tools/robot-characterization/odometry.html">WPILib Odometry documentation</a>
+    */
+    public final void updateOdometry() {
+        odometry.update(
+            gyro.getRotation2D(),
+		    getMecanumDriveWheelPositions()
+        );
+    }
+
+
+    public final Pose2d getPose() {
+        return odometry.getPoseMeters();
+    }
+
+
+    public final MecanumDriveWheelPositions getMecanumDriveWheelPositions() {
+        return new MecanumDriveWheelPositions(frontLeftMotor.getEncoderPosition(), frontRightMotor.getEncoderPosition(), rearLeftMotor.getEncoderPosition(), rearRightMotor.getEncoderPosition());
+    }
+
+
+    public final void resetEncoders() {
+        frontLeftMotor.resetEncoder();
+        frontRightMotor.resetEncoder();
+        rearLeftMotor.resetEncoder();
+        rearRightMotor.resetEncoder();
+    }
+
+
+    public final void resetOdometry(Pose2d pose) {
+        resetEncoders();
+        odometry.resetPosition(gyro.getRotation2D(), getMecanumDriveWheelPositions(), pose);
+    }
 
 
     /**
@@ -48,11 +134,11 @@ public final class Drivetrain {
      * @param bl speed for the back left motor
      * @param br speed for the back right motor
      */
-    private final static void setMotorSpeeds(double fl, double fr, double bl, double br) {
-        RobotMap.frontLeftMotor.setSpeed(fl);
-        RobotMap.frontLeftMotor.setSpeed(fr);
-        RobotMap.frontLeftMotor.setSpeed(bl);
-        RobotMap.frontLeftMotor.setSpeed(br);
+    private final void setMotorSpeeds(double fl, double fr, double bl, double br) {
+        frontLeftMotor.setSpeed(fl);
+        frontRightMotor.setSpeed(fr);
+        rearLeftMotor.setSpeed(bl);
+        rearRightMotor.setSpeed(br);
     }
 
 
@@ -63,7 +149,7 @@ public final class Drivetrain {
      * @param y y-axis movement speed
      * @param z z-axis movement speed
      */
-    public final static void driveSingleAxis(double x, double y, double z) {
+    public final void driveSingleAxis(double x, double y, double z) {
         if (Math.abs(y) > Math.abs(x) && Math.abs(y) > Math.abs(z)) { // Y-Axis Motion
             setMotorSpeeds(y, y, y, y);
         } else if (Math.abs(x) > Math.abs(y) && Math.abs(x) > Math.abs(z)) { // X-Axis Motion
@@ -100,7 +186,7 @@ public final class Drivetrain {
      * @param zRot The desired rotation speed around the z axis.
      * @param gyroAngle The current heading of the robot as measured by a gyro, in degrees.
     */
-    public final static void driveFieldOriented(double xSpeed,double ySpeed, double zRot, double gyroAngle) {
+    public final void driveFieldOriented(double xSpeed,double ySpeed, double zRot, double gyroAngle) {
         ySpeed = ySpeed * 1.1; // Counteract imperfect strafing
 
         // Calculate denominator
@@ -132,7 +218,7 @@ public final class Drivetrain {
      * @param ySpeed The desired speed in the y direction.
      * @param zRot The desired rotation speed around the z axis.
      */
-    public final static void driveRobotOriented(double xSpeed,double ySpeed, double zRot) {
+    public final void driveRobotOriented(double xSpeed,double ySpeed, double zRot) {
         ySpeed = ySpeed * 1.1; // Counteract imperfect strafing
     
         // Calculate deniminator

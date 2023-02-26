@@ -1,33 +1,39 @@
+package frc.robot;
+
+import edu.wpi.first.wpilibj.TimedRobot;
+
+import frc.robot.subsystems.DrivetrainSubsystem;
+
+
 /**
  * The Robot class is the main class of the robot program that extends the TimedRobot class.
  * It controls the overall behavior of the robot during different phases of operation such as
  * initialization, autonomous mode, teleoperated mode, test mode and simulation mode. It
  * also contains the code for the drivetrain subsystem that controls the robot's movement.
- * @author Andrii Bessarab, Sitong Li
+ * @author Andrii Bessarab
+ * @author Sitong Li
  */
-
-package frc.robot;
-
-import edu.wpi.first.wpilibj.TimedRobot;
-import frc.robot.subsystems.Drivetrain;
-
-
 public class Robot extends TimedRobot {
+
+    private DrivetrainSubsystem drivetrain;
+
     /**
      * This method is called once when the robot is first powered on. It sets the rear right
      * motor to be inverted.
      */
     @Override
     public void robotInit() {
-        RobotMap.rearRightMotor.setInverted();
+        drivetrain = new DrivetrainSubsystem();
     }
 
 
     /**
-     * This method is called periodically during operation but does not do anything in this program.
+     * This method is called periodically during operation.
      */
     @Override
-    public void robotPeriodic() {}
+    public void robotPeriodic() {
+        drivetrain.updateOdometry();
+    }
 
 
     /**
@@ -58,7 +64,7 @@ public class Robot extends TimedRobot {
      */
     @Override
     public void teleopPeriodic() {
-        Drivetrain.driveRobotOriented(
+        drivetrain.driveRobotOriented(
                 RobotMap.mController1.getThresholdedLeftX(),
                 RobotMap.mController1.getThresholdedLeftY(),
                 RobotMap.mController1.getThresholdedRightX()
