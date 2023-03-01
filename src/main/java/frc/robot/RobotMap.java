@@ -24,4 +24,7 @@ public final class RobotMap {
 	public static final int CAMERA_INTAKE_DEV = 1;
 	public static final int CAMERA_RES_H = 160;
 	public static final int CAMERA_RES_W = 283;
+
+	// Led Channel
+	public static final int LED_CHANNEL = 0;
 }

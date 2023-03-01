@@ -6,6 +6,7 @@ import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.LimelightVision;
 import frc.robot.utils.Camera;
 import frc.robot.utils.Controller;
+import frc.robot.utils.Led;
 
 
 /**
@@ -24,6 +25,7 @@ public class Robot extends TimedRobot {
     private DrivetrainSubsystem drivetrain;
     private Camera frontCam;
     private Camera intakeCam;
+    private Led led;
 
 
     /**
@@ -38,6 +40,7 @@ public class Robot extends TimedRobot {
         drivetrain = new DrivetrainSubsystem();
         frontCam = new Camera(RobotMap.CAMERA_FRONT_DEV, RobotMap.CAMERA_RES_W, RobotMap.CAMERA_RES_H);
         intakeCam = new Camera(RobotMap.CAMERA_INTAKE_DEV, RobotMap.CAMERA_RES_W, RobotMap.CAMERA_RES_H);
+        led = new Led(RobotMap.LED_CHANNEL);
     }
 
 
