@@ -18,4 +18,10 @@ public final class RobotMap {
 
 	// Liemlight Hostname
 	public static final String LIMELIGHT_HOSTNAME = "limelight-cdslime";
+
+	// Camera device inpouts and resolution constants
+	public static final int CAMERA_FRONT_DEV = 0;
+	public static final int CAMERA_INTAKE_DEV = 1;
+	public static final int CAMERA_RES_H = 160;
+	public static final int CAMERA_RES_W = 283;
 }

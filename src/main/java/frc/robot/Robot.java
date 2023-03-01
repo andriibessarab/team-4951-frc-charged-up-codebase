@@ -3,8 +3,9 @@ package frc.robot;
 import edu.wpi.first.wpilibj.TimedRobot;
 
 import frc.robot.subsystems.DrivetrainSubsystem;
+import frc.robot.subsystems.LimelightVision;
+import frc.robot.utils.Camera;
 import frc.robot.utils.Controller;
-import frc.robot.utils.LimelightVision;
 
 
 /**
@@ -21,6 +22,8 @@ public class Robot extends TimedRobot {
     private Controller mController2;
     private LimelightVision limelight;
     private DrivetrainSubsystem drivetrain;
+    private Camera frontCam;
+    private Camera intakeCam;
 
 
     /**
@@ -33,6 +36,8 @@ public class Robot extends TimedRobot {
         mController2 = new Controller(RobotMap.XBOX_CONTROLLER_2_ID);
         limelight = new LimelightVision(RobotMap.LIMELIGHT_HOSTNAME);
         drivetrain = new DrivetrainSubsystem();
+        frontCam = new Camera(RobotMap.CAMERA_FRONT_DEV, RobotMap.CAMERA_RES_W, RobotMap.CAMERA_RES_H);
+        intakeCam = new Camera(RobotMap.CAMERA_INTAKE_DEV, RobotMap.CAMERA_RES_W, RobotMap.CAMERA_RES_H);
     }
 
 
