@@ -10,6 +10,7 @@ import frc.robot.RobotMap;
 import frc.robot.utils.Gyroscope;
 import frc.robot.utils.Motor;
 
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 /**
  * This class represents the subsystem responsible for controlling the robot's drivetrain.
@@ -28,7 +29,7 @@ import frc.robot.utils.Motor;
  * @see MecanumDriveKinematics
  * @see MecanumDriveOdometry
  */
-public final class DrivetrainSubsystem {
+public class DrivetrainSubsystem extends SubsystemBase {
     /**
      * This class defines constants that are used in drivetrain.
      */
@@ -68,8 +69,6 @@ public final class DrivetrainSubsystem {
     // PID Controller Variables
     private double integralError = 0.0f; // Integral error
     private double previousError = 0.0f; // Previous error
-    public boolean isBalancing = false; /** true if balanceOnStation currently running */
-    
 
     /**
      * Constructor for the DrivetrainSubsystem class.
@@ -109,6 +108,10 @@ public final class DrivetrainSubsystem {
         resetOdometry(new Pose2d());
     }
 
+    @Override
+    public void periodic() {
+        updateOdometry();
+    }
 
     /**
      * Resets the encoder counts of a given motor to zero.
@@ -274,18 +277,15 @@ public final class DrivetrainSubsystem {
         setMotorSpeeds(frontLeftPower, frontRightPower, rearLeftPower, rearRightPower);
     }
 
-
     /**
      * Balances the robot on a balancing station using a PID controller.
      */
-    public final void balanceOnStation() {
-        isBalancing = true;
-        while (true) {
+    public final boolean balanceOnStation() {
           double angle = gyro.getPitch();
           double error = -angle; // Negative because we want to balance on the opposite side of the gyro angle
           if (Math.abs(error) < Constants.kToleranceDegrees) { // If within tolerance, stop
             setMotorSpeeds(0, 0, 0, 0);
-            break;
+            return true;
           }
           double output = Constants.kProportionalGain * error + Constants.kIntegralGain * integralError + Constants.kDerivativeGain * (error - previousError); // PID calculation
           output = Math.max(Constants.kMinOutput, Math.min(Constants.kMaxOutput, output)); // Clamp output to within limits
@@ -293,7 +293,6 @@ public final class DrivetrainSubsystem {
           // Possible add delay to wait a short amount of time before checking again
           integralError += error; // Update integral error
           previousError = error; // Update previous error
-        }
-        isBalancing = false;
-      }
+          return false;
+    }
 }
