@@ -4,7 +4,7 @@ import edu.wpi.first.wpilibj.XboxController;
 
 
 /**
- * The Controller class provides methods to retrieve values from an XboxController object and apply a controller threshold.
+ * The Controller class provides methods to retrieve values from an XboxController object.
  */
 public class Controller {
     /** The threshold value of the controller movement below which the movement is ignored. */

@@ -4,6 +4,7 @@ import edu.wpi.first.wpilibj.TimedRobot;
 
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.utils.Controller;
+import frc.robot.utils.LimelightVision;
 
 
 /**
@@ -16,12 +17,11 @@ import frc.robot.utils.Controller;
  */
 public class Robot extends TimedRobot {
 
+	private Controller mController1;
+    private Controller mController2;
+    private LimelightVision limelight;
     private DrivetrainSubsystem drivetrain;
 
-    
-	/** The Xbox controller objects used for driving the robot. */
-	public Controller mController1;
-    public Controller mController2;
 
     /**
      * This method is called once when the robot is first powered on. It sets the rear right
@@ -29,9 +29,10 @@ public class Robot extends TimedRobot {
      */
     @Override
     public void robotInit() {
-        drivetrain = new DrivetrainSubsystem();
         mController1 = new Controller(RobotMap.XBOX_CONTROLLER_1_ID);
         mController2 = new Controller(RobotMap.XBOX_CONTROLLER_2_ID);
+        limelight = new LimelightVision(RobotMap.LIMELIGHT_HOSTNAME);
+        drivetrain = new DrivetrainSubsystem();
     }
 
 

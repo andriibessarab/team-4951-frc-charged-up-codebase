@@ -2,7 +2,6 @@ package frc.robot.utils;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.ADIS16470_IMU;
-import edu.wpi.first.wpilibj.ADIS16470_IMU.IMUAxis;
 
 
 /**
@@ -46,20 +45,22 @@ public final class Gyroscope {
 
 
     /**
-     * Returns the yaw axis of the gyroscope.
-     * @return the yaw axis of the gyroscope
+     * Calculates and returns the current pitch angle of the robot using the arctangent function and data from the gyro's accelerometer.
+     * @return The current pitch angle in degrees.
      */
-    public final IMUAxis getYawAxis() {
-        return gyro.getYawAxis();
+    public final double getPitch() {
+        // Calculate the pitch angle 
+        return Math.atan2(gyro.getAccelY(), gyro.getAccelZ()) * 180 / Math.PI;
     }
 
 
     /**
-     * Returns the angle of the yaw axis as a Rotation2d object.
-     * @return the angle of the yaw axis as a Rotation2d object
+     * Calculates and returns the current thresholded pitch angle of the robot using the arctangent function and data from the gyro's accelerometer.
+     * @return The current thresholded pitch angle in degrees.
      */
-    public final Rotation2d getRotation2D() {
-        return Rotation2d.fromDegrees(-gyro.getAngle());
+    public final double getThresholdedPitch() {
+        // Calculate the pitch angle 
+        return Math.atan2(gyro.getAccelY(), gyro.getAccelZ()) * 180 / Math.PI > 5 ? Math.atan2(gyro.getAccelY(), gyro.getAccelZ()) * 180 / Math.PI : 0;
     }
 
 
@@ -73,11 +74,10 @@ public final class Gyroscope {
 
 
     /**
-     * Calculates and returns the current pitch angle of the robot using the arctangent function and data from the gyro's accelerometer.
-     * @return The current pitch angle in degrees.
+     * Returns the angle of the yaw axis as a Rotation2d object.
+     * @return the angle of the yaw axis as a Rotation2d object
      */
-    public final double getPitch() {
-        // Calculate the pitch angle 
-        return Math.atan2(gyro.getAccelY(), gyro.getAccelZ()) * 180 / Math.PI;
+    public final Rotation2d getRotation2D() {
+        return Rotation2d.fromDegrees(-gyro.getAngle());
     }
 }
