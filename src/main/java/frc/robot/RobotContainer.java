@@ -24,9 +24,11 @@ import edu.wpi.first.wpilibj2.command.RamseteCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
-import frc.robot.commands.AutonomousConePlacementCommand;
 import frc.robot.commands.BalanceOnStationCommand;
+import frc.robot.subsystems.RollerIntakeSubsystem;
+import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.DrivetrainSubsystem;
+import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.DrivetrainSubsystem.DrivetrainConstants;
 import frc.robot.utils.Controller;
 
@@ -61,6 +63,9 @@ public class RobotContainer {
      * private final Led m_led = new Led(RobotMap.LED_CHANNEL);
      * private final LimelightVision m_limelight = new
      * LimelightVision(RobotMap.LIMELIGHT_HOSTNAME);
+     * private final ElevatorSubsystem mElevator = new ElevatorSubsystem();
+     * private final RollerIntakeSubsystem mIntake = new RollerIntakeSubsystem();
+     * private final ArmSubsystem mArm = new ArmSubsystem();
      */
 
     /**
@@ -147,9 +152,9 @@ public class RobotContainer {
      */
     public Command getAutonomousCommand() {
         return new SequentialCommandGroup(
-                new AutonomousConePlacementCommand(mRobotDrive), // Place the cone that robot holds
-                pathChooser.getSelected(), // Follow trajectory to
-                                           // balancing station
-                new BalanceOnStationCommand(mRobotDrive)); // Balance the robot on the station
+                //new AutonomousConePlacementCommand(mRobotDrive, mElevator, mIntake, mArm), // Place the cone that robot holds
+                pathChooser.getSelected(), // Follow trajectory to balancing station
+                new BalanceOnStationCommand(mRobotDrive) // Balance the robot on the station
+        ); 
     }
 }

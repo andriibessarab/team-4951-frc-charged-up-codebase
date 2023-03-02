@@ -14,6 +14,18 @@ public final class RobotMap {
 	public static final int FRONT_LEFT_MOTOR_PWM_PIN = 2;
 	public static final int FRONT_RIGHT_MOTOR_PWM_PIN = 3;
 
+	// ELEVATOR SUBSYSTEM
+	public static final int ELEVATOR_PWM_PIN = 5;
+	public static final double ELEVATOR_SPEED_MULTIPLIER = 0.5;
+
+	// ARM SUBSYSTEM
+	public static final int INTAKE_PWM_PIN = 6;
+	public static final double INTAKE_SPEED_MULTIPLIER = 0.5;
+
+	// ARM SUBSYSTEM
+	public static final int ARM_PWM_PIN = 7;
+	public static final double ARM_SPEED_MULTIPLIER = 0.5;
+
 	// Liemlight Hostname
 	public static final String LIMELIGHT_HOSTNAME = "limelight-cdslime";
 

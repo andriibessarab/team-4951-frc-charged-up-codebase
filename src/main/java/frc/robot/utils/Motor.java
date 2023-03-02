@@ -3,7 +3,6 @@ package frc.robot.utils;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel;
 import com.revrobotics.RelativeEncoder;
-import edu.wpi.first.math.geometry.Translation2d;
 
 /**
  * The Motor class represents a motor in the FRC robot. It provides methods for
@@ -13,7 +12,6 @@ import edu.wpi.first.math.geometry.Translation2d;
 public class Motor {
     private CANSparkMax motor;
     private RelativeEncoder motorEncoder;
-    private Translation2d motorLocation;
     private int motorSpeedMultiplier = 1;
 
     /**
@@ -26,10 +24,9 @@ public class Motor {
      * @param yFromCenter The Y coordinate of the motor location relative to the
      *                    center of the robot.
      */
-    public Motor(int pwmPin, double xFromCenter, double yFromCenter) {
+    public Motor(int pwmPin) {
         this.motor = new CANSparkMax(pwmPin, CANSparkMaxLowLevel.MotorType.kBrushless);
         this.motorEncoder = motor.getEncoder();
-        this.motorLocation = new Translation2d(xFromCenter, yFromCenter);
     }
 
     public final void restoreMotorToFactoryDefaults() {
@@ -83,15 +80,6 @@ public class Motor {
 
     public final void setEncoderVelocityConversionFactor(double f) {
         this.motorEncoder.setVelocityConversionFactor(f);
-    }
-
-    /**
-     * Returns the location of the motor relative to the center of the robot.
-     *
-     * @return The location of the motor as a Translation2d object.
-     */
-    public final Translation2d getLocation() {
-        return this.motorLocation;
     }
 
     /**

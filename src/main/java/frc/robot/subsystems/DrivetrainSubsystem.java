@@ -58,7 +58,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
         public static final double kRamseteB = 23;
         public static final double kRamseteZeta = 0.7;
 
-        private static double kGearRatio;
+        private static double kGearRatio = 10.71;
         private static double kWheelRadiusInches = 2.75; // radius of wheels
         private static final double kLinearDistanceConversionFactor = (Units
                 .inchesToMeters(1 / (kGearRatio * 2 * Math.PI *
@@ -105,10 +105,10 @@ public class DrivetrainSubsystem extends SubsystemBase {
         m_odometry = new DifferentialDriveOdometry(gyro.getRotation2D(), frontLeftMotor.getEncoderPosition(),
                 frontRightMotor.getEncoderPosition());
 
-        rearLeftMotor = new Motor(RobotMap.REAR_LEFT_MOTOR_PWM_PIN, 0, 0);
-        rearRightMotor = new Motor(RobotMap.REAR_RIGHT_MOTOR_PWM_PIN, 0, 0);
-        frontLeftMotor = new Motor(RobotMap.FRONT_LEFT_MOTOR_PWM_PIN, 0, 0);
-        frontRightMotor = new Motor(RobotMap.FRONT_RIGHT_MOTOR_PWM_PIN, 0, 0);
+        rearLeftMotor = new Motor(RobotMap.REAR_LEFT_MOTOR_PWM_PIN);
+        rearRightMotor = new Motor(RobotMap.REAR_RIGHT_MOTOR_PWM_PIN);
+        frontLeftMotor = new Motor(RobotMap.FRONT_LEFT_MOTOR_PWM_PIN);
+        frontRightMotor = new Motor(RobotMap.FRONT_RIGHT_MOTOR_PWM_PIN);
 
         leftControllerGroup = new MotorControllerGroup(frontLeftMotor.getMotorInstance(),
                 rearLeftMotor.getMotorInstance());
