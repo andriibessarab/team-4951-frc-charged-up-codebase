@@ -6,8 +6,9 @@ import com.revrobotics.RelativeEncoder;
 import edu.wpi.first.math.geometry.Translation2d;
 
 /**
- *The Motor class represents a motor in the FRC robot. It provides methods for controlling the motor's speed,
- *direction, and position.
+ * The Motor class represents a motor in the FRC robot. It provides methods for
+ * controlling the motor's speed,
+ * direction, and position.
  */
 public class Motor {
     private CANSparkMax motor;
@@ -15,13 +16,15 @@ public class Motor {
     private Translation2d motorLocation;
     private int motorSpeedMultiplier = 1;
 
-
     /**
-     * Constructor for the Motor class. Initializes the motor, encoder, and motor location.
+     * Constructor for the Motor class. Initializes the motor, encoder, and motor
+     * location.
      *
-     * @param pwmPin The PWM pin to which the motor is connected.
-     * @param xFromCenter The X coordinate of the motor location relative to the center of the robot.
-     * @param yFromCenter The Y coordinate of the motor location relative to the center of the robot.
+     * @param pwmPin      The PWM pin to which the motor is connected.
+     * @param xFromCenter The X coordinate of the motor location relative to the
+     *                    center of the robot.
+     * @param yFromCenter The Y coordinate of the motor location relative to the
+     *                    center of the robot.
      */
     public Motor(int pwmPin, double xFromCenter, double yFromCenter) {
         this.motor = new CANSparkMax(pwmPin, CANSparkMaxLowLevel.MotorType.kBrushless);
@@ -29,16 +32,13 @@ public class Motor {
         this.motorLocation = new Translation2d(xFromCenter, yFromCenter);
     }
 
-
     public final void restoreMotorToFactoryDefaults() {
         this.motor.restoreFactoryDefaults();
     }
 
-
     public final void resetEncoder() {
         this.motorEncoder.setPosition(0);
     }
-
 
     /**
      * Sets the speed of the motor.
@@ -55,7 +55,6 @@ public class Motor {
             this.motorSpeedMultiplier = 1;
     }
 
-
     /**
      * Inverts the direction of the motor.
      */
@@ -63,9 +62,9 @@ public class Motor {
         this.motor.setInverted(true);
     }
 
-
     /**
-     * Sets the power of the motor. This method takes into account the speed multiplier and sets the motor
+     * Sets the power of the motor. This method takes into account the speed
+     * multiplier and sets the motor
      * power accordingly.
      *
      * @param power The power of the motor as a value between -1 and 1.
@@ -74,21 +73,17 @@ public class Motor {
         this.motor.set(power * motorSpeedMultiplier);
     }
 
-
     public final void setEncoderPosition(double p) {
         this.motorEncoder.setPosition(p);
     }
-
 
     public final void setEncoderPositionConversionFactor(double f) {
         this.motorEncoder.setPositionConversionFactor(f);
     }
 
-
     public final void setEncoderVelocityConversionFactor(double f) {
         this.motorEncoder.setVelocityConversionFactor(f);
     }
-
 
     /**
      * Returns the location of the motor relative to the center of the robot.
@@ -99,7 +94,6 @@ public class Motor {
         return this.motorLocation;
     }
 
-
     /**
      * Returns the current position of the motor encoder.
      *
@@ -109,8 +103,15 @@ public class Motor {
         return this.motorEncoder.getPosition();
     }
 
-
     public final double getEncoderVelocity() {
         return this.motorEncoder.getVelocity();
+    }
+
+    public final CANSparkMax getMotorInstance() {
+        return this.motor;
+    }
+
+    public final RelativeEncoder getEncoderInstance() {
+        return this.motorEncoder;
     }
 }

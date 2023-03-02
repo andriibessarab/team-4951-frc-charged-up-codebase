@@ -80,4 +80,9 @@ public final class Gyroscope {
     public final Rotation2d getRotation2D() {
         return Rotation2d.fromDegrees(-gyro.getAngle());
     }
+
+
+    public final ADIS16470_IMU getGyroInstance() {
+        return this.gyro;
+    }
 }

@@ -13,7 +13,7 @@ public final class LimelightVision implements Sendable {
         public final static int kReflectiveTapePipeline = 1;
         public final static int kAprilTagsPipeline = 0;
 
-        // #TODO Approximate(need to be measured)
+        // Approximate(need to be measured)
         public final static int MAX_VERT_OFFSET_FOR_LOW = 10;
         public final static int HEIGHT_TO_LOW = 24;
         public final static int MAX_VERT_OFFSET_FOR_MED = 20;

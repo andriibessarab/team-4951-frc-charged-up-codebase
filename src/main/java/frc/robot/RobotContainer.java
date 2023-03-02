@@ -4,16 +4,30 @@
 
 package frc.robot;
 
+import java.io.IOException;
+import java.nio.file.Path;
+
+import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.RamseteController;
+import edu.wpi.first.math.controller.SimpleMotorFeedforward;
+import edu.wpi.first.math.trajectory.Trajectory;
+import edu.wpi.first.math.trajectory.TrajectoryUtil;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.XboxController.Button;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.RamseteCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.commands.AutonomousConePlacementCommand;
-import frc.robot.commands.AutonomousFollowTrajectoryChargingCommand;
 import frc.robot.commands.BalanceOnStationCommand;
 import frc.robot.subsystems.DrivetrainSubsystem;
+import frc.robot.subsystems.DrivetrainSubsystem.DrivetrainConstants;
 import frc.robot.utils.Controller;
 
 /**
@@ -36,6 +50,7 @@ public class RobotContainer {
     // The driver's controller
     private final Controller mController = new Controller(RobotMap.XBOX_CONTROLLER_ID);
 
+    SendableChooser<Command> pathChooser = new SendableChooser<>();
     /*
      * Robot utils that currently not in use
      * private final Camera m_frontCam = new Camera(RobotMap.CAMERA_FRONT_DEV,
@@ -63,6 +78,13 @@ public class RobotContainer {
                                 mController.getThresholdedLeftY(),
                                 mController.getThresholdedRightX()),
                         mRobotDrive));
+
+        pathChooser.addOption("curvy path", loadPathplannerTrajectoryToRamseteCommand(
+                "C:\\Users\\andri\\Documents\\GitHub\\ChargedUp-4951-Robot\\src\\main\\deploy\\pathplanner\\generatedJSON\\curvy.wpilib.json",
+                true));
+
+        Shuffleboard.getTab("Autonomous").add(pathChooser);
+
     }
 
     /**
@@ -77,6 +99,47 @@ public class RobotContainer {
                 .onTrue(new BalanceOnStationCommand(mRobotDrive));
     }
 
+    public Command loadPathplannerTrajectoryToRamseteCommand(String filename, boolean resetOdometry) {
+        Trajectory trajectory;
+
+        try {
+            Path trajectoryPath = Filesystem.getDeployDirectory().toPath().resolve(filename);
+            trajectory = TrajectoryUtil.fromPathweaverJson(trajectoryPath);
+        } catch (IOException exception) {
+            DriverStation.reportError("Unable to resolve trajectory " + filename, exception.getStackTrace());
+            return new InstantCommand();
+        }
+
+        RamseteCommand ramseteCommand = new RamseteCommand(
+                trajectory,
+                mRobotDrive::getPose,
+                new RamseteController(
+                        DrivetrainConstants.kRamseteB,
+                        DrivetrainConstants.kRamseteZeta),
+                new SimpleMotorFeedforward(
+                        DrivetrainConstants.ksVolts,
+                        DrivetrainConstants.kvVoltSecondsPerMinuite,
+                        DrivetrainConstants.kaVoltSecondsSquaredPerMinuite),
+                DrivetrainConstants.kDriveKinematics,
+                mRobotDrive::getWheelSpeeds,
+                new PIDController(
+                        DrivetrainConstants.kpDriveVel,
+                        0,
+                        0),
+                new PIDController(
+                        DrivetrainConstants.kpDriveVel,
+                        0,
+                        0),
+                mRobotDrive::setDriveVolts,
+                mRobotDrive);
+        if (resetOdometry) {
+            return new SequentialCommandGroup(
+                    new InstantCommand(() -> mRobotDrive.resetOdometry(trajectory.getInitialPose())), ramseteCommand);
+        } else {
+            return ramseteCommand;
+        }
+    }
+
     /**
      * Use this to pass the autonomous command to the main {@link Robot} class.
      *
@@ -85,7 +148,8 @@ public class RobotContainer {
     public Command getAutonomousCommand() {
         return new SequentialCommandGroup(
                 new AutonomousConePlacementCommand(mRobotDrive), // Place the cone that robot holds
-                new AutonomousFollowTrajectoryChargingCommand(mRobotDrive), // Follow trajectory to balancing station
+                pathChooser.getSelected(), // Follow trajectory to
+                                           // balancing station
                 new BalanceOnStationCommand(mRobotDrive)); // Balance the robot on the station
     }
 }

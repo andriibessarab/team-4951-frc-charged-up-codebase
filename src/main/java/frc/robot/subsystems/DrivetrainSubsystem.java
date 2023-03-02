@@ -1,11 +1,15 @@
 package frc.robot.subsystems;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
+import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
+import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
 import edu.wpi.first.math.kinematics.MecanumDriveKinematics;
 import edu.wpi.first.math.kinematics.MecanumDriveOdometry;
-import edu.wpi.first.math.kinematics.MecanumDriveWheelPositions;
 import edu.wpi.first.math.util.Units;
-
+import edu.wpi.first.wpilibj.drive.DifferentialDrive;
+import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.RobotMap;
 import frc.robot.utils.Gyroscope;
 import frc.robot.utils.Motor;
@@ -22,11 +26,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
  * 
  * The class relies on the following components:
  * - Motor class: for controlling each motor on the robot
- * - Gyroscope class: for measuring the robot's orientation
- * - MecanumDriveKinematics class: for calculating kinematics based on wheel
- * location
- * - MecanumDriveOdometry class: for calculating the robot's position on the
- * field
+ * - Gyroscope class: for measuring the robot's orientationdifferential
  * 
  * @see Motor
  * @see Gyroscope
@@ -37,18 +37,32 @@ public class DrivetrainSubsystem extends SubsystemBase {
     /**
      * This class defines constants that are used in drivetrain.
      */
-    public static final class Constants {
+    public static final class DrivetrainConstants {
         // Constants for Trajecotories (need to obtain them through sysid and
         // measurements)
-        private static double ksVolts;
-        private static double kvVoltSecondsPerMinuite;
-        private static double kaVoltSecondsSquaredPerMinuite;
-        private static double kpDriveVel;
-        private static double kTrackWidthMeters; // horizontal distance between two wheels
-        private static double kGearRatioInches;
-        private static double kWheelRadiusInches; // radius of a wheel in inches
-        private static final double kLinearDistanceConversionFactor = Units
-                .inchesToMeters(1 / (kGearRatioInches * 2 * Math.PI * Units.inchesToMeters(kWheelRadiusInches)) * 10);
+        public static double ksVolts;
+        public static double kvVoltSecondsPerMinuite;
+        public static double kaVoltSecondsSquaredPerMinuite;
+        public static double kpDriveVel;
+
+        public static double kTrackWidthMeters = Units.inchesToMeters(20.5); // horizontal distance between two wheels
+        public static DifferentialDriveKinematics kDriveKinematics = new DifferentialDriveKinematics(
+                kTrackWidthMeters);
+
+        // Values obtained thrrough WILIB documentation
+        public static final double kMaxSpeedMeterserSecond = 3;
+        public static final double kMaxAccelerationMetersPerSecondSquared = 3;
+
+        // Reasonable baseline values for a RAMSETE follower in units of meters and
+        // seconds
+        public static final double kRamseteB = 23;
+        public static final double kRamseteZeta = 0.7;
+
+        private static double kGearRatio;
+        private static double kWheelRadiusInches = 2.75; // radius of wheels
+        private static final double kLinearDistanceConversionFactor = (Units
+                .inchesToMeters(1 / (kGearRatio * 2 * Math.PI *
+                        Units.inchesToMeters(kWheelRadiusInches)) * 10));
 
         // Constants & variables for balancing
         private static final double kProportionalGain = 0.03; // Proportional gain
@@ -68,8 +82,11 @@ public class DrivetrainSubsystem extends SubsystemBase {
     public Motor frontLeftMotor;
     public Motor frontRightMotor;
 
-    private MecanumDriveKinematics kinematics; // Create mecanum drive kinematics object based on motor location
-    private MecanumDriveOdometry odometry; // Mecanum drive odometry object based on kinematics and initial conditions
+    private MotorControllerGroup leftControllerGroup;
+    private MotorControllerGroup rightControllerGroup;
+
+    private DifferentialDrive m_differentialDrive;
+    private DifferentialDriveOdometry m_odometry;
 
     // PID Controller Variables
     private double integralError = 0.0f; // Integral error
@@ -85,31 +102,35 @@ public class DrivetrainSubsystem extends SubsystemBase {
         gyro.reset();
         gyro.calibrate();
 
+        m_odometry = new DifferentialDriveOdometry(gyro.getRotation2D(), frontLeftMotor.getEncoderPosition(),
+                frontRightMotor.getEncoderPosition());
+
         rearLeftMotor = new Motor(RobotMap.REAR_LEFT_MOTOR_PWM_PIN, 0, 0);
         rearRightMotor = new Motor(RobotMap.REAR_RIGHT_MOTOR_PWM_PIN, 0, 0);
         frontLeftMotor = new Motor(RobotMap.FRONT_LEFT_MOTOR_PWM_PIN, 0, 0);
         frontRightMotor = new Motor(RobotMap.FRONT_RIGHT_MOTOR_PWM_PIN, 0, 0);
+
+        leftControllerGroup = new MotorControllerGroup(frontLeftMotor.getMotorInstance(),
+                rearLeftMotor.getMotorInstance());
+        rightControllerGroup = new MotorControllerGroup(frontRightMotor.getMotorInstance(),
+                rearRightMotor.getMotorInstance());
+
+        m_differentialDrive = new DifferentialDrive(leftControllerGroup, rightControllerGroup);
 
         frontLeftMotor.restoreMotorToFactoryDefaults();
         frontRightMotor.restoreMotorToFactoryDefaults();
         rearLeftMotor.restoreMotorToFactoryDefaults();
         rearRightMotor.restoreMotorToFactoryDefaults();
 
+        leftControllerGroup.setInverted(false);
+        rightControllerGroup.setInverted(false);
+
         resetEncoders();
 
-        frontLeftMotor.setEncoderPositionConversionFactor(Constants.kLinearDistanceConversionFactor);
-        frontRightMotor.setEncoderPositionConversionFactor(Constants.kLinearDistanceConversionFactor);
-        rearLeftMotor.setEncoderPositionConversionFactor(Constants.kLinearDistanceConversionFactor);
-        rearRightMotor.setEncoderPositionConversionFactor(Constants.kLinearDistanceConversionFactor);
-
-        frontLeftMotor.setEncoderVelocityConversionFactor(Constants.kLinearDistanceConversionFactor / 60);
-        frontRightMotor.setEncoderVelocityConversionFactor(Constants.kLinearDistanceConversionFactor / 60);
-        rearLeftMotor.setEncoderVelocityConversionFactor(Constants.kLinearDistanceConversionFactor / 60);
-        rearRightMotor.setEncoderVelocityConversionFactor(Constants.kLinearDistanceConversionFactor / 60);
-
-        kinematics = new MecanumDriveKinematics(frontLeftMotor.getLocation(), frontRightMotor.getLocation(),
-                rearLeftMotor.getLocation(), rearRightMotor.getLocation());
-        odometry = new MecanumDriveOdometry(kinematics, gyro.getRotation2D(), getMecanumDriveWheelPositions());
+        frontLeftMotor.setEncoderPositionConversionFactor(DrivetrainConstants.kLinearDistanceConversionFactor);
+        frontRightMotor.setEncoderPositionConversionFactor(DrivetrainConstants.kLinearDistanceConversionFactor);
+        frontLeftMotor.setEncoderVelocityConversionFactor(DrivetrainConstants.kLinearDistanceConversionFactor / 60);
+        frontRightMotor.setEncoderVelocityConversionFactor(DrivetrainConstants.kLinearDistanceConversionFactor / 60);
 
         resetOdometry(new Pose2d());
     }
@@ -117,18 +138,18 @@ public class DrivetrainSubsystem extends SubsystemBase {
     @Override
     public void periodic() {
         updateOdometry();
+
+        SmartDashboard.putNumber("Left-encoder value(meters)", frontLeftMotor.getEncoderPosition());
+        SmartDashboard.putNumber("Right-encoder value(meters)", frontLeftMotor.getEncoderPosition());
+        SmartDashboard.putNumber("Gyro heading", gyro.getAngle());
     }
 
     /**
-     * Resets the encoder counts of a given motor to zero.
-     * 
-     * @param motor the motor to reset the encoder counts of
+     * Resets the encoder counts of a given motor to zero
      */
     public final void resetEncoders() {
         frontLeftMotor.resetEncoder();
         frontRightMotor.resetEncoder();
-        rearLeftMotor.resetEncoder();
-        rearRightMotor.resetEncoder();
     }
 
     /**
@@ -138,7 +159,8 @@ public class DrivetrainSubsystem extends SubsystemBase {
      */
     public final void resetOdometry(Pose2d pose) {
         resetEncoders();
-        odometry.resetPosition(gyro.getRotation2D(), getMecanumDriveWheelPositions(), pose);
+        m_odometry.resetPosition(gyro.getRotation2D(), frontLeftMotor.getEncoderPosition(),
+                frontRightMotor.getEncoderPosition(), pose);
     }
 
     /**
@@ -152,9 +174,8 @@ public class DrivetrainSubsystem extends SubsystemBase {
      *      Odometry documentation</a>
      */
     public final void updateOdometry() {
-        odometry.update(
-                gyro.getRotation2D(),
-                getMecanumDriveWheelPositions());
+        m_odometry.update(gyro.getRotation2D(), frontLeftMotor.getEncoderPosition(),
+                frontRightMotor.getEncoderPosition());
     }
 
     /**
@@ -163,17 +184,31 @@ public class DrivetrainSubsystem extends SubsystemBase {
      * @return The current pose of the robot.
      */
     public final Pose2d getPose() {
-        return odometry.getPoseMeters();
+        return m_odometry.getPoseMeters();
     }
 
     /**
-     * Gets the positions of the mecanum drive wheels.
+     * Gets the positions of the differential drive wheels.
      *
-     * @return The positions of the mecanum drive wheels.
+     * @return The positions of the differential drive wheels.
      */
-    public final MecanumDriveWheelPositions getMecanumDriveWheelPositions() {
-        return new MecanumDriveWheelPositions(frontLeftMotor.getEncoderPosition(), frontRightMotor.getEncoderPosition(),
-                rearLeftMotor.getEncoderPosition(), rearRightMotor.getEncoderPosition());
+    public final DifferentialDriveWheelSpeeds getWheelSpeeds() {
+        return new DifferentialDriveWheelSpeeds(frontLeftMotor.getEncoderVelocity(),
+                frontRightMotor.getEncoderVelocity());
+    }
+
+    public final void setDriveVolts(double leftVolts, double rightVolts) {
+        leftControllerGroup.setVoltage(leftVolts);
+        rightControllerGroup.setVoltage(rightVolts);
+        m_differentialDrive.feed();
+    }
+
+    public final double getAverageEncoderPosition() {
+        return (frontLeftMotor.getEncoderPosition() + frontRightMotor.getEncoderPosition()) / 2.0;
+    }
+
+    public final void setMaxOutput(double maxOutput) {
+        m_differentialDrive.setMaxOutput(maxOutput);
     }
 
     /**
@@ -195,8 +230,8 @@ public class DrivetrainSubsystem extends SubsystemBase {
      * This method drives the robot using single-axis control.
      * 
      * @param xSpeed x-axis movement speed
-     * @param y y-axis movement speed
-     * @param z z-axis movement speed
+     * @param y      y-axis movement speed
+     * @param z      z-axis movement speed
      */
     public final void driveSingleAxis(double xSpeed, double y, double z) {
         if (Math.abs(y) > Math.abs(xSpeed) && Math.abs(y) > Math.abs(z)) { // Y-Axis Motion
@@ -295,36 +330,37 @@ public class DrivetrainSubsystem extends SubsystemBase {
      * Calculates the appropriate motor powers for each wheel to achieve
      * smooth and accurate movement.
      *
-     * @param xSpeed     the x component of the joystick input (-1.0 to 1.0)
-     * @param ySpeed     the y component of the joystick input (-1.0 to 1.0)
-     * @param zRot  the rotation component of the joystick input (-1.0 to 1.0)
+     * @param xSpeed the x component of the joystick input (-1.0 to 1.0)
+     * @param ySpeed the y component of the joystick input (-1.0 to 1.0)
+     * @param zRot   the rotation component of the joystick input (-1.0 to 1.0)
      * 
-     * @see <a href="https://www.youtube.com/watch?v=gnSW2QpkGXQ">This video</a> for a demonstration of mecanum wheel drive.
-        */
-    public final void driveMecanum(double xSpeed,double ySpeed, double zRot) {
+     * @see <a href="https://www.youtube.com/watch?v=gnSW2QpkGXQ">This video</a> for
+     *      a demonstration of mecanum wheel drive.
+     */
+    public final void driveMecanum(double xSpeed, double ySpeed, double zRot) {
         // Calculate the angle and magnitude of the joystick input
         double theta = Math.atan2(ySpeed, xSpeed);
         double power = Math.hypot(xSpeed, ySpeed);
 
         // Calculate the sine and cosine of the angle, offset by 45 degrees
-        double sin = Math.sin(theta - Math.PI/4);
-        double cos = Math.cos(theta - Math.PI/4);
+        double sin = Math.sin(theta - Math.PI / 4);
+        double cos = Math.cos(theta - Math.PI / 4);
         double max = Math.max(Math.abs(sin), Math.abs(cos));
 
         // Calculate the motor powers for each wheel based on the joystick input
-        double leftFront = power * cos/max + zRot;
-        double rightFront = power * sin/max - zRot;
-        double leftRear = power * sin/max + zRot;
-        double rightRear = power * cos/max - zRot;
+        double leftFront = power * cos / max + zRot;
+        double rightFront = power * sin / max - zRot;
+        double leftRear = power * sin / max + zRot;
+        double rightRear = power * cos / max - zRot;
 
         // Scale the motor powers if necessary to avoid exceeding the maximum power
         if ((power + Math.abs(zRot)) > 1) {
-            leftFront   /= power + Math.abs(zRot);
+            leftFront /= power + Math.abs(zRot);
             rightFront /= power + Math.abs(zRot);
-            leftRear    /= power + Math.abs(zRot);
-            rightRear  /= power + Math.abs(zRot);
+            leftRear /= power + Math.abs(zRot);
+            rightRear /= power + Math.abs(zRot);
         }
-      
+
         // Set the motor speeds to achieve the desired movement
         setMotorSpeeds(leftFront, rightFront, leftRear, rightRear);
     }
@@ -335,14 +371,18 @@ public class DrivetrainSubsystem extends SubsystemBase {
     public final boolean balanceOnStation() {
         double angle = gyro.getPitch();
         double error = -angle; // Negative because we want to balance on the opposite side of the gyro angle
-        if (Math.abs(error) < Constants.kToleranceDegrees) { // If within tolerance, stop
+        if (Math.abs(error) < DrivetrainConstants.kToleranceDegrees) { // If within tolerance, stop
             setMotorSpeeds(0, 0, 0, 0);
             return true;
         }
-        double output = Constants.kProportionalGain * error + Constants.kIntegralGain * integralError
-                + Constants.kDerivativeGain * (error - previousError); // PID calculation
-        output = Math.max(Constants.kMinOutput, Math.min(Constants.kMaxOutput, output)); // Clamp output to within
-                                                                                         // limits
+        double output = DrivetrainConstants.kProportionalGain * error
+                + DrivetrainConstants.kIntegralGain * integralError
+                + DrivetrainConstants.kDerivativeGain * (error - previousError); // PID calculation
+        output = Math.max(DrivetrainConstants.kMinOutput, Math.min(DrivetrainConstants.kMaxOutput, output)); // Clamp
+                                                                                                             // output
+                                                                                                             // to
+                                                                                                             // within
+        // limits
         setMotorSpeeds(output, output, output, output); // Set the motor speeds based on the PID output
         // Possible add delay to wait a short amount of time before checking again
         integralError += error; // Update integral error
