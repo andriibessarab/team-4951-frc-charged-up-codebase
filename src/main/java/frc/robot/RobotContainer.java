@@ -26,10 +26,9 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.commands.BalanceOnStationCommand;
 import frc.robot.subsystems.RollerIntakeSubsystem;
+import frc.robot.subsystems.DriveTrainSubsystem.*;
 import frc.robot.subsystems.ArmSubsystem;
-import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem;
-import frc.robot.subsystems.DrivetrainSubsystem.DrivetrainConstants;
 import frc.robot.utils.Controller;
 
 /**
@@ -47,7 +46,7 @@ import frc.robot.utils.Controller;
  */
 public class RobotContainer {
     // The robot's subsystems
-    private final DrivetrainSubsystem mRobotDrive = new DrivetrainSubsystem();
+    private final VictorSubsystem mRobotDrive = new VictorSubsystem();
 
     // The driver's controller
     private final Controller mController = new Controller(RobotMap.XBOX_CONTROLLER_ID);
@@ -84,10 +83,11 @@ public class RobotContainer {
                                 mController.getThresholdedRightX()),
                         mRobotDrive));
 
+        /*
         pathChooser.addOption("curvy path", loadPathplannerTrajectoryToRamseteCommand(
-                "C:\\Users\\andri\\Documents\\GitHub\\ChargedUp-4951-Robot\\src\\main\\deploy\\pathplanner\\generatedJSON\\curvy.wpilib.json",
+                ".\\src\\main\\deploy\\pathplanner\\generatedJSON\\curvy.wpilib.json",
                 true));
-
+*/
         Shuffleboard.getTab("Autonomous").add(pathChooser);
 
     }
@@ -103,7 +103,7 @@ public class RobotContainer {
         new JoystickButton(mController, Button.kB.value)
                 .onTrue(new BalanceOnStationCommand(mRobotDrive));
     }
-
+/*
     public Command loadPathplannerTrajectoryToRamseteCommand(String filename, boolean resetOdometry) {
         Trajectory trajectory;
 
@@ -114,7 +114,6 @@ public class RobotContainer {
             DriverStation.reportError("Unable to resolve trajectory " + filename, exception.getStackTrace());
             return new InstantCommand();
         }
-
         RamseteCommand ramseteCommand = new RamseteCommand(
                 trajectory,
                 mRobotDrive::getPose,
@@ -144,7 +143,7 @@ public class RobotContainer {
             return ramseteCommand;
         }
     }
-
+*/
     /**
      * Use this to pass the autonomous command to the main {@link Robot} class.
      *

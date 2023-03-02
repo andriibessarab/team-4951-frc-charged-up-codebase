@@ -3,7 +3,7 @@ package frc.robot.commands;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.RollerIntakeSubsystem;
 import frc.robot.subsystems.ArmSubsystem;
-import frc.robot.subsystems.DrivetrainSubsystem;
+import frc.robot.subsystems.DriveTrainSubsystem.*;
 import frc.robot.subsystems.ElevatorSubsystem;
 
 /**
@@ -11,13 +11,13 @@ import frc.robot.subsystems.ElevatorSubsystem;
  * s
  */
 public class AutonomousConePlacementCommand extends CommandBase {
-    private final DrivetrainSubsystem drivetrainSubsystem;
+    private final SparkMax drivetrainSubsystem;
     private final ElevatorSubsystem elevatorSubsystem;
     private final RollerIntakeSubsystem intakeSubsystem;
     private final ArmSubsystem armSubsystem;
     private boolean conePlaced = false;
 
-    public AutonomousConePlacementCommand(DrivetrainSubsystem drivetrainSubsystem, ElevatorSubsystem elevatorSubsystem,
+    public AutonomousConePlacementCommand(SparkMax drivetrainSubsystem, ElevatorSubsystem elevatorSubsystem,
             RollerIntakeSubsystem intakeSubsystem, ArmSubsystem armSubsystem) {
         this.drivetrainSubsystem = drivetrainSubsystem;
         this.elevatorSubsystem = elevatorSubsystem;
