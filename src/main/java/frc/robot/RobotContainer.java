@@ -14,33 +14,39 @@ import frc.robot.commands.AutonomousConePlacementCommand;
 import frc.robot.commands.AutonomousFollowTrajectoryChargingCommand;
 import frc.robot.commands.BalanceOnStationCommand;
 import frc.robot.subsystems.DrivetrainSubsystem;
-import frc.robot.subsystems.LimelightVision;
-import frc.robot.utils.Camera;
 import frc.robot.utils.Controller;
-import frc.robot.utils.Led;
 
 /**
- * This class is where the bulk of the robot should be declared.  Since Command-based is a
- * "declarative" paradigm, very little robot logic should actually be handled in the {@link Robot}
- * periodic methods (other than the scheduler calls).  Instead, the structure of the robot
- * (including subsystems, commands, and button mappings) should be declared here.
+ * This class is where the bulk of the robot should be declared. Since
+ * Command-based is a
+ * "declarative" paradigm, very little robot logic should actually be handled in
+ * the {@link Robot}
+ * periodic methods (other than the scheduler calls). Instead, the structure of
+ * the robot
+ * (including subsystems, commands, and button mappings) should be declared
+ * here.
+ * 
  * @author Andrii Bessarab
  * @author Sitong Li
  */
 public class RobotContainer {
     // The robot's subsystems
-    private final DrivetrainSubsystem m_robotDrive = new DrivetrainSubsystem();
+    private final DrivetrainSubsystem mRobotDrive = new DrivetrainSubsystem();
 
     // The driver's controller
-    private final Controller mController1 = new Controller(RobotMap.XBOX_CONTROLLER_1_ID);
-    private final Controller mController2 = new Controller(RobotMap.XBOX_CONTROLLER_2_ID);
+    private final Controller mController = new Controller(RobotMap.XBOX_CONTROLLER_ID);
 
-    private final LimelightVision limelight = new LimelightVision(RobotMap.LIMELIGHT_HOSTNAME);
-    private final DrivetrainSubsystem drivetrain = new DrivetrainSubsystem();
-    private final Camera frontCam = new Camera(RobotMap.CAMERA_FRONT_DEV, RobotMap.CAMERA_RES_W, RobotMap.CAMERA_RES_H);
-    private final Camera intakeCam = new Camera(RobotMap.CAMERA_INTAKE_DEV, RobotMap.CAMERA_RES_W,
-            RobotMap.CAMERA_RES_H);;
-    private final Led led = new Led(RobotMap.LED_CHANNEL);
+    /*
+     * Robot utils that currently not in use
+     * private final Camera m_frontCam = new Camera(RobotMap.CAMERA_FRONT_DEV,
+     * RobotMap.CAMERA_RES_W, RobotMap.CAMERA_RES_H);
+     * private final Camera m_intakeCam = new Camera(RobotMap.CAMERA_INTAKE_DEV,
+     * RobotMap.CAMERA_RES_W,
+     * RobotMap.CAMERA_RES_H);;
+     * private final Led m_led = new Led(RobotMap.LED_CHANNEL);
+     * private final LimelightVision m_limelight = new
+     * LimelightVision(RobotMap.LIMELIGHT_HOSTNAME);
+     */
 
     /**
      * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -50,26 +56,25 @@ public class RobotContainer {
         configureButtonBindings();
 
         // Configure default commands
-        m_robotDrive.setDefaultCommand(
+        mRobotDrive.setDefaultCommand(
                 new RunCommand(
-                        () -> m_robotDrive.driveRobotOriented(
-                                mController1.getThresholdedLeftX(),
-                                mController1.getThresholdedLeftY(),
-                                mController1.getThresholdedRightX()),
-                        m_robotDrive));
+                        () -> mRobotDrive.driveRobotOriented(
+                                mController.getThresholdedLeftX(),
+                                mController.getThresholdedLeftY(),
+                                mController.getThresholdedRightX()),
+                        mRobotDrive));
     }
 
     /**
      * Use this method to define your button->command mappings. Buttons can be
-     * created by instantiating a {@link edu.wpi.first.wpilibj.GenericHID} or one 
-     * of its subclasses ({@link edu.wpi.first.wpilibj.Joystick} or 
+     * created by instantiating a {@link edu.wpi.first.wpilibj.GenericHID} or one
+     * of its subclasses ({@link edu.wpi.first.wpilibj.Joystick} or
      * {@link XboxController}), and then calling passing it to a
      * {@link JoystickButton}.
      */
     private void configureButtonBindings() {
-        // if(mController1.getBButtonPressed())
-        new JoystickButton(mController1, Button.kB.value)
-                .onTrue(new BalanceOnStationCommand(drivetrain));
+        new JoystickButton(mController, Button.kB.value)
+                .onTrue(new BalanceOnStationCommand(mRobotDrive));
     }
 
     /**
@@ -79,8 +84,8 @@ public class RobotContainer {
      */
     public Command getAutonomousCommand() {
         return new SequentialCommandGroup(
-                new AutonomousConePlacementCommand(drivetrain),
-                new AutonomousFollowTrajectoryChargingCommand(drivetrain),
-                new BalanceOnStationCommand(drivetrain));
+                new AutonomousConePlacementCommand(mRobotDrive), // Place the cone that robot holds
+                new AutonomousFollowTrajectoryChargingCommand(mRobotDrive), // Follow trajectory to balancing station
+                new BalanceOnStationCommand(mRobotDrive)); // Balance the robot on the station
     }
 }

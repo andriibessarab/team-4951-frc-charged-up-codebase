@@ -11,7 +11,7 @@ public class Controller extends XboxController {
      * The threshold value of the controller movement below which the movement is
      * ignored.
      */
-    public static final double CONTROLLER_THRESHOLD = 0.2;
+    private static final double CONTROLLER_THRESHOLD = 0.2;
 
     /**
      * Constructs a new Controller object with the specified PWM pin number.

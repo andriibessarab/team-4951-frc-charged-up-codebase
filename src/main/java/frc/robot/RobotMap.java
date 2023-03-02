@@ -1,14 +1,12 @@
 package frc.robot;
 
-
 /**
- *This class holds all the inputs and constants used in the robot's code.
+ * This class holds all the inputs and constants used in the robot's code.
  */
 public final class RobotMap {
 
 	// The IDs of the Xbox controllers used for driving the robot
-	public static final int XBOX_CONTROLLER_1_ID = 0;
-	public static final int XBOX_CONTROLLER_2_ID = 1;
+	public static final int XBOX_CONTROLLER_ID = 0;
 
 	// The PWM pins number of SPARK MAX motor controllers.
 	public static final int REAR_LEFT_MOTOR_PWM_PIN = 0;
@@ -19,7 +17,7 @@ public final class RobotMap {
 	// Liemlight Hostname
 	public static final String LIMELIGHT_HOSTNAME = "limelight-cdslime";
 
-	// Camera device inpouts and resolution constants
+	// Camera device inputs and resolution constants
 	public static final int CAMERA_FRONT_DEV = 0;
 	public static final int CAMERA_INTAKE_DEV = 1;
 	public static final int CAMERA_RES_H = 160;

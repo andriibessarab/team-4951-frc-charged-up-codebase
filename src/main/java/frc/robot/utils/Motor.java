@@ -45,7 +45,7 @@ public class Motor {
      *
      * @param speed The speed of the motor as a value between 0 and 1.
      */
-    public final void setSpeed(double speed) {
+    public final void setSpeedMultiplier(double speed) {
         // 0 < speed <= 1
         if (speed > 1)
             this.motorSpeedMultiplier = 1;

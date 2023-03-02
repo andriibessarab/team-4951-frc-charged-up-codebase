@@ -13,16 +13,20 @@ import frc.robot.utils.Motor;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 /**
- * This class represents the subsystem responsible for controlling the robot's drivetrain.
+ * This class represents the subsystem responsible for controlling the robot's
+ * drivetrain.
  * It uses a mecanum drive to allow for multi-axis and omnidirectional movement.
  * 
- * It includes methods for driving the robot using both robot-oriented and field-oriented control.
+ * It includes methods for driving the robot using both robot-oriented and
+ * field-oriented control.
  * 
  * The class relies on the following components:
  * - Motor class: for controlling each motor on the robot
  * - Gyroscope class: for measuring the robot's orientation
- * - MecanumDriveKinematics class: for calculating kinematics based on wheel location
- * - MecanumDriveOdometry class: for calculating the robot's position on the field
+ * - MecanumDriveKinematics class: for calculating kinematics based on wheel
+ * location
+ * - MecanumDriveOdometry class: for calculating the robot's position on the
+ * field
  * 
  * @see Motor
  * @see Gyroscope
@@ -34,7 +38,8 @@ public class DrivetrainSubsystem extends SubsystemBase {
      * This class defines constants that are used in drivetrain.
      */
     public static final class Constants {
-        // Constants for Trajecotories (need to obtain them through sysid and measurements)
+        // Constants for Trajecotories (need to obtain them through sysid and
+        // measurements)
         private static double ksVolts;
         private static double kvVoltSecondsPerMinuite;
         private static double kaVoltSecondsSquaredPerMinuite;
@@ -42,7 +47,8 @@ public class DrivetrainSubsystem extends SubsystemBase {
         private static double kTrackWidthMeters; // horizontal distance between two wheels
         private static double kGearRatioInches;
         private static double kWheelRadiusInches; // radius of a wheel in inches
-        private static final double kLinearDistanceConversionFactor = Units.inchesToMeters(1 / (kGearRatioInches*2*Math.PI*Units.inchesToMeters(kWheelRadiusInches)) * 10);
+        private static final double kLinearDistanceConversionFactor = Units
+                .inchesToMeters(1 / (kGearRatioInches * 2 * Math.PI * Units.inchesToMeters(kWheelRadiusInches)) * 10);
 
         // Constants & variables for balancing
         private static final double kProportionalGain = 0.03; // Proportional gain
@@ -53,18 +59,17 @@ public class DrivetrainSubsystem extends SubsystemBase {
         private static final double kMinOutput = -0.5; // Minimum output
     }
 
-    
     // The gyroscope object used for detecting and measuring the robot's rotation.
-	public Gyroscope gyro;
+    public Gyroscope gyro;
 
-	// The motor objects used for controlling the robot's drivetrain
-	public Motor rearLeftMotor;
-	public Motor rearRightMotor;
-	public Motor frontLeftMotor;
-	public Motor frontRightMotor;
-    
-	private MecanumDriveKinematics kinematics;  // Create mecanum drive kinematics object based on motor location
-	private MecanumDriveOdometry odometry;  // Mecanum drive odometry object based on kinematics and initial conditions
+    // The motor objects used for controlling the robot's drivetrain
+    public Motor rearLeftMotor;
+    public Motor rearRightMotor;
+    public Motor frontLeftMotor;
+    public Motor frontRightMotor;
+
+    private MecanumDriveKinematics kinematics; // Create mecanum drive kinematics object based on motor location
+    private MecanumDriveOdometry odometry; // Mecanum drive odometry object based on kinematics and initial conditions
 
     // PID Controller Variables
     private double integralError = 0.0f; // Integral error
@@ -102,9 +107,10 @@ public class DrivetrainSubsystem extends SubsystemBase {
         rearLeftMotor.setEncoderVelocityConversionFactor(Constants.kLinearDistanceConversionFactor / 60);
         rearRightMotor.setEncoderVelocityConversionFactor(Constants.kLinearDistanceConversionFactor / 60);
 
-        kinematics = new MecanumDriveKinematics(frontLeftMotor.getLocation(), frontRightMotor.getLocation(), rearLeftMotor.getLocation(), rearRightMotor.getLocation());
+        kinematics = new MecanumDriveKinematics(frontLeftMotor.getLocation(), frontRightMotor.getLocation(),
+                rearLeftMotor.getLocation(), rearRightMotor.getLocation());
         odometry = new MecanumDriveOdometry(kinematics, gyro.getRotation2D(), getMecanumDriveWheelPositions());
-    
+
         resetOdometry(new Pose2d());
     }
 
@@ -115,6 +121,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
     /**
      * Resets the encoder counts of a given motor to zero.
+     * 
      * @param motor the motor to reset the encoder counts of
      */
     public final void resetEncoders() {
@@ -124,9 +131,9 @@ public class DrivetrainSubsystem extends SubsystemBase {
         rearRightMotor.resetEncoder();
     }
 
-
     /**
      * Resets the robot's odometry to a specified starting pose.
+     * 
      * @param startingPose the pose to set the robot's odometry to
      */
     public final void resetOdometry(Pose2d pose) {
@@ -134,20 +141,21 @@ public class DrivetrainSubsystem extends SubsystemBase {
         odometry.resetPosition(gyro.getRotation2D(), getMecanumDriveWheelPositions(), pose);
     }
 
-
     /**
      * Updates the robot's odometry information using the current sensor readings.
-     * This method calculates the robot's position and orientation based on readings from the
+     * This method calculates the robot's position and orientation based on readings
+     * from the
      * gyro and the mecanum drive motor encoders.
-     * @see <a href="https://docs.wpilib.org/en/stable/docs/software/wpilib-tools/robot-characterization/odometry.html">WPILib Odometry documentation</a>
-    */
+     * 
+     * @see <a href=
+     *      "https://docs.wpilib.org/en/stable/docs/software/wpilib-tools/robot-characterization/odometry.html">WPILib
+     *      Odometry documentation</a>
+     */
     public final void updateOdometry() {
         odometry.update(
-            gyro.getRotation2D(),
-		    getMecanumDriveWheelPositions()
-        );
+                gyro.getRotation2D(),
+                getMecanumDriveWheelPositions());
     }
-
 
     /**
      * Gets the current pose of the robot.
@@ -158,16 +166,15 @@ public class DrivetrainSubsystem extends SubsystemBase {
         return odometry.getPoseMeters();
     }
 
-
     /**
      * Gets the positions of the mecanum drive wheels.
      *
      * @return The positions of the mecanum drive wheels.
      */
     public final MecanumDriveWheelPositions getMecanumDriveWheelPositions() {
-        return new MecanumDriveWheelPositions(frontLeftMotor.getEncoderPosition(), frontRightMotor.getEncoderPosition(), rearLeftMotor.getEncoderPosition(), rearRightMotor.getEncoderPosition());
+        return new MecanumDriveWheelPositions(frontLeftMotor.getEncoderPosition(), frontRightMotor.getEncoderPosition(),
+                rearLeftMotor.getEncoderPosition(), rearRightMotor.getEncoderPosition());
     }
-
 
     /**
      * This private method sets the speed for each motor on the robot.
@@ -178,58 +185,61 @@ public class DrivetrainSubsystem extends SubsystemBase {
      * @param br speed for the back right motor
      */
     private final void setMotorSpeeds(double fl, double fr, double bl, double br) {
-        frontLeftMotor.setSpeed(fl);
-        frontRightMotor.setSpeed(fr);
-        rearLeftMotor.setSpeed(bl);
-        rearRightMotor.setSpeed(br);
+        frontLeftMotor.setSpeedMultiplier(fl);
+        frontRightMotor.setSpeedMultiplier(fr);
+        rearLeftMotor.setSpeedMultiplier(bl);
+        rearRightMotor.setSpeedMultiplier(br);
     }
-
 
     /**
      * This method drives the robot using single-axis control.
      * 
-     * @param x x-axis movement speed
+     * @param xSpeed x-axis movement speed
      * @param y y-axis movement speed
      * @param z z-axis movement speed
      */
-    public final void driveSingleAxis(double x, double y, double z) {
-        if (Math.abs(y) > Math.abs(x) && Math.abs(y) > Math.abs(z)) { // Y-Axis Motion
+    public final void driveSingleAxis(double xSpeed, double y, double z) {
+        if (Math.abs(y) > Math.abs(xSpeed) && Math.abs(y) > Math.abs(z)) { // Y-Axis Motion
             setMotorSpeeds(y, y, y, y);
-        } else if (Math.abs(x) > Math.abs(y) && Math.abs(x) > Math.abs(z)) { // X-Axis Motion
-            if(x > 0) {
-                setMotorSpeeds(x*1.1, x*-0.95, x*-1.1, x);
-                if(Math.abs(x) >= 0.5) {
-                    setMotorSpeeds(x*1.1, x*-0.95, x*-1.1, x);
-                } else if(Math.abs(x) > 0.35) {
-                    setMotorSpeeds(x*0.9, x*-0.9, x*-1.1, x);
+        } else if (Math.abs(xSpeed) > Math.abs(y) && Math.abs(xSpeed) > Math.abs(z)) { // X-Axis Motion
+            if (xSpeed > 0) {
+                setMotorSpeeds(xSpeed * 1.1, xSpeed * -0.95, xSpeed * -1.1, xSpeed);
+                if (Math.abs(xSpeed) >= 0.5) {
+                    setMotorSpeeds(xSpeed * 1.1, xSpeed * -0.95, xSpeed * -1.1, xSpeed);
+                } else if (Math.abs(xSpeed) > 0.35) {
+                    setMotorSpeeds(xSpeed * 0.9, xSpeed * -0.9, xSpeed * -1.1, xSpeed);
 
                 }
-            } else if(x < 0) {
-                if(Math.abs(x) >= 0.5) {
-                    setMotorSpeeds(x*1.05, x*-1, x*-1, x);
-                } else if(Math.abs(x) > 0.35) {
-                    setMotorSpeeds(x*1.1, x*-1, x*-1.1, x);
+            } else if (xSpeed < 0) {
+                if (Math.abs(xSpeed) >= 0.5) {
+                    setMotorSpeeds(xSpeed * 1.05, xSpeed * -1, xSpeed * -1, xSpeed);
+                } else if (Math.abs(xSpeed) > 0.35) {
+                    setMotorSpeeds(xSpeed * 1.1, xSpeed * -1, xSpeed * -1.1, xSpeed);
                 }
             }
-        } else if (Math.abs(z) > Math.abs(y) && Math.abs(z) > Math.abs(x)) { // Z-Axis Movement
+        } else if (Math.abs(z) > Math.abs(y) && Math.abs(z) > Math.abs(xSpeed)) { // Z-Axis Movement
             setMotorSpeeds(z, -z, z, -z);
         } else {
             setMotorSpeeds(0, 0, 0, 0);
         }
     }
 
-
     /**
-     * This method provides field-oriented mecanum drive. It calculates the power to each motor based on the
-     * robot's current heading as determined by a gyro, and the input speed and rotation values. It also applies a
-     * correction factor to the ySpeed to counteract imperfect strafing. The resulting motor power values are sent to
+     * This method provides field-oriented mecanum drive. It calculates the power to
+     * each motor based on the
+     * robot's current heading as determined by a gyro, and the input speed and
+     * rotation values. It also applies a
+     * correction factor to the ySpeed to counteract imperfect strafing. The
+     * resulting motor power values are sent to
      * the setMotorSpeeds() method to be applied to the physical motors.
-     * @param xSpeed The desired speed in the x direction.
-     * @param ySpeed The desired speed in the y direction.
-     * @param zRot The desired rotation speed around the z axis.
-     * @param gyroAngle The current heading of the robot as measured by a gyro, in degrees.
-    */
-    public final void driveFieldOriented(double xSpeed,double ySpeed, double zRot, double gyroAngle) {
+     * 
+     * @param xSpeed    The desired speed in the x direction.
+     * @param ySpeed    The desired speed in the y direction.
+     * @param zRot      The desired rotation speed around the z axis.
+     * @param gyroAngle The current heading of the robot as measured by a gyro, in
+     *                  degrees.
+     */
+    public final void driveFieldOriented(double xSpeed, double ySpeed, double zRot, double gyroAngle) {
         ySpeed = ySpeed * 1.1; // Counteract imperfect strafing
 
         // Calculate denominator
@@ -252,47 +262,91 @@ public class DrivetrainSubsystem extends SubsystemBase {
         setMotorSpeeds(frontLeftPower, frontRightPower, rearLeftPower, rearRightPower);
     }
 
-
     /**
-     * This method provides robot-oriented mecanum drive. It calculates the power to each motor based solely on the input
-     * speed and rotation values. It also applies a correction factor to the ySpeed to counteract imperfect strafing.
-     * The resulting motor power values are sent to the setMotorSpeeds() method to be applied to the physical motors.
+     * This method provides robot-oriented mecanum drive. It calculates the power to
+     * each motor based solely on the input
+     * speed and rotation values. It also applies a correction factor to the ySpeed
+     * to counteract imperfect strafing.
+     * The resulting motor power values are sent to the setMotorSpeeds() method to
+     * be applied to the physical motors.
+     * 
      * @param xSpeed The desired speed in the x direction.
      * @param ySpeed The desired speed in the y direction.
-     * @param zRot The desired rotation speed around the z axis.
+     * @param zRot   The desired rotation speed around the z axis.
      */
-    public final void driveRobotOriented(double xSpeed,double ySpeed, double zRot) {
+    public final void driveRobotOriented(double xSpeed, double ySpeed, double zRot) {
         ySpeed = ySpeed * 1.1; // Counteract imperfect strafing
-    
+
         // Calculate deniminator
         double denominator = Math.max(Math.abs(ySpeed) + Math.abs(xSpeed) + Math.abs(zRot), 1);
-    
+
         // Calculate motors power
         double rearLeftPower = (ySpeed - xSpeed + zRot) / denominator;
         double frontLeftPower = (ySpeed + xSpeed + zRot) / denominator;
         double frontRightPower = (ySpeed - xSpeed - zRot) / denominator;
         double rearRightPower = (ySpeed + xSpeed - zRot) / denominator;
-    
+
         // Send power to motors
         setMotorSpeeds(frontLeftPower, frontRightPower, rearLeftPower, rearRightPower);
+    }
+
+    /**
+     * Drives a robot with mecanum wheels based on joystick input.
+     * Calculates the appropriate motor powers for each wheel to achieve
+     * smooth and accurate movement.
+     *
+     * @param xSpeed     the x component of the joystick input (-1.0 to 1.0)
+     * @param ySpeed     the y component of the joystick input (-1.0 to 1.0)
+     * @param zRot  the rotation component of the joystick input (-1.0 to 1.0)
+     * 
+     * @see <a href="https://www.youtube.com/watch?v=gnSW2QpkGXQ">This video</a> for a demonstration of mecanum wheel drive.
+        */
+    public final void driveMecanum(double xSpeed,double ySpeed, double zRot) {
+        // Calculate the angle and magnitude of the joystick input
+        double theta = Math.atan2(ySpeed, xSpeed);
+        double power = Math.hypot(xSpeed, ySpeed);
+
+        // Calculate the sine and cosine of the angle, offset by 45 degrees
+        double sin = Math.sin(theta - Math.PI/4);
+        double cos = Math.cos(theta - Math.PI/4);
+        double max = Math.max(Math.abs(sin), Math.abs(cos));
+
+        // Calculate the motor powers for each wheel based on the joystick input
+        double leftFront = power * cos/max + zRot;
+        double rightFront = power * sin/max - zRot;
+        double leftRear = power * sin/max + zRot;
+        double rightRear = power * cos/max - zRot;
+
+        // Scale the motor powers if necessary to avoid exceeding the maximum power
+        if ((power + Math.abs(zRot)) > 1) {
+            leftFront   /= power + Math.abs(zRot);
+            rightFront /= power + Math.abs(zRot);
+            leftRear    /= power + Math.abs(zRot);
+            rightRear  /= power + Math.abs(zRot);
+        }
+      
+        // Set the motor speeds to achieve the desired movement
+        setMotorSpeeds(leftFront, rightFront, leftRear, rightRear);
     }
 
     /**
      * Balances the robot on a balancing station using a PID controller.
      */
     public final boolean balanceOnStation() {
-          double angle = gyro.getPitch();
-          double error = -angle; // Negative because we want to balance on the opposite side of the gyro angle
-          if (Math.abs(error) < Constants.kToleranceDegrees) { // If within tolerance, stop
+        double angle = gyro.getPitch();
+        double error = -angle; // Negative because we want to balance on the opposite side of the gyro angle
+        if (Math.abs(error) < Constants.kToleranceDegrees) { // If within tolerance, stop
             setMotorSpeeds(0, 0, 0, 0);
             return true;
-          }
-          double output = Constants.kProportionalGain * error + Constants.kIntegralGain * integralError + Constants.kDerivativeGain * (error - previousError); // PID calculation
-          output = Math.max(Constants.kMinOutput, Math.min(Constants.kMaxOutput, output)); // Clamp output to within limits
-          setMotorSpeeds(output, output, output, output); // Set the motor speeds based on the PID output
-          // Possible add delay to wait a short amount of time before checking again
-          integralError += error; // Update integral error
-          previousError = error; // Update previous error
-          return false;
+        }
+        double output = Constants.kProportionalGain * error + Constants.kIntegralGain * integralError
+                + Constants.kDerivativeGain * (error - previousError); // PID calculation
+        output = Math.max(Constants.kMinOutput, Math.min(Constants.kMaxOutput, output)); // Clamp output to within
+                                                                                         // limits
+        setMotorSpeeds(output, output, output, output); // Set the motor speeds based on the PID output
+        // Possible add delay to wait a short amount of time before checking again
+        integralError += error; // Update integral error
+        previousError = error; // Update previous error
+        return false;
     }
 }
