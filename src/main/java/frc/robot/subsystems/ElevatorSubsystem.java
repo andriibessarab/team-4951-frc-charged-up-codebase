@@ -19,6 +19,7 @@ public class ElevatorSubsystem extends SubsystemBase {
                         Units.inchesToMeters(kDistancePerRevolution)) * 10));
     }
 
+
     Motor elevatorMotor;
 
     public ElevatorSubsystem() {
@@ -31,11 +32,20 @@ public class ElevatorSubsystem extends SubsystemBase {
                 .setEncoderVelocityConversionFactor(ElevatorSubsystemConstants.kLinearDistanceConversionFactor / 60);
     }
 
+    
+    //set max and mix value for distance travelled
+    private static double max = 10;
+    private static double min = 1;
+
     public final void raiseElevator() {
+        //check if greater than max
+        if(!(getPosition()>max)){}
         elevatorMotor.setPower(1);
     }
 
     public final void lowerElevator() {
+        //check if less than min
+        if(!(getPosition()<min)){}
         elevatorMotor.setPower(-1);
     }
 

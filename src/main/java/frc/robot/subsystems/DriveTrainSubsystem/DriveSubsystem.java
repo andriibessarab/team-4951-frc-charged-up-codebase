@@ -22,7 +22,7 @@ public abstract class DriveSubsystem extends SubsystemBase {
         private static final double kProportionalGain = 0.03; // Proportional gain
         private static final double kIntegralGain = 0.00; // Integral gain
         private static final double kDerivativeGain = 0.00; // Derivative gain
-        private static final double kToleranceDegrees = 2.0f; // Tolerance for gyro angle
+        private static final double kToleranceDegrees = 1.0f; // Tolerance for gyro angle
         private static final double kMaxOutput = 0.5; // Maximum output
         private static final double kMinOutput = -0.5; // Minimum output
     }
@@ -169,8 +169,9 @@ public abstract class DriveSubsystem extends SubsystemBase {
     /**
      * Balances the robot on a balancing station using a PID controller.
      */
+    //TODO: try to use sparkmaxPIDController
     public boolean balanceOnStation() {
-        double angle = gyro.getPitch();
+        double angle = gyro.getPitch();//TODO: not thresholded
         double error = -angle; // Negative because we want to balance on the opposite side of the gyro angle
         if (Math.abs(error) < DrivetrainConstants.kToleranceDegrees) { // If within tolerance, stop
             setMotorSpeeds(0, 0, 0, 0);
@@ -183,7 +184,7 @@ public abstract class DriveSubsystem extends SubsystemBase {
                                                                                                              // output
                                                                                                              // to
                                                                                                              // within
-        // limits
+                                                                                                             // limits
         setMotorSpeeds(output, output, output, output); // Set the motor speeds based on the PID output
         // Possible add delay to wait a short amount of time before checking again
         integralError += error; // Update integral error

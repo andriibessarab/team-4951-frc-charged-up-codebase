@@ -24,11 +24,12 @@ import edu.wpi.first.wpilibj2.command.RamseteCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
-import frc.robot.commands.BalanceOnStationCommand;
+import frc.robot.commands.*;
 import frc.robot.subsystems.RollerIntakeSubsystem;
 import frc.robot.subsystems.DriveTrainSubsystem.*;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem;
+import frc.robot.subsystems.PneumaticsSubsystem;
 import frc.robot.utils.Controller;
 
 /**
@@ -49,22 +50,20 @@ public class RobotContainer {
     private final VictorSubsystem mRobotDrive = new VictorSubsystem();
 
     // The driver's controller
-    private final Controller mController = new Controller(RobotMap.XBOX_CONTROLLER_ID);
+    private final Controller mController1 = new Controller(RobotMap.XBOX_CONTROLLER_ID);
+    private final Controller mController2 = new Controller(RobotMap.XBOX_CONTROLLER_ID);
 
     SendableChooser<Command> pathChooser = new SendableChooser<>();
     /*
      * Robot utils that currently not in use
-     * private final Camera m_frontCam = new Camera(RobotMap.CAMERA_FRONT_DEV,
-     * RobotMap.CAMERA_RES_W, RobotMap.CAMERA_RES_H);
-     * private final Camera m_intakeCam = new Camera(RobotMap.CAMERA_INTAKE_DEV,
-     * RobotMap.CAMERA_RES_W,
-     * RobotMap.CAMERA_RES_H);;
+     * private final Camera m_frontCam = new Camera(RobotMap.CAMERA_FRONT_DEV, RobotMap.CAMERA_RES_W, RobotMap.CAMERA_RES_H);
+     * private final Camera m_intakeCam = new Camera(RobotMap.CAMERA_INTAKE_DEV, RobotMap.CAMERA_RES_W, RobotMap.CAMERA_RES_H);
      * private final Led m_led = new Led(RobotMap.LED_CHANNEL);
-     * private final LimelightVision m_limelight = new
-     * LimelightVision(RobotMap.LIMELIGHT_HOSTNAME);
+     * private final LimelightVision m_limelight = new LimelightVision(RobotMap.LIMELIGHT_HOSTNAME);
      * private final ElevatorSubsystem mElevator = new ElevatorSubsystem();
      * private final RollerIntakeSubsystem mIntake = new RollerIntakeSubsystem();
      * private final ArmSubsystem mArm = new ArmSubsystem();
+     * private final PneumaticsSubsystem Pneumat = new PneumaticsSubsystem();
      */
 
     /**
@@ -78,9 +77,9 @@ public class RobotContainer {
         mRobotDrive.setDefaultCommand(
                 new RunCommand(
                         () -> mRobotDrive.driveRobotOriented(
-                                mController.getThresholdedLeftX(),
-                                mController.getThresholdedLeftY(),
-                                mController.getThresholdedRightX()),
+                                mController1.getThresholdedLeftX(),
+                                mController1.getThresholdedLeftY(),
+                                mController1.getThresholdedRightX()),
                         mRobotDrive));
 
         /*
@@ -100,8 +99,14 @@ public class RobotContainer {
      * {@link JoystickButton}.
      */
     private void configureButtonBindings() {
-        new JoystickButton(mController, Button.kB.value)
-                .onTrue(new BalanceOnStationCommand(mRobotDrive));
+        new JoystickButton(mController1, Button.kB.value)
+                .onTrue(new BalanceOnStationCommand(mRobotDrive));//schedules command
+        /*
+        new JoystickButton(mController2, Button.kA.value)
+                .onTrue(new PneumaticCommand(Pneumat));
+        */
+        //TODO: the rest of the subsystems are dependent on how long drivers hold them down for, so may need hardcode
+        
     }
 /*
     public Command loadPathplannerTrajectoryToRamseteCommand(String filename, boolean resetOdometry) {
@@ -151,7 +156,7 @@ public class RobotContainer {
      */
     public Command getAutonomousCommand() {
         return new SequentialCommandGroup(
-                //new AutonomousConePlacementCommand(mRobotDrive, mElevator, mIntake, mArm), // Place the cone that robot holds
+                //new AutonomousConePlacementCommand(mRobotDrive, mElevator, mIntake, mArm, pneumat), // Place the cone that robot holds
                 pathChooser.getSelected(), // Follow trajectory to balancing station
                 new BalanceOnStationCommand(mRobotDrive) // Balance the robot on the station
         ); 
