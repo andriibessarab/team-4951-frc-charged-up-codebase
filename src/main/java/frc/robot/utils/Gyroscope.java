@@ -58,7 +58,7 @@ public final class Gyroscope {
      */
     public final double getThresholdedPitch() {
         // Calculate the pitch angle
-        return Math.atan2(gyro.getAccelY(), gyro.getAccelZ()) * 180 / Math.PI > 5
+        return Math.atan2(gyro.getAccelY(), gyro.getAccelZ()) * 180 / Math.PI > 2
                 ? Math.atan2(gyro.getAccelY(), gyro.getAccelZ()) * 180 / Math.PI
                 : 0;
     }

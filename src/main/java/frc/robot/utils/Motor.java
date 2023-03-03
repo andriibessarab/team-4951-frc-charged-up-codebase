@@ -3,6 +3,7 @@ package frc.robot.utils;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel;
 import com.revrobotics.RelativeEncoder;
+import com.revrobotics.SparkMaxPIDController;
 
 /**
  * The Motor class represents a motor in the FRC robot. It provides methods for
@@ -101,5 +102,9 @@ public class Motor {
 
     public final RelativeEncoder getEncoderInstance() {
         return this.motorEncoder;
+    }
+
+    public final SparkMaxPIDController getPIDController(){
+        return motor.getPIDController();
     }
 }
