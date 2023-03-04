@@ -1,16 +1,16 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.DrivetrainSubsystem.MecanumDrivetrainSubsystemBase;;
+import frc.robot.subsystems.DrivetrainSubsystem.DrivetrainSubsystemBase;
 
 /** 
  * Balance on charging station
  */ 
 public class BalanceOnStationCommand extends CommandBase {
-  private final MecanumDrivetrainSubsystemBase drivetrainSubsystem;
+  private final DrivetrainSubsystemBase drivetrainSubsystem;
   private boolean balanced = false;
 
-  public BalanceOnStationCommand(MecanumDrivetrainSubsystemBase drivetrainSubsystem) {
+  public BalanceOnStationCommand(DrivetrainSubsystemBase drivetrainSubsystem) {
     this.drivetrainSubsystem = drivetrainSubsystem;
     addRequirements(this.drivetrainSubsystem);
   }

@@ -17,6 +17,10 @@ public final class RobotMap {
 
 	public static final int MOTOR_SPEED_MULTIPLIER = 1;
 
+	//Pneumatic Intake Subsystem
+	public static final int INTAKE_FORWRD_CHANNEL = 8;
+	public static final int INTAKE_REVERSE_CHANNEL = 9;
+
 	// ELEVATOR SUBSYSTEM
 	public static final int ELEVATOR_PWM_PIN = 5;
 	public static final double ELEVATOR_SPEED_MULTIPLIER = 0.5;

@@ -25,11 +25,12 @@ import edu.wpi.first.wpilibj2.command.RamseteCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
-import frc.robot.commands.BalanceOnStationCommand;
+import frc.robot.commands.*;
 import frc.robot.subsystems.RollerIntakeSubsystem;
 import frc.robot.subsystems.DrivetrainSubsystem.*;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem;
+import frc.robot.subsystems.PneumaticsSubsystem;
 import frc.robot.utils.Controller;
 
 /**
@@ -55,17 +56,14 @@ public class RobotContainer {
     SendableChooser<Command> pathChooser = new SendableChooser<>();
     /*
      * Robot utils that currently not in use
-     * private final Camera m_frontCam = new Camera(RobotMap.CAMERA_FRONT_DEV,
-     * RobotMap.CAMERA_RES_W, RobotMap.CAMERA_RES_H);
-     * private final Camera m_intakeCam = new Camera(RobotMap.CAMERA_INTAKE_DEV,
-     * RobotMap.CAMERA_RES_W,
-     * RobotMap.CAMERA_RES_H);;
+     * private final Camera m_frontCam = new Camera(RobotMap.CAMERA_FRONT_DEV, RobotMap.CAMERA_RES_W, RobotMap.CAMERA_RES_H);
+     * private final Camera m_intakeCam = new Camera(RobotMap.CAMERA_INTAKE_DEV, RobotMap.CAMERA_RES_W, RobotMap.CAMERA_RES_H);
      * private final Led m_led = new Led(RobotMap.LED_CHANNEL);
-     * private final LimelightVision m_limelight = new
-     * LimelightVision(RobotMap.LIMELIGHT_HOSTNAME);
+     * private final LimelightVision m_limelight = new LimelightVision(RobotMap.LIMELIGHT_HOSTNAME);
      * private final ElevatorSubsystem mElevator = new ElevatorSubsystem();
      * private final RollerIntakeSubsystem mIntake = new RollerIntakeSubsystem();
      * private final ArmSubsystem mArm = new ArmSubsystem();
+     * private final PneumaticsSubsystem Pneumat = new PneumaticsSubsystem();
      */
 
     /**
@@ -73,7 +71,7 @@ public class RobotContainer {
      */
     public RobotContainer() {
         // Configure the button bindings
-        //configureButtonBindings();
+        configureButtonBindings();
 
         // Configure default commands
         m_RobotDrive.setDefaultCommand(

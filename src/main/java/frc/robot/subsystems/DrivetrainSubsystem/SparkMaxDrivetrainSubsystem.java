@@ -27,7 +27,7 @@ import frc.robot.RobotMap;
  * @see MecanumDriveKinematics
  * @see MecanumDriveOdometry
  */
-public class SparkMaxDrivetrainSubsystem extends MecanumDrivetrainSubsystemBase {
+public class SparkMaxDrivetrainSubsystem extends DrivetrainSubsystemBase {
     // The motor objects used for controlling the robot's drivetrain
     public CANSparkMax rearLeftMotor;
     public CANSparkMax rearRightMotor;

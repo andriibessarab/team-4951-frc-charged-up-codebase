@@ -7,7 +7,7 @@ import edu.wpi.first.wpilibj.ADIS16470_IMU;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-public abstract class MecanumDrivetrainSubsystemBase extends SubsystemBase {
+public abstract class DrivetrainSubsystemBase extends SubsystemBase {
     /**
      * This class defines constants that are used in drivetrain.
      */
@@ -55,7 +55,7 @@ public abstract class MecanumDrivetrainSubsystemBase extends SubsystemBase {
     PIDController pidController = new PIDController(DrivetrainConstants.kProportionalGain,
             DrivetrainConstants.kIntegralGain, DrivetrainConstants.kDerivativeGain);
 
-    public MecanumDrivetrainSubsystemBase() {
+    public DrivetrainSubsystemBase() {
         this.gyro = new ADIS16470_IMU();
         pidController.setTolerance(DrivetrainConstants.kToleranceDegrees);
     }
@@ -63,7 +63,6 @@ public abstract class MecanumDrivetrainSubsystemBase extends SubsystemBase {
     @Override
     public void periodic() {
         SmartDashboard.putNumber("Gyro heading", gyro.getAngle());
-
     }
 
     /**

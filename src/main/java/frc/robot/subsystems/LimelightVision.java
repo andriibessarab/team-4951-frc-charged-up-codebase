@@ -7,8 +7,9 @@ import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.util.sendable.SendableBuilder;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-public final class LimelightVision implements Sendable {
+public final class LimelightVision extends SubsystemBase implements Sendable{
     public final class LimelightConstants {
         public final static int kReflectiveTapePipeline = 1;
         public final static int kAprilTagsPipeline = 0;
