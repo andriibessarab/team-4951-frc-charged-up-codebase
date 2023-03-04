@@ -3,10 +3,9 @@ package frc.robot.subsystems;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotMap;
-import frc.robot.utils.Motor;
 
 public class ArmSubsystem extends SubsystemBase {
-
+/* 
     public final static class ArmSubsystemConstants {
         private static double kGearRatio = 0; // determine
         private static double kDistancePerRevolution = 0; // determine
@@ -48,5 +47,5 @@ public class ArmSubsystem extends SubsystemBase {
 
     public final void resetPosition() {
         armMotor.resetEncoder();
-    }
+    }*/
 }

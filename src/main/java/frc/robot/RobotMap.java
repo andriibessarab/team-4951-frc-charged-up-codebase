@@ -6,13 +6,16 @@ package frc.robot;
 public final class RobotMap {
 
 	// The IDs of the Xbox controllers used for driving the robot
-	public static final int XBOX_CONTROLLER_ID = 0;
+	public static final int XBOX_DRIVER_CONTROLLER_ID = 0;
+	public static final int XBOX_ARM_CONTROLLER_ID = 1;
 
 	// The PWM pins number of SPARK MAX motor controllers.
-	public static final int REAR_LEFT_MOTOR_PWM_PIN = 0;
-	public static final int REAR_RIGHT_MOTOR_PWM_PIN = 1;
+	public static final int FRONT_RIGHT_MOTOR_PWM_PIN = 1;
 	public static final int FRONT_LEFT_MOTOR_PWM_PIN = 2;
-	public static final int FRONT_RIGHT_MOTOR_PWM_PIN = 3;
+	public static final int REAR_RIGHT_MOTOR_PWM_PIN = 3;
+	public static final int REAR_LEFT_MOTOR_PWM_PIN = 4;
+
+	public static final int MOTOR_SPEED_MULTIPLIER = 1;
 
 	// ELEVATOR SUBSYSTEM
 	public static final int ELEVATOR_PWM_PIN = 5;

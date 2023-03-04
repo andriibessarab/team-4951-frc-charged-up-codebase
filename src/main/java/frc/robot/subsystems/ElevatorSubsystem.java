@@ -3,14 +3,13 @@ package frc.robot.subsystems;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotMap;
-import frc.robot.utils.Motor;
 
 
 /**
  * Responsible for raising.lowering the arm and intake system
  */
 public class ElevatorSubsystem extends SubsystemBase {
-
+/* 
     public final static class ElevatorSubsystemConstants {
         private static double kGearRatio = 0; // determine
         private static double kDistancePerRevolution = 0; // determine
@@ -53,5 +52,5 @@ public class ElevatorSubsystem extends SubsystemBase {
 
     public final void resetPosition() {
         elevatorMotor.resetEncoder();
-    }
+    }*/
 }

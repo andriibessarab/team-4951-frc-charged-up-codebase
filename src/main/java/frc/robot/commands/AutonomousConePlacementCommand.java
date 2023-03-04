@@ -2,8 +2,8 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.RollerIntakeSubsystem;
+import frc.robot.subsystems.DrivetrainSubsystem.*;
 import frc.robot.subsystems.ArmSubsystem;
-import frc.robot.subsystems.DriveTrainSubsystem.*;
 import frc.robot.subsystems.ElevatorSubsystem;
 
 /**
@@ -11,13 +11,13 @@ import frc.robot.subsystems.ElevatorSubsystem;
  * s
  */
 public class AutonomousConePlacementCommand extends CommandBase {
-    private final SparkMax drivetrainSubsystem;
+    private final SparkMaxDrivetrainSubsystem drivetrainSubsystem;
     private final ElevatorSubsystem elevatorSubsystem;
     private final RollerIntakeSubsystem intakeSubsystem;
     private final ArmSubsystem armSubsystem;
     private boolean conePlaced = false;
 
-    public AutonomousConePlacementCommand(SparkMax drivetrainSubsystem, ElevatorSubsystem elevatorSubsystem,
+    public AutonomousConePlacementCommand(SparkMaxDrivetrainSubsystem drivetrainSubsystem, ElevatorSubsystem elevatorSubsystem,
             RollerIntakeSubsystem intakeSubsystem, ArmSubsystem armSubsystem) {
         this.drivetrainSubsystem = drivetrainSubsystem;
         this.elevatorSubsystem = elevatorSubsystem;
@@ -33,7 +33,8 @@ public class AutonomousConePlacementCommand extends CommandBase {
 
     @Override
     public void execute() {
-        // Raise elevator
+        /* 
+                // Raise elevator
         while (elevatorSubsystem.getPosition() != 10) { // specifiy how high the elevator needs to be raised
             elevatorSubsystem.raiseElevator();
         }
@@ -51,7 +52,7 @@ public class AutonomousConePlacementCommand extends CommandBase {
         }
         armSubsystem.stopArm();
 
-        conePlaced = true;
+        conePlaced = true;*/
     }
 
     @Override

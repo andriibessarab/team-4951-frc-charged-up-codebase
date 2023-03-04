@@ -1,22 +1,14 @@
-package frc.robot.subsystems.DriveTrainSubsystem;
+package frc.robot.subsystems.DrivetrainSubsystem;
 
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.ADIS16470_IMU;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.utils.Gyroscope;
 
-public abstract class DriveSubsystem extends SubsystemBase {
-
-    
-    // The gyroscope object used for detecting and measuring the robot's rotation.
-    public Gyroscope gyro;
-
-    // PID Controller Variables
-    private double integralError = 0.0f; // Integral error
-    private double previousError = 0.0f; // Previous error
-
-
-        /**
+public abstract class MecanumDrivetrainSubsystemBase extends SubsystemBase {
+    /**
      * This class defines constants that are used in drivetrain.
      */
     public static class DrivetrainConstants {
@@ -42,7 +34,7 @@ public abstract class DriveSubsystem extends SubsystemBase {
 
         private static double kGearRatio = 10.71;
         private static double kWheelRadiusInches = 2.75; // radius of wheels
-        private static final double kLinearDistanceConversionFactor = (Units
+        public static final double kLinearDistanceConversionFactor = (Units
                 .inchesToMeters(1 / (kGearRatio * 2 * Math.PI *
                         Units.inchesToMeters(kWheelRadiusInches)) * 10));
 
@@ -50,11 +42,40 @@ public abstract class DriveSubsystem extends SubsystemBase {
         private static final double kProportionalGain = 0.03; // Proportional gain
         private static final double kIntegralGain = 0.00; // Integral gain
         private static final double kDerivativeGain = 0.00; // Derivative gain
-        private static final double kToleranceDegrees = 2.0f; // Tolerance for gyro angle
+        private static final double kToleranceDegrees = 4.0f; // Tolerance for gyro angle
         private static final double kMaxOutput = 0.5; // Maximum output
         private static final double kMinOutput = -0.5; // Minimum output
     }
-    
+
+    /**
+     * The gyroscope object used for detecting and measuring the robot's rotation.
+     */
+    protected ADIS16470_IMU gyro;
+
+    PIDController pidController = new PIDController(DrivetrainConstants.kProportionalGain,
+            DrivetrainConstants.kIntegralGain, DrivetrainConstants.kDerivativeGain);
+
+    public MecanumDrivetrainSubsystemBase() {
+        this.gyro = new ADIS16470_IMU();
+        pidController.setTolerance(DrivetrainConstants.kToleranceDegrees);
+    }
+
+    @Override
+    public void periodic() {
+        SmartDashboard.putNumber("Gyro heading", gyro.getAngle());
+
+    }
+
+    /**
+     * This method sets the speed for each motor on the robot.
+     * 
+     * @param fl speed for the front left motor
+     * @param fr speed for the front right motor
+     * @param bl speed for the back left motor
+     * @param br speed for the back right motor
+     */
+    abstract public void setMotorSpeeds(double fl, double fr, double bl, double br);
+
     /**
      * This method drives the robot using single-axis control.
      * 
@@ -198,26 +219,17 @@ public abstract class DriveSubsystem extends SubsystemBase {
      * Balances the robot on a balancing station using a PID controller.
      */
     public boolean balanceOnStation() {
-        double angle = gyro.getPitch();
+        double angle = gyro.getYComplementaryAngle();
         double error = -angle; // Negative because we want to balance on the opposite side of the gyro angle
         if (Math.abs(error) < DrivetrainConstants.kToleranceDegrees) { // If within tolerance, stop
             setMotorSpeeds(0, 0, 0, 0);
             return true;
         }
-        double output = DrivetrainConstants.kProportionalGain * error
-                + DrivetrainConstants.kIntegralGain * integralError
-                + DrivetrainConstants.kDerivativeGain * (error - previousError); // PID calculation
-        output = Math.max(DrivetrainConstants.kMinOutput, Math.min(DrivetrainConstants.kMaxOutput, output)); // Clamp
-                                                                                                             // output
-                                                                                                             // to
-                                                                                                             // within
-        // limits
-        setMotorSpeeds(output, output, output, output); // Set the motor speeds based on the PID output
-        // Possible add delay to wait a short amount of time before checking again
-        integralError += error; // Update integral error
-        previousError = error; // Update previous error
-        return false;
-    }
 
-    abstract void setMotorSpeeds(double fl, double fr, double bl, double br);
+        double output = -Math.max(DrivetrainConstants.kMinOutput,
+                Math.min(DrivetrainConstants.kMaxOutput, pidController.calculate(angle)));
+        setMotorSpeeds(output, output, output, output); // Set the motor speeds based on the PID output
+        return false;
+
+    }
 }

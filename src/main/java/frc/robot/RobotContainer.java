@@ -18,6 +18,7 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.XboxController.Button;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
@@ -26,7 +27,7 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.commands.BalanceOnStationCommand;
 import frc.robot.subsystems.RollerIntakeSubsystem;
-import frc.robot.subsystems.DriveTrainSubsystem.*;
+import frc.robot.subsystems.DrivetrainSubsystem.*;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.utils.Controller;
@@ -46,10 +47,10 @@ import frc.robot.utils.Controller;
  */
 public class RobotContainer {
     // The robot's subsystems
-    private final VictorSubsystem mRobotDrive = new VictorSubsystem();
+    private final SparkMaxDrivetrainSubsystem m_RobotDrive = new SparkMaxDrivetrainSubsystem();
 
-    // The driver's controller
-    private final Controller mController = new Controller(RobotMap.XBOX_CONTROLLER_ID);
+    // The driver's controllers
+    private final Controller m_DrivingController = new Controller(RobotMap.XBOX_DRIVER_CONTROLLER_ID);
 
     SendableChooser<Command> pathChooser = new SendableChooser<>();
     /*
@@ -72,22 +73,23 @@ public class RobotContainer {
      */
     public RobotContainer() {
         // Configure the button bindings
-        configureButtonBindings();
+        //configureButtonBindings();
 
         // Configure default commands
-        mRobotDrive.setDefaultCommand(
+        m_RobotDrive.setDefaultCommand(
                 new RunCommand(
-                        () -> mRobotDrive.driveRobotOriented(
-                                mController.getThresholdedLeftX(),
-                                mController.getThresholdedLeftY(),
-                                mController.getThresholdedRightX()),
-                        mRobotDrive));
+                        () -> m_RobotDrive.driveMecanum(
+                                m_DrivingController.getThresholdedLeftX(),
+                                m_DrivingController.getThresholdedLeftY(),
+                                m_DrivingController.getThresholdedRightX()),
+                        m_RobotDrive));
 
         /*
-        pathChooser.addOption("curvy path", loadPathplannerTrajectoryToRamseteCommand(
-                ".\\src\\main\\deploy\\pathplanner\\generatedJSON\\curvy.wpilib.json",
-                true));
-*/
+         * pathChooser.addOption("curvy path",
+         * loadPathplannerTrajectoryToRamseteCommand(
+         * ".\\src\\main\\deploy\\pathplanner\\generatedJSON\\curvy.wpilib.json",
+         * true));
+         */
         Shuffleboard.getTab("Autonomous").add(pathChooser);
 
     }
@@ -100,60 +102,69 @@ public class RobotContainer {
      * {@link JoystickButton}.
      */
     private void configureButtonBindings() {
-        new JoystickButton(mController, Button.kB.value)
-                .onTrue(new BalanceOnStationCommand(mRobotDrive));
+        new JoystickButton(m_DrivingController, Button.kB.value)
+                .onTrue(new BalanceOnStationCommand(m_RobotDrive));
     }
-/*
-    public Command loadPathplannerTrajectoryToRamseteCommand(String filename, boolean resetOdometry) {
-        Trajectory trajectory;
 
-        try {
-            Path trajectoryPath = Filesystem.getDeployDirectory().toPath().resolve(filename);
-            trajectory = TrajectoryUtil.fromPathweaverJson(trajectoryPath);
-        } catch (IOException exception) {
-            DriverStation.reportError("Unable to resolve trajectory " + filename, exception.getStackTrace());
-            return new InstantCommand();
-        }
-        RamseteCommand ramseteCommand = new RamseteCommand(
-                trajectory,
-                mRobotDrive::getPose,
-                new RamseteController(
-                        DrivetrainConstants.kRamseteB,
-                        DrivetrainConstants.kRamseteZeta),
-                new SimpleMotorFeedforward(
-                        DrivetrainConstants.ksVolts,
-                        DrivetrainConstants.kvVoltSecondsPerMinuite,
-                        DrivetrainConstants.kaVoltSecondsSquaredPerMinuite),
-                DrivetrainConstants.kDriveKinematics,
-                mRobotDrive::getWheelSpeeds,
-                new PIDController(
-                        DrivetrainConstants.kpDriveVel,
-                        0,
-                        0),
-                new PIDController(
-                        DrivetrainConstants.kpDriveVel,
-                        0,
-                        0),
-                mRobotDrive::setDriveVolts,
-                mRobotDrive);
-        if (resetOdometry) {
-            return new SequentialCommandGroup(
-                    new InstantCommand(() -> mRobotDrive.resetOdometry(trajectory.getInitialPose())), ramseteCommand);
-        } else {
-            return ramseteCommand;
-        }
-    }
-*/
+
+
+    /*
+     * public Command loadPathplannerTrajectoryToRamseteCommand(String filename,
+     * boolean resetOdometry) {
+     * Trajectory trajectory;
+     * 
+     * try {
+     * Path trajectoryPath =
+     * Filesystem.getDeployDirectory().toPath().resolve(filename);
+     * trajectory = TrajectoryUtil.fromPathweaverJson(trajectoryPath);
+     * } catch (IOException exception) {
+     * DriverStation.reportError("Unable to resolve trajectory " + filename,
+     * exception.getStackTrace());
+     * return new InstantCommand();
+     * }
+     * RamseteCommand ramseteCommand = new RamseteCommand(
+     * trajectory,
+     * mRobotDrive::getPose,
+     * new RamseteController(
+     * DrivetrainConstants.kRamseteB,
+     * DrivetrainConstants.kRamseteZeta),
+     * new SimpleMotorFeedforward(
+     * DrivetrainConstants.ksVolts,
+     * DrivetrainConstants.kvVoltSecondsPerMinuite,
+     * DrivetrainConstants.kaVoltSecondsSquaredPerMinuite),
+     * DrivetrainConstants.kDriveKinematics,
+     * mRobotDrive::getWheelSpeeds,
+     * new PIDController(
+     * DrivetrainConstants.kpDriveVel,
+     * 0,
+     * 0),
+     * new PIDController(
+     * DrivetrainConstants.kpDriveVel,
+     * 0,
+     * 0),
+     * mRobotDrive::setDriveVolts,
+     * mRobotDrive);
+     * if (resetOdometry) {
+     * return new SequentialCommandGroup(
+     * new InstantCommand(() ->
+     * mRobotDrive.resetOdometry(trajectory.getInitialPose())), ramseteCommand);
+     * } else {
+     * return ramseteCommand;
+     * }
+     * }
+     */
+
     /**
      * Use this to pass the autonomous command to the main {@link Robot} class.
      *
      * @return the command to run in autonomous
      */
-    public Command getAutonomousCommand() {
+    /*public Command getAutonomousCommand() {
         return new SequentialCommandGroup(
-                //new AutonomousConePlacementCommand(mRobotDrive, mElevator, mIntake, mArm), // Place the cone that robot holds
-                pathChooser.getSelected(), // Follow trajectory to balancing station
+                // new AutonomousConePlacementCommand(mRobotDrive, mElevator, mIntake, mArm), //
+                // Place the cone that robot holds
+                // pathChooser.getSelected(), // Follow trajectory to balancing station
                 new BalanceOnStationCommand(mRobotDrive) // Balance the robot on the station
-        ); 
-    }
+        );
+    }*/
 }
