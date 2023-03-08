@@ -1,4 +1,4 @@
-package frc.robot.subsystems.DrivetrainSubsystem;
+package frc.robot.Subsystems.OldDrivetrainSubsystems;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
@@ -7,7 +7,7 @@ import edu.wpi.first.wpilibj.ADIS16470_IMU;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-public abstract class DrivetrainSubsystemBase extends SubsystemBase {
+public abstract class MecanumDrivetrainSubsystemBase extends SubsystemBase {
     /**
      * This class defines constants that are used in drivetrain.
      */
@@ -55,7 +55,7 @@ public abstract class DrivetrainSubsystemBase extends SubsystemBase {
     PIDController pidController = new PIDController(DrivetrainConstants.kProportionalGain,
             DrivetrainConstants.kIntegralGain, DrivetrainConstants.kDerivativeGain);
 
-    public DrivetrainSubsystemBase() {
+    public MecanumDrivetrainSubsystemBase() {
         this.gyro = new ADIS16470_IMU();
         pidController.setTolerance(DrivetrainConstants.kToleranceDegrees);
     }
@@ -213,6 +213,8 @@ public abstract class DrivetrainSubsystemBase extends SubsystemBase {
         // Set the motor speeds to achieve the desired movement
         setMotorSpeeds(leftFront, rightFront, leftRear, rightRear);
     }
+
+
 
     /**
      * Balances the robot on a balancing station using a PID controller.

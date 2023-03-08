@@ -1,28 +1,15 @@
-package frc.robot.subsystems;
+package frc.robot.Subsystems;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants.LimelightConstants;
 
-public final class LimelightVision extends SubsystemBase implements Sendable{
-    public final class LimelightConstants {
-        public final static int kReflectiveTapePipeline = 1;
-        public final static int kAprilTagsPipeline = 0;
-
-        // Approximate(need to be measured)
-        public final static int MAX_VERT_OFFSET_FOR_LOW = 10;
-        public final static int HEIGHT_TO_LOW = 24;
-        public final static int MAX_VERT_OFFSET_FOR_MED = 20;
-        public final static int HEIGHT_TO_MED = 36;
-        public final static int MAX_VERT_OFFSET_FOR_HIGH = 30;
-        public final static int HEIGHT_TO_HIGH = 48;
-    }
-
+public final class LimelightVision extends SubsystemBase {
     /**
      * Provides an object through which to access the networkTables entries
      * associated with the limelight

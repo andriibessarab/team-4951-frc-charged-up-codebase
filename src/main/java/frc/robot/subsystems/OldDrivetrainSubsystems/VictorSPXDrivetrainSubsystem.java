@@ -1,9 +1,9 @@
-package frc.robot.subsystems.DrivetrainSubsystem;
+package frc.robot.Subsystems.OldDrivetrainSubsystems;
 
 import edu.wpi.first.wpilibj.motorcontrol.Victor;
 import frc.robot.RobotMap;
 
-public class VictorSPXDrivetrainSubsystem extends DrivetrainSubsystemBase{
+public class VictorSPXDrivetrainSubsystem extends MecanumDrivetrainSubsystemBase{
     
     // The motor objects used for controlling the robot's drivetrain
     private Victor rearLeftMotor;

@@ -15,33 +15,6 @@ public final class RobotMap {
 	public static final int REAR_RIGHT_MOTOR_PWM_PIN = 3;
 	public static final int REAR_LEFT_MOTOR_PWM_PIN = 4;
 
-	public static final int MOTOR_SPEED_MULTIPLIER = 1;
-
-	//Pneumatic Intake Subsystem
-	public static final int INTAKE_FORWRD_CHANNEL = 8;
-	public static final int INTAKE_REVERSE_CHANNEL = 9;
-
-	// ELEVATOR SUBSYSTEM
-	public static final int ELEVATOR_PWM_PIN = 5;
-	public static final double ELEVATOR_SPEED_MULTIPLIER = 0.5;
-
-	// ARM SUBSYSTEM
-	public static final int INTAKE_PWM_PIN = 6;
-	public static final double INTAKE_SPEED_MULTIPLIER = 0.5;
-
-	// ARM SUBSYSTEM
-	public static final int ARM_PWM_PIN = 7;
-	public static final double ARM_SPEED_MULTIPLIER = 0.5;
-
 	// Liemlight Hostname
 	public static final String LIMELIGHT_HOSTNAME = "limelight-cdslime";
-
-	// Camera device inputs and resolution constants
-	public static final int CAMERA_FRONT_DEV = 0;
-	public static final int CAMERA_INTAKE_DEV = 1;
-	public static final int CAMERA_RES_H = 160;
-	public static final int CAMERA_RES_W = 283;
-
-	// Led Channel
-	public static final int LED_CHANNEL = 0;
 }

@@ -4,33 +4,16 @@
 
 package frc.robot;
 
-import java.io.IOException;
-import java.nio.file.Path;
+import com.pathplanner.lib.PathConstraints;
+import com.pathplanner.lib.PathPlanner;
 
-import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.controller.RamseteController;
-import edu.wpi.first.math.controller.SimpleMotorFeedforward;
-import edu.wpi.first.math.trajectory.Trajectory;
-import edu.wpi.first.math.trajectory.TrajectoryUtil;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.Filesystem;
-import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.XboxController.Button;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.RamseteCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import edu.wpi.first.wpilibj2.command.button.JoystickButton;
-import frc.robot.commands.*;
-import frc.robot.subsystems.RollerIntakeSubsystem;
-import frc.robot.subsystems.DrivetrainSubsystem.*;
-import frc.robot.subsystems.ArmSubsystem;
-import frc.robot.subsystems.ElevatorSubsystem;
-import frc.robot.subsystems.PneumaticsSubsystem;
+
+import frc.robot.Subsystems.DrivetrainSubsystem;
 import frc.robot.utils.Controller;
 
 /**
@@ -48,121 +31,70 @@ import frc.robot.utils.Controller;
  */
 public class RobotContainer {
     // The robot's subsystems
-    private final SparkMaxDrivetrainSubsystem m_RobotDrive = new SparkMaxDrivetrainSubsystem();
+    private final DrivetrainSubsystem m_DrivetrainSubsystem = new DrivetrainSubsystem();
 
     // The driver's controllers
-    private final Controller m_DrivingController = new Controller(RobotMap.XBOX_DRIVER_CONTROLLER_ID);
+    private final Controller m_Controller = new Controller(RobotMap.XBOX_DRIVER_CONTROLLER_ID);
 
+    // Shuffleboard elements
     SendableChooser<Command> pathChooser = new SendableChooser<>();
-    /*
-     * Robot utils that currently not in use
-     * private final Camera m_frontCam = new Camera(RobotMap.CAMERA_FRONT_DEV, RobotMap.CAMERA_RES_W, RobotMap.CAMERA_RES_H);
-     * private final Camera m_intakeCam = new Camera(RobotMap.CAMERA_INTAKE_DEV, RobotMap.CAMERA_RES_W, RobotMap.CAMERA_RES_H);
-     * private final Led m_led = new Led(RobotMap.LED_CHANNEL);
-     * private final LimelightVision m_limelight = new LimelightVision(RobotMap.LIMELIGHT_HOSTNAME);
-     * private final ElevatorSubsystem mElevator = new ElevatorSubsystem();
-     * private final RollerIntakeSubsystem mIntake = new RollerIntakeSubsystem();
-     * private final ArmSubsystem mArm = new ArmSubsystem();
-     * private final PneumaticsSubsystem Pneumat = new PneumaticsSubsystem();
-     */
 
     /**
      * The container for the robot. Contains subsystems, OI devices, and commands.
      */
     public RobotContainer() {
         // Configure the button bindings
-        configureButtonBindings();
+        configureBindings();
 
         // Configure default commands
-        m_RobotDrive.setDefaultCommand(
+        m_DrivetrainSubsystem.setDefaultCommand(
                 new RunCommand(
-                        () -> m_RobotDrive.driveMecanum(
-                                m_DrivingController.getThresholdedLeftX(),
-                                m_DrivingController.getThresholdedLeftY(),
-                                m_DrivingController.getThresholdedRightX()),
-                        m_RobotDrive));
+                        () -> m_DrivetrainSubsystem.driveMecanum(
+                                m_Controller.getThresholdedLeftX(),
+                                m_Controller.getThresholdedLeftY(),
+                                m_Controller.getThresholdedRightX()),
+                        m_DrivetrainSubsystem));
 
-        /*
-         * pathChooser.addOption("curvy path",
-         * loadPathplannerTrajectoryToRamseteCommand(
-         * ".\\src\\main\\deploy\\pathplanner\\generatedJSON\\curvy.wpilib.json",
-         * true));
-         */
+        // Add paths to sendable chooser
+        pathChooser.addOption("PathWithStrafing", m_DrivetrainSubsystem
+                .followTrajectoryCommand(
+                        PathPlanner.loadPath("PathWithStrafing", new PathConstraints(4, 3)), true));
+
+        // Add shufflebord elements
         Shuffleboard.getTab("Autonomous").add(pathChooser);
 
     }
 
     /**
-     * Use this method to define your button->command mappings. Buttons can be
-     * created by instantiating a {@link edu.wpi.first.wpilibj.GenericHID} or one
-     * of its subclasses ({@link edu.wpi.first.wpilibj.Joystick} or
-     * {@link XboxController}), and then calling passing it to a
-     * {@link JoystickButton}.
+     * Use this method to define your trigger->command mappings. Triggers can be
+     * created via the
+     * {@link Trigger#Trigger(java.util.function.BooleanSupplier)} constructor with
+     * an arbitrary
+     * predicate, or via the named factories in {@link
+     * edu.wpi.first.wpilibj2.command.button.CommandGenericHID}'s subclasses for
+     * {@link
+     * CommandXboxController
+     * Xbox}/{@link edu.wpi.first.wpilibj2.command.button.CommandPS4Controller
+     * PS4} controllers or
+     * {@link edu.wpi.first.wpilibj2.command.button.CommandJoystick Flight
+     * joysticks}.
      */
-    private void configureButtonBindings() {
-        new JoystickButton(m_DrivingController, Button.kB.value)
-                .onTrue(new BalanceOnStationCommand(m_RobotDrive));
+    private void configureBindings() {
+        // Balance on charging station when "B" is pressed
+        /*
+         * new JoystickButton(m_Controller, Button.kB.value)
+         * .onTrue());
+         */
     }
-
-
-
-    /*
-     * public Command loadPathplannerTrajectoryToRamseteCommand(String filename,
-     * boolean resetOdometry) {
-     * Trajectory trajectory;
-     * 
-     * try {
-     * Path trajectoryPath =
-     * Filesystem.getDeployDirectory().toPath().resolve(filename);
-     * trajectory = TrajectoryUtil.fromPathweaverJson(trajectoryPath);
-     * } catch (IOException exception) {
-     * DriverStation.reportError("Unable to resolve trajectory " + filename,
-     * exception.getStackTrace());
-     * return new InstantCommand();
-     * }
-     * RamseteCommand ramseteCommand = new RamseteCommand(
-     * trajectory,
-     * mRobotDrive::getPose,
-     * new RamseteController(
-     * DrivetrainConstants.kRamseteB,
-     * DrivetrainConstants.kRamseteZeta),
-     * new SimpleMotorFeedforward(
-     * DrivetrainConstants.ksVolts,
-     * DrivetrainConstants.kvVoltSecondsPerMinuite,
-     * DrivetrainConstants.kaVoltSecondsSquaredPerMinuite),
-     * DrivetrainConstants.kDriveKinematics,
-     * mRobotDrive::getWheelSpeeds,
-     * new PIDController(
-     * DrivetrainConstants.kpDriveVel,
-     * 0,
-     * 0),
-     * new PIDController(
-     * DrivetrainConstants.kpDriveVel,
-     * 0,
-     * 0),
-     * mRobotDrive::setDriveVolts,
-     * mRobotDrive);
-     * if (resetOdometry) {
-     * return new SequentialCommandGroup(
-     * new InstantCommand(() ->
-     * mRobotDrive.resetOdometry(trajectory.getInitialPose())), ramseteCommand);
-     * } else {
-     * return ramseteCommand;
-     * }
-     * }
-     */
 
     /**
      * Use this to pass the autonomous command to the main {@link Robot} class.
      *
      * @return the command to run in autonomous
      */
-    /*public Command getAutonomousCommand() {
+    public Command getAutonomousCommand() {
         return new SequentialCommandGroup(
-                // new AutonomousConePlacementCommand(mRobotDrive, mElevator, mIntake, mArm), //
-                // Place the cone that robot holds
-                // pathChooser.getSelected(), // Follow trajectory to balancing station
-                new BalanceOnStationCommand(mRobotDrive) // Balance the robot on the station
+                pathChooser.getSelected() // Selected autonomous path
         );
-    }*/
+    }
 }
