@@ -1,88 +1,144 @@
 package frc.robot;
 
-import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.MecanumDriveKinematics;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 
 /**
- * This class defines constants used for this robot's subsystems.
+ * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
+ * constants. This class should not be used for any other purpose. All constants should be declared
+ * globally (i.e. public static). Do not put anything functional in this class.
+ *
+ * <p>It is advised to statically import this class (or one of its inner classes) wherever the
+ * constants are needed, to reduce verbosity.
  */
-public class Constants {
-    /**
-     * This class defines constants that are used in drivetrain.
-     */
-    public static final class DrivetrainConstants {
-        public static final int kMotorSpeedMultiplier = 1;
+public final class Constants {
 
-        /*
-         * Locations of wheel relative to the cneter of robot(in meters)
-         * Positive x value means closer to the front of the robot
-         * Positive y value means closer to the left of the robot
-         */
-        public static final Translation2d frontLeftWheelLocation = new Translation2d(12, 11);
-        public static final Translation2d frontRightWheelLocation = new Translation2d(12, -11);
-        public static final Translation2d rearLeftWheelLocation = new Translation2d(-12, 11);
-        public static final Translation2d rearRightWheelLocation = new Translation2d(-12, -11);
-
-        public static final PIDController kXController = new PIDController(0.1, 0.05, 0);
-        public static final PIDController kYController = new PIDController(0.1, 0.05, 0);
-        public static final PIDController kZController = new PIDController(0.3, 0.1, 0.01);
-
-        public static final double kMaxWheelVelocityMetersPerSecond = 3.0; // Max wheel velocity meters per second
-
-        // need to obtain them through sysid
-        public static double ksVolts;
-        public static double kvVoltSecondsPerMinuite;
-        public static double kaVoltSecondsSquaredPerMinuite;
-        public static double kpDriveVel;
-
-        public static final double kTrackWidthMeters = Units.inchesToMeters(20.5); // horizontal distance between two
-                                                                                   // wheels
-        public static final MecanumDriveKinematics kKinematics = new MecanumDriveKinematics(
-                frontLeftWheelLocation, frontRightWheelLocation, rearLeftWheelLocation, rearRightWheelLocation);
-
-        // Values obtained thrrough WILIB documentation
-        public static final double kMaxSpeedMeterserSecond = 3;
-        public static final double kMaxAccelerationMetersPerSecondSquared = 3;
-
-        // Reasonable baseline values for a RAMSETE follower in units of meters and
-        // seconds
-        public static final double kRamseteB = 23;
-        public static final double kRamseteZeta = 0.7;
-
-        public static final double kRadiansePerSecondToRPMConverisionFactor = 0.10472;
-        public static final double kGearRatio = 10.71;
-        public static final double kWheelRadiusInches = 2.75;
-        public static final double kWheelDiameterMeters = Units.inchesToMeters(kWheelRadiusInches*2);
-        public static final double kLinearDistanceConversionFactor = (Units
-                .inchesToMeters(1 / (kGearRatio * 2 * Math.PI * Units.inchesToMeters(kWheelRadiusInches)) * 10));
-
-        public static final double kProportionalGain = 0.03; // Proportional gain
-        public static final double kIntegralGain = 0.00; // Integral gain
-        public static final double kDerivativeGain = 0.00; // Derivative gain
-        public static final double kToleranceDegrees = 4.0f; // Tolerance for gyro angle
-        public static final double kMaxOutput = 0.5; // Maximum output
-        public static final double kMinOutput = -0.5; // Minimum output
-
-        public final static PIDController kBalancingController = new PIDController(
-                DrivetrainConstants.kProportionalGain,
-                DrivetrainConstants.kIntegralGain, DrivetrainConstants.kDerivativeGain);
+  // Operator Input Constants (Joystick)
+  public static final class OIConstants {
+    public static final class DriverControl {
+      public static final int kDriverControllerPort = 1;
+      public static double kDriveDeadband = 0.00;
+      public static double kRotationDeadband = 0.00;
+      public static double kZeroCalibrateLeftY = 0.0234375;
+      public static double kZeroCalibrateRightX = 0.0;
+      public static double kZeroCalibrateLeftX = 0.0078125;
     }
 
-    /**
-     * This class defines constants that are used for limelight vision.
-     */
-    public final class LimelightConstants {
-        public final static int kReflectiveTapePipeline = 1;
-        public final static int kAprilTagsPipeline = 0;
+    public static final class OperatorControl {
+      public static int kOperatorControllerPort = 0;
 
-        // Approximate(need to be measured)
-        public final static int MAX_VERT_OFFSET_FOR_LOW = 10;
-        public final static int HEIGHT_TO_LOW = 24;
-        public final static int MAX_VERT_OFFSET_FOR_MED = 20;
-        public final static int HEIGHT_TO_MED = 36;
-        public final static int MAX_VERT_OFFSET_FOR_HIGH = 30;
-        public final static int HEIGHT_TO_HIGH = 48;
+      public static double kZeroCalibrateLeftY = 0.0;
+      public static double kZeroCalibrateRightX = 0.0;
     }
+  }
+
+  public static final class DriveConstants {
+    public static final int kFrontLeftMotorPort = 3;
+    public static final int kRearLeftMotorPort = 4;
+    public static final int kFrontRightMotorPort = 2;
+    public static final int kRearRightMotorPort = 1;
+
+    public static final boolean kFrontLeftInverted = false;
+    public static final boolean kFrontRightInverted = true;
+    public static final boolean kRearLeftInverted = false;
+    public static final boolean kRearRightInverted = true;
+
+    public static final double kTrackWidth = Units.inchesToMeters(23.0);;
+    // Distance between centers of right and left wheels on robot
+    public static final double kWheelBase = Units.inchesToMeters(20.50);
+    // Distance between centers of front and back wheels on robot
+
+    public static final MecanumDriveKinematics kDriveKinematics =
+        new MecanumDriveKinematics(
+            new Translation2d(kWheelBase / 2, kTrackWidth / 2),
+            new Translation2d(kWheelBase / 2, -kTrackWidth / 2),
+            new Translation2d(-kWheelBase / 2, kTrackWidth / 2),
+            new Translation2d(-kWheelBase / 2, -kTrackWidth / 2));
+
+    // Using tough box micros installed with the standard gear ratio of 8.45 : 1
+    public static final double kGearRatio = 8.45;    // For every 8.45 encoder rotations, 1 wheel rotation
+    public static final double kWheelRadiusMeters = Units.inchesToMeters(6.0 / 2.0); // 6" diameter wheels
+    public static final double kRotationsToMeterConversionFactor = (1.0/kGearRatio) * 2.0 * Math.PI * kWheelRadiusMeters;
+    public static final double kRpmToMeterPerSecondConversionFactor = kRotationsToMeterConversionFactor / 60.0;
+
+    // These are example values only - DO NOT USE THESE FOR YOUR OWN ROBOT!
+    // These characterization values MUST be determined either experimentally or theoretically
+    // for *your* robot's drive.
+    // The SysId tool provides a convenient method for obtaining these values for your robot.
+    public static final SimpleMotorFeedforward kFeedforward =
+        new SimpleMotorFeedforward(1, 0.8, 0.15);
+
+    // Example value only - as above, this must be tuned for your drive!
+    public static final double kPFrontLeftVel = 0.5;
+    public static final double kPRearLeftVel = 0.5;
+    public static final double kPFrontRightVel = 0.5;
+    public static final double kPRearRightVel = 0.5;
+  }
+
+  public static final class AutoDriveConstants {
+    public static final double kMaxSpeedMetersPerSecond = 3;
+    public static final double kMaxAccelerationMetersPerSecondSquared = 3;
+    public static final double kMaxAngularSpeedRadiansPerSecond = Math.PI;
+    public static final double kMaxAngularSpeedRadiansPerSecondSquared = Math.PI;
+
+    public static final double kPXController = 0.5;
+    public static final double kPYController = 0.5;
+    public static final double kPThetaController = 0.5;
+
+    // Constraint for the motion profilied robot angle controller
+    public static final TrapezoidProfile.Constraints kThetaControllerConstraints =
+        new TrapezoidProfile.Constraints(
+            kMaxAngularSpeedRadiansPerSecond, kMaxAngularSpeedRadiansPerSecondSquared);
+  }
+
+  public static final class ElevatorSubsystem {
+    public static int kMotorPort = 5;
+    public static int kSmartCurrentLimit = 20;  // 30A - is this sufficient to cause lift?
+    public static double kDistancePerRevolution = Units.inchesToMeters(28.0/7.0); // measured 7 rotations = 28"
+    public static double kVelocityMetersPerSecond = kDistancePerRevolution/60.0;
+
+    public static double kMinHeight = 0.0;
+    public static double kMaxHeight = 9.5; // value from smart dashboard
+
+    public static double kP = 1.0;
+    public static double kI = 0.0;
+    public static double kD = 0.0;
+    public static double kIZone = 0.0;
+    public static double kFeedForwardVelocity = 0.3149;   // Input to keep it from falling
+
+    public static double kMaxControllerUpSpeed = 0.6;
+    public static double kMaxControllerDownSpeed = -0.6;
+    public static double kControllerDeadband = 0.1;
+
+  }
+
+  // Limelight configuration: http://10.49.51.11:5801/
+  public static final class LimelightSubsystem {
+    public static String kLimelightName = "limelight";   // Default name, may change to support multiple limelight
+
+    public static int kAprilTagsWatchPosePipelineID = 0;
+
+    public static int kRetroTapePostAlignmentPipelineID = 1;
+
+    public static int kAprilTagsPostAlignmentPipelineID = 2;
+  }
+
+  public static final class Vision {
+    public static double kAlignmentKP = 0.05;   // P factor to use for auto alignment routines
+
+    public static double kSpinClockwiseSearchRate = 0.05;  // Missing target spin rate for search during alignment
+  }
+
+  public static final class BalancePID {
+    public static double kPosKP = 0.05;
+    public static double kPosKI = 0.05;
+    public static double kPosKD = 0.05;
+
+    public static double kYawKP = 0.05;
+    public static double kYawKI = 0.05;
+    public static double kYawKD = 0.05;
+  }
 }
