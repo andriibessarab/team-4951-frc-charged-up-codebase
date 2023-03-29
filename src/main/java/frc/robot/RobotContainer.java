@@ -7,7 +7,10 @@ package frc.robot;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.DoubleSolenoid;
+import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.XboxController.Button;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -18,10 +21,13 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.Constants.OIConstants;
 import frc.robot.commands.vision.*;
 import frc.robot.commands.elevator.*;
+import frc.robot.commands.Claw.Claw;
 import frc.robot.commands.drivetrain.AutoDrivePathPlannerTrajectory;
 import frc.robot.commands.drivetrain.MecanumDriveExample;
 import frc.robot.commands.vision.WatchForAprilTagPose;
 import frc.robot.helpers.PathPlannerPath;
+import frc.robot.subsystems.Claw_Motors;
+import frc.robot.subsystems.Claw_Pneumatic;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.LimelightSubsystem;
@@ -37,6 +43,8 @@ public class RobotContainer {
     private final DriveSubsystem m_robotDrive = new DriveSubsystem();
     private final ElevatorSubsystem m_elevator = new ElevatorSubsystem();
     private final LimelightSubsystem m_limeLight = new LimelightSubsystem(Constants.LimelightSubsystem.kLimelightName);
+    private final Claw_Pneumatic reach = new Claw_Pneumatic();
+    private final Claw_Motors claw = new Claw_Motors();
 
     // The controllers
     XboxController m_driverController = new XboxController(OIConstants.DriverControl.kDriverControllerPort);
@@ -131,6 +139,12 @@ public class RobotContainer {
 
         new JoystickButton(m_operatorController, Button.kA.value)  // PS4 kSquare
                 .onTrue(new InstantCommand(m_elevator::stop));
+
+        new JoystickButton(m_operatorController, Button.kRightBumper.value)  //Claw open and close
+                .onTrue(new InstantCommand(()->reach.use()));
+
+        new JoystickButton(m_operatorController, Button.kLeftBumper.value)
+                .whenHeld(new Claw(claw));
     }
 
     private void registerAutonomousOperations() {

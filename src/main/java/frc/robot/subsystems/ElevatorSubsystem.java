@@ -14,7 +14,7 @@ import static frc.robot.Constants.ElevatorSubsystem.*;
  */
 public class ElevatorSubsystem extends SubsystemBase {
 
-    private final CANSparkMax m_motor = new CANSparkMax(Constants.ElevatorSubsystem.kMotorPort, CANSparkMaxLowLevel.MotorType.kBrushless);;
+    private final CANSparkMax m_motor = new CANSparkMax(Constants.ElevatorSubsystem.kMotorPort, CANSparkMaxLowLevel.MotorType.kBrushless);
     private final RelativeEncoder m_encoder = m_motor.getEncoder();
     private final SparkMaxPIDController m_pidController = m_motor.getPIDController();
 

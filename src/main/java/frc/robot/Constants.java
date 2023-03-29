@@ -137,6 +137,14 @@ public final class Constants {
 
   }
 
+  //Claw Stuff
+  public static final class Claw{
+    public static int forwardChannel = 0;
+    public static int reverseChannel = 0;
+    public static int kRMotorPort = 0;
+    public static int kLMotorPort = 0;
+  }
+
   // Limelight configuration: http://10.49.51.11:5801/
   public static final class LimelightSubsystem {
     public static String kLimelightName = "limelight";   // Default name, may change to support multiple limelight
