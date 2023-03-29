@@ -64,14 +64,15 @@ public final class Constants {
     public static final double kRotationsToMeterConversionFactor = (1.0/kGearRatio) * 2.0 * Math.PI * kWheelRadiusMeters;
     public static final double kRpmToMeterPerSecondConversionFactor = kRotationsToMeterConversionFactor / 60.0;
 
+
     // These are example values only - DO NOT USE THESE FOR YOUR OWN ROBOT!
     // These characterization values MUST be determined either experimentally or theoretically
     // for *your* robot's drive.
-    // The SysId tool provides a convenient method for obtaining these values for your robot.
+    // #TODO The SysId tool provides a convenient method for obtaining these values for your robot.
     public static final SimpleMotorFeedforward kFeedforward =
         new SimpleMotorFeedforward(1, 0.8, 0.15);
 
-    // Example value only - as above, this must be tuned for your drive!
+    // #TODO Example value only - as above, this must be tuned for your drive!
     public static final double kPFrontLeftVel = 0.5;
     public static final double kPRearLeftVel = 0.5;
     public static final double kPFrontRightVel = 0.5;
@@ -96,7 +97,7 @@ public final class Constants {
 
   public static final class ElevatorSubsystem {
     public static int kMotorPort = 5;
-    public static int kSmartCurrentLimit = 20;  // 30A - is this sufficient to cause lift?
+    public static int kSmartCurrentLimit = 20;  // #TODO 30A - is this sufficient to cause lift?
     public static double kDistancePerRevolution = Units.inchesToMeters(28.0/7.0); // measured 7 rotations = 28"
     public static double kVelocityMetersPerSecond = kDistancePerRevolution/60.0;
 
@@ -107,7 +108,7 @@ public final class Constants {
     public static double kI = 0.0;
     public static double kD = 0.0;
     public static double kIZone = 0.0;
-    public static double kFeedForwardVelocity = 0.3149;   // Input to keep it from falling
+    public static double kFeedForwardVelocity = 0.3149;   // #TODO Input to keep it from falling - might need to be higher
 
     public static double kMaxControllerUpSpeed = 0.6;
     public static double kMaxControllerDownSpeed = -0.6;

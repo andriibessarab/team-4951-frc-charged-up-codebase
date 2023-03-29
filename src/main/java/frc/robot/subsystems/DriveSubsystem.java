@@ -28,31 +28,27 @@ import frc.robot.Constants.DriveConstants;
  * MecanumDrive also enables MotorSafety by default.
  */
 public class DriveSubsystem extends SubsystemBase {
+  // Motors
   private final CANSparkMax m_frontLeft = new CANSparkMax(DriveConstants.kFrontLeftMotorPort, CANSparkMaxLowLevel.MotorType.kBrushless);
   private final CANSparkMax m_rearLeft = new CANSparkMax(DriveConstants.kRearLeftMotorPort, CANSparkMaxLowLevel.MotorType.kBrushless);
   private final CANSparkMax m_frontRight = new CANSparkMax(DriveConstants.kFrontRightMotorPort, CANSparkMaxLowLevel.MotorType.kBrushless);
   private final CANSparkMax m_rearRight = new CANSparkMax(DriveConstants.kRearRightMotorPort, CANSparkMaxLowLevel.MotorType.kBrushless);
 
-  private final MecanumDrive m_drive =
-      new MecanumDrive(m_frontLeft, m_rearLeft, m_frontRight, m_rearRight);
-
-  // The front-left-side drive encoder
+  // Encoders
   private final RelativeEncoder m_frontLeftEncoder = m_frontLeft.getEncoder();
-
-  // The rear-left-side drive encoder
   private final RelativeEncoder m_rearLeftEncoder = m_rearLeft.getEncoder();
-
-  // The front-right--side drive encoder
   private final RelativeEncoder m_frontRightEncoder = m_frontRight.getEncoder();
-
-  // The rear-right-side drive encoder
   private final RelativeEncoder m_rearRightEncoder = m_rearRight.getEncoder();
 
+  // Gyro
   private final ADIS16470_IMU m_gyro = new ADIS16470_IMU();
   private long m_gyroLastResetTimeMS = 0;
   private double m_gyroYawOffset = 0.0;
   private double m_gyroPitchOffset = 0.0;
   private double m_gyroRollOffset = 0.0;
+
+  // Mecanum drive
+  private final MecanumDrive m_drive = new MecanumDrive(m_frontLeft, m_rearLeft, m_frontRight, m_rearRight);
 
   // Odometry class for tracking robot pose
   private MecanumDriveOdometry m_odometry;
@@ -61,12 +57,13 @@ public class DriveSubsystem extends SubsystemBase {
 
   /** Creates a new DriveSubsystem. */
   public DriveSubsystem() {
+    // Reset motors to factory defaults
     m_frontLeft.restoreFactoryDefaults();
     m_rearLeft.restoreFactoryDefaults();
     m_frontRight.restoreFactoryDefaults();
     m_rearRight.restoreFactoryDefaults();
 
-    // Sets the distance per pulse for the encoders
+    // Set the distance per pulse for the encoders
     m_frontLeftEncoder.setPositionConversionFactor(DriveConstants.kRotationsToMeterConversionFactor);
     m_rearLeftEncoder.setPositionConversionFactor(DriveConstants.kRotationsToMeterConversionFactor);
     m_frontRightEncoder.setPositionConversionFactor(DriveConstants.kRotationsToMeterConversionFactor);
@@ -140,7 +137,9 @@ public class DriveSubsystem extends SubsystemBase {
     }
   }
 
-  /** Sets the front left drive MotorController to a voltage. */
+  /**
+   * Sets the front left drive MotorController to a voltage.
+   */
   public void setDriveMotorControllersVolts(MecanumDriveMotorVoltages volts) {
     m_frontLeft.setVoltage(volts.frontLeftVoltage);
     m_rearLeft.setVoltage(volts.rearLeftVoltage);
@@ -148,7 +147,9 @@ public class DriveSubsystem extends SubsystemBase {
     m_rearRight.setVoltage(volts.rearRightVoltage);
   }
 
-  /** Resets the drive encoders to currently read a position of 0. */
+  /**
+   * Resets the drive encoders to currently read a position of 0.
+   */
   public void resetEncoders() {
     m_frontLeftEncoder.setPosition(0);
     m_rearLeftEncoder.setPosition(0);
@@ -227,7 +228,9 @@ public class DriveSubsystem extends SubsystemBase {
     m_drive.setMaxOutput(maxOutput);
   }
 
-  /** Zeroes the heading of the robot. */
+  /**
+   * Zeroes the heading of the robot.
+   */
   public void zeroHeading() {
     m_gyroLastResetTimeMS = System.currentTimeMillis();
 
