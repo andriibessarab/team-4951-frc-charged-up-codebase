@@ -118,23 +118,42 @@ public final class Constants {
 
   public static final class ArmSubsystem {
     public static int kMotorPort = 6;
-    public static int kSmartCurrentLimit = 20;  // #TODO 30A - is this sufficient to cause lift?
+    public static int kSmartCurrentLimit = 20;
     public static double kDistancePerRevolution = Units.inchesToMeters(28.0/7.0); // measured 7 rotations = 28"
     public static double kVelocityMetersPerSecond = kDistancePerRevolution/60.0;
 
-    public static double kMinHeight = 0.0;
-    public static double kMaxHeight = 9.5; // value from smart dashboard
+    public static double kMinExtend = 0.0;
+    public static double kMaxExtend = 9.5; // #TODO value from smart dashboard
 
-    public static double kP = 1.0;
+    public static double kP = 0.1; // #TODO what shouldi t be?
     public static double kI = 0.0;
     public static double kD = 0.0;
     public static double kIZone = 0.0;
-    public static double kFeedForwardVelocity = 0.3149;   // #TODO Input to keep it from falling - might need to be higher
+    public static double kFeedForwardVelocity = 0;
 
-    public static double kMaxControllerUpSpeed = 0.6;
+    public static double kMaxControllerUpSpeed = 0.6; // #TODO test those
     public static double kMaxControllerDownSpeed = -0.6;
     public static double kControllerDeadband = 0.1;
+  }
 
+  public static final class PivotSubsystem {
+    public static int kMotorPort = 7;
+    public static int kSmartCurrentLimit = 20;
+    public static double kDistancePerRevolution = Units.inchesToMeters(28.0/7.0); // measured 7 rotations = 28"
+    public static double kVelocityMetersPerSecond = kDistancePerRevolution/60.0;
+
+    public static double kMinOut = 0.0;
+    public static double kMaxOut = 9.5; // #TODO value from smart dashboard
+
+    public static double kP = 0.1; // #TODO what shouldi t be?
+    public static double kI = 0.0;
+    public static double kD = 0.0;
+    public static double kIZone = 0.0;
+    public static double kFeedForwardVelocity = 0;
+
+    public static double kMaxControllerUpSpeed = 0.6; // #TODO test those
+    public static double kMaxControllerDownSpeed = -0.6;
+    public static double kControllerDeadband = 0.1;
   }
 
   // Limelight configuration: http://10.49.51.11:5801/
