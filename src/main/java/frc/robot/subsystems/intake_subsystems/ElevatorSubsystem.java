@@ -14,9 +14,12 @@ import static frc.robot.Constants.ElevatorSubsystem.*;
  */
 public class ElevatorSubsystem extends SubsystemBase {
 
-    private final CANSparkMax m_motor = new CANSparkMax(Constants.ElevatorSubsystem.kMotorPort, CANSparkMaxLowLevel.MotorType.kBrushless);
+    private final CANSparkMax m_motor = new CANSparkMax(Constants.ElevatorSubsystem.kMotorPort, CANSparkMaxLowLevel.MotorType.kBrushless);;
     private final RelativeEncoder m_encoder = m_motor.getEncoder();
     private final SparkMaxPIDController m_pidController = m_motor.getPIDController();
+
+    private final int MOVE_UP_PID_SLOT = 0;
+    private final int MOVE_DOWN_PID_SLOT = 1;
 
     public ElevatorSubsystem() {
         m_motor.restoreFactoryDefaults();
@@ -30,11 +33,19 @@ public class ElevatorSubsystem extends SubsystemBase {
 
         m_pidController.setFeedbackDevice(m_encoder);
 
-        m_pidController.setP(Constants.ElevatorSubsystem.kP);
-        m_pidController.setI(Constants.ElevatorSubsystem.kI);
-        m_pidController.setD(Constants.ElevatorSubsystem.kD);
-        m_pidController.setIZone(Constants.ElevatorSubsystem.kIZone);
-        m_pidController.setOutputRange(kMinHeight, kMaxHeight);
+        // Setup PID Slot for moving upwards
+        m_pidController.setP(Constants.ElevatorSubsystem.MOVE_UP.kP, MOVE_UP_PID_SLOT);
+        m_pidController.setI(Constants.ElevatorSubsystem.MOVE_UP.kI, MOVE_UP_PID_SLOT);
+        m_pidController.setD(Constants.ElevatorSubsystem.MOVE_UP.kD, MOVE_UP_PID_SLOT);
+        m_pidController.setIZone(Constants.ElevatorSubsystem.MOVE_UP.kIZone, MOVE_UP_PID_SLOT);
+        m_pidController.setOutputRange(kMinHeight, kMaxHeight, MOVE_UP_PID_SLOT);
+
+        // Setup PID Slot for moving downwards
+        m_pidController.setP(Constants.ElevatorSubsystem.MOVE_DOWN.kP, MOVE_DOWN_PID_SLOT);
+        m_pidController.setI(Constants.ElevatorSubsystem.MOVE_DOWN.kI, MOVE_DOWN_PID_SLOT);
+        m_pidController.setD(Constants.ElevatorSubsystem.MOVE_DOWN.kD, MOVE_DOWN_PID_SLOT);
+        m_pidController.setIZone(Constants.ElevatorSubsystem.MOVE_DOWN.kIZone, MOVE_DOWN_PID_SLOT);
+        m_pidController.setOutputRange(kMinHeight, kMaxHeight, MOVE_DOWN_PID_SLOT);
 
         m_motor.enableSoftLimit(CANSparkMax.SoftLimitDirection.kForward, true);
         m_motor.enableSoftLimit(CANSparkMax.SoftLimitDirection.kReverse, true);
@@ -53,7 +64,7 @@ public class ElevatorSubsystem extends SubsystemBase {
     public void setSpeed(double speed) {
         double clampedSpeed = MathUtil.clamp(speed, kMaxControllerDownSpeed, kMaxControllerUpSpeed);
         clampedSpeed = MathUtil.applyDeadband(clampedSpeed, kControllerDeadband);
-        m_pidController.setReference(clampedSpeed, CANSparkMax.ControlType.kDutyCycle, 0, kFeedForwardVelocity);
+        m_pidController.setReference(clampedSpeed, CANSparkMax.ControlType.kDutyCycle, MOVE_UP_PID_SLOT, MOVE_UP.kFeedForwardVelocity);
         updateSmartDashboard();
     }
 
@@ -61,12 +72,12 @@ public class ElevatorSubsystem extends SubsystemBase {
         double reference = MathUtil.clamp(position, kMinHeight, kMaxHeight);
         double current = m_encoder.getPosition();
         if (reference < current) {
-            // We want to go down... but feed forward prevents unless negative. Actually all the PID
-            // values would be in reverse but not sure what the best approach is - toggling PID values
-            // every time direction changes does not feel right... but presently it is slow to drop.
-            m_pidController.setReference(reference, CANSparkMax.ControlType.kPosition, 0, -kFeedForwardVelocity);
+            // We want to go down... 
+            m_pidController.setReference(reference, CANSparkMax.ControlType.kPosition, MOVE_DOWN_PID_SLOT,
+                    MOVE_DOWN.kFeedForwardVelocity);
         } else {
-            m_pidController.setReference(reference, CANSparkMax.ControlType.kPosition, 0, kFeedForwardVelocity);
+            m_pidController.setReference(reference, CANSparkMax.ControlType.kPosition, MOVE_UP_PID_SLOT,
+                    MOVE_UP.kFeedForwardVelocity);
         }
         updateSmartDashboard();
     }
@@ -76,7 +87,7 @@ public class ElevatorSubsystem extends SubsystemBase {
     }
 
     public void stop() {
-        m_pidController.setReference(0, CANSparkMax.ControlType.kDutyCycle, 0, kFeedForwardVelocity);
+        m_pidController.setReference(0, CANSparkMax.ControlType.kDutyCycle, MOVE_UP_PID_SLOT, MOVE_UP.kFeedForwardVelocity);
     }
 
     public void updateSmartDashboard() {

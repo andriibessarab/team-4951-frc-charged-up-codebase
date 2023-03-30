@@ -104,11 +104,21 @@ public final class Constants {
     public static double kMinHeight = 0.0;
     public static double kMaxHeight = 9.5; // value from smart dashboard
 
-    public static double kP = 1.0;
-    public static double kI = 0.0;
-    public static double kD = 0.0;
-    public static double kIZone = 0.0;
-    public static double kFeedForwardVelocity = 0.3149;   // #TODO Input to keep it from falling - might need to be higher
+    public static class MOVE_UP {
+      public static double kP = 1.0;
+      public static double kI = 0.0;
+      public static double kD = 0.0;
+      public static double kIZone = 0.0;
+      public static double kFeedForwardVelocity = 0.3149;   // Input to keep it from falling
+    }
+  
+    public static class MOVE_DOWN {
+      public static double kP = -1.0;
+      public static double kI = 0.0;
+      public static double kD = 0.0;
+      public static double kIZone = 0.0;
+      public static double kFeedForwardVelocity = 0.0;
+    }
 
     public static double kMaxControllerUpSpeed = 0.6;
     public static double kMaxControllerDownSpeed = -0.6;
