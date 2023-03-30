@@ -131,25 +131,27 @@ public class RobotContainer {
                 ///////////////////////////////////////////////////////
 
                 // Drive at half speed when the right bumper is held
-                new JoystickButton(m_driverController, Button.kRightBumper.value)
+                new JoystickButton(m_driverController, Button.kRightBumper.value)// Xbox kRightBumper
                                 .onTrue(new InstantCommand(() -> m_robotDrive.setMaxOutput(0.5)))
                                 .onFalse(new InstantCommand(() -> m_robotDrive.setMaxOutput(1)));
 
                 // Align robot with detected retro tape
-                new JoystickButton(m_driverController, Button.kLeftBumper.value) // PS4 top left upper
+                new JoystickButton(m_driverController, Button.kLeftBumper.value) // Xbox kLeftBumper
                                 .whenHeld(new AutoAlignWithRetroTape(m_limeLight, m_robotDrive));
 
                 // Align robot with detected april tag
-                new JoystickButton(m_driverController, Button.kBack.value) // PS4 top left lower
+                new JoystickButton(m_driverController, Button.kX.value) // Xbox kX
                                 .whenHeld(new AutoAlignWithAprilTag(m_limeLight, m_robotDrive));
 
                 // Update smart dashboard values
-                new JoystickButton(m_driverController, Button.kA.value) // PS4 kSquare
+                new JoystickButton(m_driverController, Button.kA.value) // Xbox kA
                                 .whenHeld(new InstantCommand(m_robotDrive::updateSmartDashboard));
 
                 // Reset gyro heading to zero
-                new JoystickButton(m_driverController, Button.kY.value) // PS4 kTriangle
+                new JoystickButton(m_driverController, Button.kY.value) // Xbox kY
                                 .whenHeld(new InstantCommand(m_robotDrive::zeroHeading));
+                
+                // #TODO add command for 180
 
                 ///////////////////////////////////////////////////////
                 // OPERATOR CONTROL
