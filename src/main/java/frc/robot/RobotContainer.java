@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import java.util.ArrayList;
+
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -17,6 +19,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.Constants.OIConstants;
 import frc.robot.commands.drivetrain_commands.AutoDrivePathPlannerTrajectory;
@@ -24,7 +27,6 @@ import frc.robot.commands.drivetrain_commands.MecanumDriveExample;
 import frc.robot.commands.intake_commands.*;
 import frc.robot.commands.vision_commands.*;
 import frc.robot.helpers.PathPlannerPath;
-
 import frc.robot.subsystems.drivetrain_subsystems.*;
 import frc.robot.subsystems.intake_subsystems.*;
 import frc.robot.subsystems.vision_subsystems.*;
@@ -56,6 +58,8 @@ public class RobotContainer {
 
         // Path planner trajectories
         PathPlannerPath[] m_pathPlannerPaths = {
+                        new PathPlannerPath("openSidePreload1", true, 0.4, 0.3),
+                        new PathPlannerPath("openSidePreload2", true, 0.4, 0.3),
                         new PathPlannerPath("basictest", true, 0.3, 0.3),
                         new PathPlannerPath("rotation", true, 0.3, 0.3),
         };
@@ -184,7 +188,15 @@ public class RobotContainer {
                                                 m_pivot.getPosition() > 0.5 ? Constants.PivotSubsystem.kMinOut
                                                                 : Constants.PivotSubsystem.kMaxOut));
 
-                // #TODO add key binding for claw
+                new JoystickButton(m_operatorController, Button.kRightBumper.value)
+                                .onTrue(new InstantCommand(()->m_reach.use()));
+                if(m_operatorController.getRightTriggerAxis()>0.2){
+                        m_claw.spinIn();
+                } else if(m_operatorController.getLeftTriggerAxis()>0.2){
+                        m_claw.spinOut();
+                } else{
+                        m_claw.stop();
+                }
 
         }
 
@@ -192,6 +204,7 @@ public class RobotContainer {
          * Registers the available autonomous operations that the robot can perform during autonomous mode.
          * This method populates the m_autonomousOperation object with available autonomous options.
          */
+        ArrayList<AutoDrivePathPlannerTrajectory> paths = new ArrayList<>();
         private void registerAutonomousOperations() {
                 m_autonomousOperation.setDefaultOption("Do Nothing",
                                 new InstantCommand(() -> {
@@ -204,6 +217,7 @@ public class RobotContainer {
                                         m_pathPlannerPaths[index].resetOdometry,
                                         m_pathPlannerPaths[index].maxVelocity,
                                         m_pathPlannerPaths[index].maxAcceleration);
+                        paths.add(drivePath);
                         m_autonomousOperation.addOption(m_pathPlannerPaths[index].name, drivePath);
                 }
 
@@ -219,7 +233,16 @@ public class RobotContainer {
          * @return the command to run in autonomous
          */
         public Command getAutonomousCommand() {
-                return (Command) m_autonomousOperation.getSelected();
+                return new SequentialCommandGroup(
+                        new ElevatorGotoPosition(m_elevator, Constants.ElevatorSubsystem.kTopLayerHeight),
+                        new PivotGoToPosition(m_pivot, Constants.PivotSubsystem.kMaxOut),
+                        new ArmGoToPosition(m_arm, Constants.ArmSubsystem.kMaxExtend),
+                        new ClawOutake(m_claw),
+                        (Command) paths.get(0),
+                        new ElevatorGotoPosition(m_elevator, Constants.ElevatorSubsystem.kMinHeight),
+                        new PivotGoToPosition(m_pivot, Constants.PivotSubsystem.kMinOut),
+                        new ArmGoToPosition(m_arm, Constants.ArmSubsystem.kMinExtend)
+                );
         }
 
         /**

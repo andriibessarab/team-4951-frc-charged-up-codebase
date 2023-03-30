@@ -137,6 +137,43 @@ public class DriveSubsystem extends SubsystemBase {
     }
   }
 
+  public void driveMecanum(double xSpeed, double ySpeed, double zRot) {
+    // Calculate the angle and magnitude of the joystick input
+    double theta = Math.atan2(ySpeed, xSpeed);
+    double power = Math.hypot(xSpeed, ySpeed);
+    
+    // Calculate the sine and cosine of the angle, offset by 45 degrees
+    double sin = Math.sin(theta - Math.PI / 4);
+    double cos = Math.cos(theta - Math.PI / 4);
+    double max = Math.max(Math.abs(sin), Math.abs(cos));
+
+    // Calculate the motor powers for each wheel based on the joystick input
+    double leftFront = power * cos / max + zRot;
+    double rightFront = power * sin / max - zRot;
+    double leftRear = power * sin / max + zRot;
+    double rightRear = power * cos / max - zRot;
+
+    // Scale the motor powers if necessary to avoid exceeding the maximum power
+    if ((power + Math.abs(zRot)) > 1) {
+        leftFront /= power + Math.abs(zRot);
+        rightFront /= power + Math.abs(zRot);
+        leftRear /= power + Math.abs(zRot);
+        rightRear /= power + Math.abs(zRot);
+      }
+
+    if(leftFront==0&&leftRear==0&&rightFront==0&&rightRear==0){
+      this.m_frontLeft.stopMotor();
+      this.m_rearLeft.stopMotor();
+      this.m_rearRight.stopMotor();
+      this.m_frontRight.stopMotor();
+    } else{
+      m_frontLeft.set(leftFront);
+      m_rearLeft.set(leftRear);
+      m_rearRight.set(rightRear);
+      m_frontRight.set(rightFront);
+    }
+  }
+
   /**
    * Sets the front left drive MotorController to a voltage.
    */

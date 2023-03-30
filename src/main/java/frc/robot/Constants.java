@@ -127,7 +127,7 @@ public final class Constants {
     // #TODO determine actual heights
     public static double kTopLayerHeight = 9;
     public static double kMidLayerHeight = 5;
-    public static double kBottomLayerHeight = 1;
+    public static double kBottomLayerHeight = kMinHeight;
 
   }
 
