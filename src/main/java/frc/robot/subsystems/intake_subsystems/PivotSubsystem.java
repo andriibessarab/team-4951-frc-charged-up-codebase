@@ -1,4 +1,4 @@
-package frc.robot.subsystems;
+package frc.robot.subsystems.intake_subsystems;
 
 import com.revrobotics.*;
 import edu.wpi.first.math.MathUtil;
@@ -10,7 +10,7 @@ import frc.robot.Constants;
 import static frc.robot.Constants.PivotSubsystem.*;
 
 /**
- * Responsible for raising/lowering the elevator.
+ * Responsible for moving claw inwards/outwards.
  */
 public class PivotSubsystem extends SubsystemBase {
 

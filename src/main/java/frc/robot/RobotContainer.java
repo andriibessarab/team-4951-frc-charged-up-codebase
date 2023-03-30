@@ -7,7 +7,10 @@ package frc.robot;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.DoubleSolenoid;
+import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.XboxController.Button;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -16,17 +19,15 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.Constants.OIConstants;
-import frc.robot.commands.vision.*;
-import frc.robot.commands.intake.*;
-import frc.robot.commands.drivetrain.AutoDrivePathPlannerTrajectory;
-import frc.robot.commands.drivetrain.MecanumDriveExample;
-import frc.robot.commands.vision.WatchForAprilTagPose;
+import frc.robot.commands.drivetrain_commands.AutoDrivePathPlannerTrajectory;
+import frc.robot.commands.drivetrain_commands.MecanumDriveExample;
+import frc.robot.commands.intake_commands.*;
+import frc.robot.commands.vision_commands.*;
 import frc.robot.helpers.PathPlannerPath;
-import frc.robot.subsystems.ArmSubsystem;
-import frc.robot.subsystems.DriveSubsystem;
-import frc.robot.subsystems.ElevatorSubsystem;
-import frc.robot.subsystems.LimelightSubsystem;
-import frc.robot.subsystems.PivotSubsystem;
+
+import frc.robot.subsystems.drivetrain_subsystems.*;
+import frc.robot.subsystems.intake_subsystems.*;
+import frc.robot.subsystems.vision_subsystems.*;
 
 /*
  * This class is where the bulk of the robot should be declared.  Since Command-based is a
@@ -35,15 +36,21 @@ import frc.robot.subsystems.PivotSubsystem;
  * (including subsystems, commands, and button mappings) should be declared here.
  */
 public class RobotContainer {
-        // The robot's subsystems
+        // Robot's dirvetrain subsystems
         private final DriveSubsystem m_robotDrive = new DriveSubsystem();
+
+        // Robot's intake subsystems
         private final ElevatorSubsystem m_elevator = new ElevatorSubsystem();
         private final ArmSubsystem m_arm = new ArmSubsystem();
         private final PivotSubsystem m_pivot = new PivotSubsystem();
+        private final ClawPneumaticsSubsystem m_reach = new ClawPneumaticsSubsystem();
+        private final ClawMotorsSubsystem m_claw = new ClawMotorsSubsystem();
+
+        // Robot's vision subsystems
         private final LimelightSubsystem m_limeLight = new LimelightSubsystem(
                         Constants.LimelightSubsystem.kLimelightName);
 
-        // The controllers
+        // Operator input controllers
         XboxController m_driverController = new XboxController(OIConstants.DriverControl.kDriverControllerPort);
         XboxController m_operatorController = new XboxController(OIConstants.OperatorControl.kOperatorControllerPort);
 
@@ -53,6 +60,7 @@ public class RobotContainer {
                         new PathPlannerPath("rotation", true, 0.3, 0.3),
         };
 
+        // Autonomous command selecter
         SendableChooser m_autonomousOperation = new SendableChooser();
 
         /**
@@ -125,45 +133,61 @@ public class RobotContainer {
                                 .onTrue(new InstantCommand(() -> m_robotDrive.setMaxOutput(0.5)))
                                 .onFalse(new InstantCommand(() -> m_robotDrive.setMaxOutput(1)));
 
+                // Align robot with detected retro tape
                 new JoystickButton(m_driverController, Button.kLeftBumper.value) // PS4 top left upper
                                 .whenHeld(new AutoAlignWithRetroTape(m_limeLight, m_robotDrive));
 
+                // Align robot with detected april tag
                 new JoystickButton(m_driverController, Button.kBack.value) // PS4 top left lower
                                 .whenHeld(new AutoAlignWithAprilTag(m_limeLight, m_robotDrive));
 
+                // Update smart dashboard values
                 new JoystickButton(m_driverController, Button.kA.value) // PS4 kSquare
                                 .whenHeld(new InstantCommand(m_robotDrive::updateSmartDashboard));
 
+                // Reset gyro heading to zero
                 new JoystickButton(m_driverController, Button.kY.value) // PS4 kTriangle
                                 .whenHeld(new InstantCommand(m_robotDrive::zeroHeading));
 
                 ///////////////////////////////////////////////////////
                 // OPERATOR CONTROL
                 ///////////////////////////////////////////////////////
+
+                // Move elevator to top layer
                 new JoystickButton(m_operatorController, Button.kY.value) // Xbox kY
                                 .onTrue(new ElevatorGotoPosition(m_elevator,
-                                                Constants.ElevatorSubsystem.kTopLevelHeight));
+                                                Constants.ElevatorSubsystem.kTopLayerHeight));
 
+                // Move elevator to middle layer
                 new JoystickButton(m_operatorController, Button.kX.value) // Xbox kX
                                 .onTrue(new ElevatorGotoPosition(m_elevator,
                                                 Constants.ElevatorSubsystem.kMidLayerHeight));
 
+                // Move elevator to bottom layer
                 new JoystickButton(m_operatorController, Button.kA.value) // Xbox kA
                                 .onTrue(new ElevatorGotoPosition(m_elevator,
                                                 Constants.ElevatorSubsystem.kBottomLayerHeight));
 
+                // Extend arm if not, otherwise move in
                 new JoystickButton(m_operatorController, Button.kB.value) // Xbox kB
                                 .onTrue(new ArmGoToPosition(m_arm,
                                                 m_arm.getPosition() > 0.5 ? Constants.ArmSubsystem.kMinExtend
                                                                 : Constants.ArmSubsystem.kMaxExtend));
 
+                // Open pivot if closed, otherwise close
                 new JoystickButton(m_operatorController, Button.kLeftBumper.value) // Xbox kLeftBumper
                                 .onTrue(new PivotGoToPosition(m_pivot,
                                                 m_pivot.getPosition() > 0.5 ? Constants.PivotSubsystem.kMinOut
                                                                 : Constants.PivotSubsystem.kMaxOut));
 
+                // #TODO add key binding for claw
+
         }
 
+        /**
+         * Registers the available autonomous operations that the robot can perform during autonomous mode.
+         * This method populates the m_autonomousOperation object with available autonomous options.
+         */
         private void registerAutonomousOperations() {
                 m_autonomousOperation.setDefaultOption("Do Nothing",
                                 new InstantCommand(() -> {
@@ -194,6 +218,14 @@ public class RobotContainer {
                 return (Command) m_autonomousOperation.getSelected();
         }
 
+        /**
+         * Sets the initial position and orientation of the robot based on the alliance start position.
+         *
+         * @param xPosition  the x-coordinate of the robot's starting position
+         * @param yPosition  the y-coordinate of the robot's starting position
+         * @param orientation  the orientation of the robot, represented as an integer where 0 represents 0 degrees,
+         *                     1 represents 90 degrees, 2 represents 180 degrees, and 3 represents 270 degrees.
+         */
         public void setInitialAlliancePosition(double xPosition, double yPosition, int orientation) {
                 m_robotDrive.resetOdometry(new Pose2d(xPosition, yPosition, new Rotation2d(orientation * 2 * Math.PI)));
         }

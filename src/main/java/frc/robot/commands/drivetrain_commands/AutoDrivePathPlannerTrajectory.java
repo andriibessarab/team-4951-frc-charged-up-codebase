@@ -1,4 +1,4 @@
-package frc.robot.commands.drivetrain;
+package frc.robot.commands.drivetrain_commands;
 
 import com.pathplanner.lib.PathPlanner;
 import com.pathplanner.lib.commands.PPMecanumControllerCommand;
@@ -6,7 +6,7 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.Constants;
-import frc.robot.subsystems.DriveSubsystem;
+import frc.robot.subsystems.drivetrain_subsystems.DriveSubsystem;
 
 public class AutoDrivePathPlannerTrajectory extends SequentialCommandGroup {
     public AutoDrivePathPlannerTrajectory(DriveSubsystem robotDrive, String pathName, boolean isFirstPath, double maxVelocity, double maxAccel) {

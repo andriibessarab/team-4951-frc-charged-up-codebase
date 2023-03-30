@@ -1,10 +1,10 @@
-package frc.robot.commands.vision;
+package frc.robot.commands.vision_commands;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
-import frc.robot.subsystems.DriveSubsystem;
-import frc.robot.subsystems.LimelightSubsystem;
+import frc.robot.subsystems.drivetrain_subsystems.DriveSubsystem;
+import frc.robot.subsystems.vision_subsystems.LimelightSubsystem;
 
 public class WatchForAprilTagPose extends CommandBase {
     private LimelightSubsystem m_limelight;

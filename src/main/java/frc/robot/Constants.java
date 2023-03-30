@@ -115,7 +115,7 @@ public final class Constants {
     public static double kControllerDeadband = 0.1;
 
     // #TODO determine actual heights
-    public static double kTopLevelHeight = 9;
+    public static double kTopLayerHeight = 9;
     public static double kMidLayerHeight = 5;
     public static double kBottomLayerHeight = 1;
 
@@ -130,7 +130,7 @@ public final class Constants {
     public static double kMinExtend = 0.0;
     public static double kMaxExtend = 9.5; // #TODO value from smart dashboard
 
-    public static double kP = 0.1; // #TODO what shouldi t be?
+    public static double kP = 0.1; // #TODO what should it be?
     public static double kI = 0.0;
     public static double kD = 0.0;
     public static double kIZone = 0.0;
@@ -159,6 +159,14 @@ public final class Constants {
     public static double kMaxControllerUpSpeed = 0.6; // #TODO test those
     public static double kMaxControllerDownSpeed = -0.6;
     public static double kControllerDeadband = 0.1;
+  }
+
+  //Claw Stuff
+  public static final class Claw{
+    public static int forwardChannel = 0;
+    public static int reverseChannel = 0;
+    public static int kRMotorPort = 0;
+    public static int kLMotorPort = 0;
   }
 
   // Limelight configuration: http://10.49.51.11:5801/

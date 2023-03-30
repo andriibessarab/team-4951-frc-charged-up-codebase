@@ -1,4 +1,4 @@
-package frc.robot.subsystems;
+package frc.robot.subsystems.intake_subsystems;
 
 import com.revrobotics.*;
 import edu.wpi.first.math.MathUtil;
@@ -10,7 +10,8 @@ import frc.robot.Constants;
 import static frc.robot.Constants.ArmSubsystem.*;
 
 /**
- * Responsible for raising/lowering the elevator.
+ * Responsible for moving intake system inwards/ouwards.
+ * Act as horizontal lift.
  */
 public class ArmSubsystem extends SubsystemBase {
 

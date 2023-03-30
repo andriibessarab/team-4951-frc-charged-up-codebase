@@ -1,7 +1,7 @@
-package frc.robot.commands.intake;
+package frc.robot.commands.intake_commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.ArmSubsystem;
+import frc.robot.subsystems.intake_subsystems.ArmSubsystem;
 
 public class ArmGoToPosition extends CommandBase {
     private final ArmSubsystem m_arm;
