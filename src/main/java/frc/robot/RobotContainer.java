@@ -96,14 +96,16 @@ public class RobotContainer {
                                                 },
                                                 m_robotDrive));
 
+                // #TODO only for testing
                 m_arm.setDefaultCommand(new RunCommand(
                                 () -> {
                                         var controllerLeftX = m_operatorController.getLeftX()
                                                         + Constants.OIConstants.OperatorControl.kZeroCalibrateLeftY;
-                                        m_elevator.setSpeed(controllerLeftX);
+                                        m_arm.setSpeed(controllerLeftX);
                                 },
-                                m_elevator));
+                                m_arm));
 
+                // #TODO only for testing
                 m_pivot.setDefaultCommand(new RunCommand(
                                 () -> {
                                         var controllerRightY = m_operatorController.getRightY()
