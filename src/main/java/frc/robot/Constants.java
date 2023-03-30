@@ -117,7 +117,7 @@ public final class Constants {
       public static double kI = 0.0;
       public static double kD = 0.0;
       public static double kIZone = 0.0;
-      public static double kFeedForwardVelocity = 0.0;
+      public static double kFeedForwardVelocity = 0.3149;
     }
 
     public static double kMaxControllerUpSpeed = 0.6;
@@ -173,10 +173,10 @@ public final class Constants {
 
   //Claw Stuff
   public static final class Claw{
-    public static int forwardChannel = 0;
-    public static int reverseChannel = 0;
-    public static int kRMotorPort = 0;
-    public static int kLMotorPort = 0;
+    public static int forwardChannel = 2;
+    public static int reverseChannel = 1;
+    public static int kRMotorPort = 9;
+    public static int kLMotorPort = 8;
   }
 
   // Limelight configuration: http://10.49.51.11:5801/

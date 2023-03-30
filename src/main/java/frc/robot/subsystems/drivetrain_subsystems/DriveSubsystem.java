@@ -92,6 +92,8 @@ public class DriveSubsystem extends SubsystemBase {
             DriveConstants.kDriveKinematics,
             getGyroRotation2d(),
             new MecanumDriveWheelPositions());
+    
+            m_drive.setSafetyEnabled(false);
   }
 
   @Override

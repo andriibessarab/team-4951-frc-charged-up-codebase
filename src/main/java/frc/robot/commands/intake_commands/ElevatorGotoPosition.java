@@ -26,4 +26,8 @@ public class ElevatorGotoPosition extends CommandBase {
         }
         return false;
     }
+
+    @Override
+    public void end(boolean b){
+    }
 }

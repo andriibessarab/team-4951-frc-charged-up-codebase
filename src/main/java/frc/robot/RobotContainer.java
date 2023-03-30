@@ -72,7 +72,7 @@ public class RobotContainer {
          */
         public RobotContainer() {
                 configureButtonBindings();
-                registerAutonomousOperations();
+                //registerAutonomousOperations();
 
                 m_limeLight.setDefaultCommand(new WatchForAprilTagPose(m_limeLight, m_robotDrive));
 
@@ -233,12 +233,18 @@ public class RobotContainer {
          * @return the command to run in autonomous
          */
         public Command getAutonomousCommand() {
+                AutoDrivePathPlannerTrajectory drivePath = new AutoDrivePathPlannerTrajectory(m_robotDrive,
+                m_pathPlannerPaths[0].name,
+                m_pathPlannerPaths[0].resetOdometry,
+                m_pathPlannerPaths[0].maxVelocity,
+                m_pathPlannerPaths[0].maxAcceleration);
+                paths.add(drivePath);
                 return new SequentialCommandGroup(
                         new ElevatorGotoPosition(m_elevator, Constants.ElevatorSubsystem.kTopLayerHeight),
                         new PivotGoToPosition(m_pivot, Constants.PivotSubsystem.kMaxOut),
                         new ArmGoToPosition(m_arm, Constants.ArmSubsystem.kMaxExtend),
                         new ClawOutake(m_claw),
-                        (Command) paths.get(0),
+                        drivePath,
                         new ElevatorGotoPosition(m_elevator, Constants.ElevatorSubsystem.kMinHeight),
                         new PivotGoToPosition(m_pivot, Constants.PivotSubsystem.kMinOut),
                         new ArmGoToPosition(m_arm, Constants.ArmSubsystem.kMinExtend)
