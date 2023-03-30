@@ -114,6 +114,11 @@ public final class Constants {
     public static double kMaxControllerDownSpeed = -0.6;
     public static double kControllerDeadband = 0.1;
 
+    // #TODO determine actual heights
+    public static double kTopLevelHeight = 9;
+    public static double kMidLayerHeight = 5;
+    public static double kBottomLayerHeight = 1;
+
   }
 
   public static final class ArmSubsystem {

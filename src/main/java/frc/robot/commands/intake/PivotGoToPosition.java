@@ -1,16 +1,16 @@
-package frc.robot.commands.pivot;
+package frc.robot.commands.intake;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.PivotSubsystem;
 
-public class PivotPosition extends CommandBase {
+public class PivotGoToPosition extends CommandBase {
     private final PivotSubsystem m_pivot;
     private final double m_position;
 
 
-    public PivotPosition(PivotSubsystem pivot, boolean pivotOut) {
+    public PivotGoToPosition(PivotSubsystem pivot, double position) {
         m_pivot = pivot;
-        m_position = pivotOut ? frc.robot.Constants.PivotSubsystem.kMaxOut : frc.robot.Constants.PivotSubsystem.kMinOut;
+        m_position = position;
         addRequirements(pivot);
     }
 
