@@ -99,6 +99,24 @@ public class RobotContainer {
                                                                         false);
                                                 },
                                                 m_robotDrive));
+                                // new RunCommand(
+                                //         ()->{
+                                //                 var controllerLeftY = m_driverController.getLeftY()
+                                //                                         + Constants.OIConstants.DriverControl.kZeroCalibrateLeftY;
+                                //                         var controllerRightY = m_driverController.getRightX()
+                                //                                         + Constants.OIConstants.DriverControl.kZeroCalibrateRightX;
+                                //                         var controllerLeftX = m_driverController.getLeftX()
+                                //                                         + Constants.OIConstants.DriverControl.kZeroCalibrateLeftX;
+                                //                         m_robotDrive.driveMecanum(
+                                //                                         MathUtil.applyDeadband(-controllerLeftY,
+                                //                                                         Constants.OIConstants.DriverControl.kDriveDeadband),
+                                //                                         MathUtil.applyDeadband(-controllerRightY,
+                                //                                                         Constants.OIConstants.DriverControl.kDriveDeadband),
+                                //                                         MathUtil.applyDeadband(-controllerLeftX,
+                                //                                                         Constants.OIConstants.DriverControl.kRotationDeadband)
+                                //                         );
+                                //         }
+                                // );
 
                 // #TODO only for testing
                 m_arm.setDefaultCommand(new RunCommand(
