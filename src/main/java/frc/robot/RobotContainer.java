@@ -39,7 +39,7 @@ import frc.robot.subsystems.vision_subsystems.*;
  */
 public class RobotContainer {
         // Robot's dirvetrain subsystems
-        private final DriveSubsystem m_robotDrive = new DriveSubsystem();
+        public final DriveSubsystem m_robotDrive = new DriveSubsystem();
 
         // Robot's intake subsystems
         private final ElevatorSubsystem m_elevator = new ElevatorSubsystem();
@@ -92,29 +92,29 @@ public class RobotContainer {
                                                                                         Constants.OIConstants.DriverControl.kDriveDeadband),
                                                                         MathUtil.applyDeadband(-controllerLeftY,
                                                                                         Constants.OIConstants.DriverControl.kDriveDeadband),
-                                                                        MathUtil.applyDeadband(controllerRightX * 0.6,
+                                                                        MathUtil.applyDeadband(controllerRightX * 0.67,
                                                                                         Constants.OIConstants.DriverControl.kRotationDeadband)
                                                         );
                                                 },
                                                 m_robotDrive));
 
-                // // #TODO only for testing
-                // m_arm.setDefaultCommand(new RunCommand(
-                //                 () -> {
-                //                         var controllerLeftX = m_operatorController.getLeftX()
-                //                                         + Constants.OIConstants.OperatorControl.kZeroCalibrateLeftY;
-                //                         m_arm.setSpeed(controllerLeftX);
-                //                 },
-                //                 m_arm));
+                // #TODO only for testing
+                m_arm.setDefaultCommand(new RunCommand(
+                                () -> {
+                                        var controllerLeftX = m_operatorController.getLeftX()
+                                                        + Constants.OIConstants.OperatorControl.kZeroCalibrateLeftY;
+                                        m_arm.setSpeed(controllerLeftX);
+                                },
+                                m_arm));
 
-                // // #TODO only for testing
-                // m_pivot.setDefaultCommand(new RunCommand(
-                //                 () -> {
-                //                         var controllerRightY = m_operatorController.getRightY()
-                //                                         + Constants.OIConstants.OperatorControl.kZeroCalibrateLeftY;
-                //                         m_pivot.setSpeed(-controllerRightY);
-                //                 },
-                //                 m_pivot));
+                // #TODO only for testing
+                m_pivot.setDefaultCommand(new RunCommand(
+                                () -> {
+                                        var controllerRightY = m_operatorController.getRightY()
+                                                        + Constants.OIConstants.OperatorControl.kZeroCalibrateLeftY;
+                                        m_pivot.setSpeed(-controllerRightY);
+                                },
+                                m_pivot));
         }
 
         /**
@@ -275,7 +275,14 @@ public class RobotContainer {
         //                 new PivotGoToPosition(m_pivot, Constants.PivotSubsystem.kMinOut),
         //                 new ArmGoToPosition(m_arm, Constants.ArmSubsystem.kMinExtend)
         //         );
-        // }
+        // } 741225
+
+                /**
+         * Use this to pass the autonomous command to the main {@link Robot} class.
+         *
+         * @return the command to run in autonomous
+         */
+
 
         /**
          * Sets the initial position and orientation of the robot based on the alliance start position.

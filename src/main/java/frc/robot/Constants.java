@@ -21,10 +21,10 @@ public final class Constants {
     public static final class DriverControl {
       public static final int kDriverControllerPort = 0;
       public static double kDriveDeadband = 0.2;
-      public static double kRotationDeadband = 0.2;
-      public static double kZeroCalibrateLeftY = 0.0234375;
+      public static double kRotationDeadband = 0.1;
+      public static double kZeroCalibrateLeftY = 0.0;
       public static double kZeroCalibrateRightX = 0.0;
-      public static double kZeroCalibrateLeftX = 0.0078125;
+      public static double kZeroCalibrateLeftX = 0.0;
     }
 
     public static final class OperatorControl {
@@ -42,9 +42,9 @@ public final class Constants {
     public static final int kRearRightMotorPort = 1;
 
     public static final boolean kFrontLeftInverted = false;
-    public static final boolean kFrontRightInverted = false;
-    public static final boolean kRearLeftInverted = true;
-    public static final boolean kRearRightInverted = false;
+    public static final boolean kFrontRightInverted = true;
+    public static final boolean kRearLeftInverted = false;
+    public static final boolean kRearRightInverted = true;
 
     public static final double kTrackWidth = Units.inchesToMeters(23.0);;
     // Distance between centers of right and left wheels on robot
@@ -138,7 +138,7 @@ public final class Constants {
     public static double kVelocityMetersPerSecond = kDistancePerRevolution/60.0;
 
     public static double kMinExtend = 0.0;
-    public static double kMaxExtend = 9.5; // #TODO value from smart dashboard
+    public static double kMaxExtend = 11; // #TODO value from smart dashboard
 
     public static double kP = 0.1; // #TODO what should it be?
     public static double kI = 0.0;

@@ -45,8 +45,8 @@ public class ArmSubsystem extends SubsystemBase {
 
         resetPosition();  // Assumes that it starts at the LOWEST position
 
-        SmartDashboard.putNumber("Arm/PosFactor", Constants.ElevatorSubsystem.kDistancePerRevolution);
-        SmartDashboard.putNumber("Arm/VelFactor", Constants.ElevatorSubsystem.kVelocityMetersPerSecond);
+        SmartDashboard.putNumber("Arm/PosFactor", Constants.ArmSubsystem.kDistancePerRevolution);
+        SmartDashboard.putNumber("Arm/VelFactor", Constants.ArmSubsystem.kVelocityMetersPerSecond);
         SmartDashboard.putNumber("Arm/MaxExtend", kMaxExtend);
         SmartDashboard.putNumber("Arm/MinExtend", kMinExtend);
     }

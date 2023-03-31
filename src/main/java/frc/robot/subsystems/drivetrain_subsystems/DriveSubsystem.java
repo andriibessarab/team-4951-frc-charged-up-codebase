@@ -63,6 +63,11 @@ public class DriveSubsystem extends SubsystemBase {
     m_frontRight.restoreFactoryDefaults();
     m_rearRight.restoreFactoryDefaults();
 
+    m_frontLeft.setSmartCurrentLimit(30);
+    m_rearLeft.setSmartCurrentLimit(30);
+    m_frontRight.setSmartCurrentLimit(30);
+    m_rearRight.setSmartCurrentLimit(30);
+
     // Set the distance per pulse for the encoders
     m_frontLeftEncoder.setPositionConversionFactor(DriveConstants.kRotationsToMeterConversionFactor);
     m_rearLeftEncoder.setPositionConversionFactor(DriveConstants.kRotationsToMeterConversionFactor);

@@ -44,9 +44,9 @@ public class PivotSubsystem extends SubsystemBase {
 
         resetPosition();  // Assumes that it starts at the LOWEST position
 
-        SmartDashboard.putNumber("Pivot/PosFactor", Constants.ElevatorSubsystem.kDistancePerRevolution);
-        SmartDashboard.putNumber("Pivot/VelFactor", Constants.ElevatorSubsystem.kVelocityMetersPerSecond);
-        SmartDashboard.putNumber("Pivotrm/MaxAngle", kMaxOut);
+        SmartDashboard.putNumber("Pivot/PosFactor", Constants.PivotSubsystem.kDistancePerRevolution);
+        SmartDashboard.putNumber("Pivot/VelFactor", Constants.PivotSubsystem.kVelocityMetersPerSecond);
+        SmartDashboard.putNumber("Pivot/MaxAngle", kMaxOut);
         SmartDashboard.putNumber("Pivot/MinAngle", kMinOut);
     }
 
