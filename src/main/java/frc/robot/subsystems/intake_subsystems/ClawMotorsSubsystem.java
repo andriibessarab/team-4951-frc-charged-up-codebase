@@ -5,8 +5,8 @@ import com.revrobotics.*;
 import frc.robot.Constants;
 
 public class ClawMotorsSubsystem {
-    private final CANSparkMax m_motor = new CANSparkMax(Constants.Claw.kLMotorPort, CANSparkMaxLowLevel.MotorType.kBrushless);
-    private final CANSparkMax m_motor1 = new CANSparkMax(Constants.Claw.kRMotorPort, CANSparkMaxLowLevel.MotorType.kBrushless);
+    private final CANSparkMax m_motor = new CANSparkMax(Constants.ClawSubsystemConstants.kLMotorPort, CANSparkMaxLowLevel.MotorType.kBrushless);
+    private final CANSparkMax m_motor1 = new CANSparkMax(Constants.ClawSubsystemConstants.kRMotorPort, CANSparkMaxLowLevel.MotorType.kBrushless);
 
     public ClawMotorsSubsystem(){
         m_motor.setInverted(true);

@@ -19,16 +19,16 @@ public final class Constants {
   // Operator Input Constants (Joystick)
   public static final class OIConstants {
     public static final class DriverControl {
-      public static final int kDriverControllerPort = 1;
-      public static double kDriveDeadband = 0.00;
-      public static double kRotationDeadband = 0.00;
+      public static final int kDriverControllerPort = 0;
+      public static double kDriveDeadband = 0.2;
+      public static double kRotationDeadband = 0.2;
       public static double kZeroCalibrateLeftY = 0.0234375;
       public static double kZeroCalibrateRightX = 0.0;
       public static double kZeroCalibrateLeftX = 0.0078125;
     }
 
     public static final class OperatorControl {
-      public static int kOperatorControllerPort = 0;
+      public static int kOperatorControllerPort = 1;
 
       public static double kZeroCalibrateLeftY = 0.0;
       public static double kZeroCalibrateRightX = 0.0;
@@ -42,9 +42,9 @@ public final class Constants {
     public static final int kRearRightMotorPort = 1;
 
     public static final boolean kFrontLeftInverted = false;
-    public static final boolean kFrontRightInverted = true;
-    public static final boolean kRearLeftInverted = false;
-    public static final boolean kRearRightInverted = true;
+    public static final boolean kFrontRightInverted = false;
+    public static final boolean kRearLeftInverted = true;
+    public static final boolean kRearRightInverted = false;
 
     public static final double kTrackWidth = Units.inchesToMeters(23.0);;
     // Distance between centers of right and left wheels on robot
@@ -60,7 +60,7 @@ public final class Constants {
 
     // Using tough box micros installed with the standard gear ratio of 8.45 : 1
     public static final double kGearRatio = 8.45;    // For every 8.45 encoder rotations, 1 wheel rotation
-    public static final double kWheelRadiusMeters = Units.inchesToMeters(6.0 / 2.0); // 6" diameter wheels
+    public static final double kWheelRadiusMeters = Units.inchesToMeters(8.0 / 2.0); // #TODO 8" diameter wheels
     public static final double kRotationsToMeterConversionFactor = (1.0/kGearRatio) * 2.0 * Math.PI * kWheelRadiusMeters;
     public static final double kRpmToMeterPerSecondConversionFactor = kRotationsToMeterConversionFactor / 60.0;
 
@@ -172,7 +172,7 @@ public final class Constants {
   }
 
   //Claw Stuff
-  public static final class Claw{
+  public static final class ClawSubsystemConstants {
     public static int forwardChannel = 2;
     public static int reverseChannel = 1;
     public static int kRMotorPort = 9;

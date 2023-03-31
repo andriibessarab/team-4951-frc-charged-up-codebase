@@ -56,16 +56,16 @@ public class RobotContainer {
         XboxController m_driverController = new XboxController(OIConstants.DriverControl.kDriverControllerPort);
         XboxController m_operatorController = new XboxController(OIConstants.OperatorControl.kOperatorControllerPort);
 
-        // Path planner trajectories
-        PathPlannerPath[] m_pathPlannerPaths = {
-                        new PathPlannerPath("openSidePreload1", true, 0.4, 0.3),
-                        new PathPlannerPath("openSidePreload2", true, 0.4, 0.3),
-                        new PathPlannerPath("basictest", true, 0.3, 0.3),
-                        new PathPlannerPath("rotation", true, 0.3, 0.3),
-        };
+        // // Path planner trajectories
+        // PathPlannerPath[] m_pathPlannerPaths = {
+        //                 new PathPlannerPath("openSidePreload1", true, 0.4, 0.3),
+        //                 new PathPlannerPath("openSidePreload2", true, 0.4, 0.3),
+        //                 new PathPlannerPath("basictest", true, 0.3, 0.3),
+        //                 new PathPlannerPath("rotation", true, 0.3, 0.3),
+        // };
 
-        // Autonomous command selecter
-        SendableChooser m_autonomousOperation = new SendableChooser();
+        // // Autonomous command selecter
+        // SendableChooser m_autonomousOperation = new SendableChooser();
 
         /**
          * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -82,41 +82,39 @@ public class RobotContainer {
                                 // A split-stick arcade command, with forward/backward controlled by the left
                                 // hand, and turning controlled by the right.
                                 new RunCommand(
-                                                () -> {
-                                                        var controllerLeftY = m_driverController.getLeftY()
-                                                                        + Constants.OIConstants.DriverControl.kZeroCalibrateLeftY;
-                                                        var controllerRightY = m_driverController.getRightX()
-                                                                        + Constants.OIConstants.DriverControl.kZeroCalibrateRightX;
-                                                        var controllerLeftX = m_driverController.getLeftX()
-                                                                        + Constants.OIConstants.DriverControl.kZeroCalibrateLeftX;
-                                                        m_robotDrive.drive(
+                                                () -> {                                                    
+                                                        var controllerLeftX = m_driverController.getLeftX();
+                                                        var controllerLeftY = m_driverController.getLeftY();
+                                                        var controllerRightX = m_driverController.getRightX();
+
+                                                        m_robotDrive.driveMecanum(
+                                                                        MathUtil.applyDeadband(controllerLeftX,
+                                                                                        Constants.OIConstants.DriverControl.kDriveDeadband),
                                                                         MathUtil.applyDeadband(-controllerLeftY,
                                                                                         Constants.OIConstants.DriverControl.kDriveDeadband),
-                                                                        MathUtil.applyDeadband(-controllerRightY,
-                                                                                        Constants.OIConstants.DriverControl.kDriveDeadband),
-                                                                        MathUtil.applyDeadband(-controllerLeftX,
-                                                                                        Constants.OIConstants.DriverControl.kRotationDeadband),
-                                                                        false);
+                                                                        MathUtil.applyDeadband(controllerRightX * 0.6,
+                                                                                        Constants.OIConstants.DriverControl.kRotationDeadband)
+                                                        );
                                                 },
                                                 m_robotDrive));
 
-                // #TODO only for testing
-                m_arm.setDefaultCommand(new RunCommand(
-                                () -> {
-                                        var controllerLeftX = m_operatorController.getLeftX()
-                                                        + Constants.OIConstants.OperatorControl.kZeroCalibrateLeftY;
-                                        m_arm.setSpeed(controllerLeftX);
-                                },
-                                m_arm));
+                // // #TODO only for testing
+                // m_arm.setDefaultCommand(new RunCommand(
+                //                 () -> {
+                //                         var controllerLeftX = m_operatorController.getLeftX()
+                //                                         + Constants.OIConstants.OperatorControl.kZeroCalibrateLeftY;
+                //                         m_arm.setSpeed(controllerLeftX);
+                //                 },
+                //                 m_arm));
 
-                // #TODO only for testing
-                m_pivot.setDefaultCommand(new RunCommand(
-                                () -> {
-                                        var controllerRightY = m_operatorController.getRightY()
-                                                        + Constants.OIConstants.OperatorControl.kZeroCalibrateLeftY;
-                                        m_pivot.setSpeed(-controllerRightY);
-                                },
-                                m_pivot));
+                // // #TODO only for testing
+                // m_pivot.setDefaultCommand(new RunCommand(
+                //                 () -> {
+                //                         var controllerRightY = m_operatorController.getRightY()
+                //                                         + Constants.OIConstants.OperatorControl.kZeroCalibrateLeftY;
+                //                         m_pivot.setSpeed(-controllerRightY);
+                //                 },
+                //                 m_pivot));
         }
 
         /**
@@ -228,56 +226,56 @@ public class RobotContainer {
 
         }
 
-        /**
-         * Registers the available autonomous operations that the robot can perform during autonomous mode.
-         * This method populates the m_autonomousOperation object with available autonomous options.
-         */
-        ArrayList<AutoDrivePathPlannerTrajectory> paths = new ArrayList<>();
-        private void registerAutonomousOperations() {
-                m_autonomousOperation.setDefaultOption("Do Nothing",
-                                new InstantCommand(() -> {
-                                        m_robotDrive.drive(0.0, 0.0, 0.0, false);
-                                }));
+        // /**
+        //  * Registers the available autonomous operations that the robot can perform during autonomous mode.
+        //  * This method populates the m_autonomousOperation object with available autonomous options.
+        //  */
+        // ArrayList<AutoDrivePathPlannerTrajectory> paths = new ArrayList<>();
+        // private void registerAutonomousOperations() {
+        //         m_autonomousOperation.setDefaultOption("Do Nothing",
+        //                         new InstantCommand(() -> {
+        //                                 m_robotDrive.drive(0.0, 0.0, 0.0, false);
+        //                         }));
 
-                for (int index = 0; index < m_pathPlannerPaths.length; index++) {
-                        AutoDrivePathPlannerTrajectory drivePath = new AutoDrivePathPlannerTrajectory(m_robotDrive,
-                                        m_pathPlannerPaths[index].name,
-                                        m_pathPlannerPaths[index].resetOdometry,
-                                        m_pathPlannerPaths[index].maxVelocity,
-                                        m_pathPlannerPaths[index].maxAcceleration);
-                        paths.add(drivePath);
-                        m_autonomousOperation.addOption(m_pathPlannerPaths[index].name, drivePath);
-                }
+        //         for (int index = 0; index < m_pathPlannerPaths.length; index++) {
+        //                 AutoDrivePathPlannerTrajectory drivePath = new AutoDrivePathPlannerTrajectory(m_robotDrive,
+        //                                 m_pathPlannerPaths[index].name,
+        //                                 m_pathPlannerPaths[index].resetOdometry,
+        //                                 m_pathPlannerPaths[index].maxVelocity,
+        //                                 m_pathPlannerPaths[index].maxAcceleration);
+        //                 paths.add(drivePath);
+        //                 m_autonomousOperation.addOption(m_pathPlannerPaths[index].name, drivePath);
+        //         }
 
-                m_autonomousOperation.addOption("Mecanum Drive Example",
-                                new MecanumDriveExample(m_robotDrive, true));
+        //         m_autonomousOperation.addOption("Mecanum Drive Example",
+        //                         new MecanumDriveExample(m_robotDrive, true));
 
-                SmartDashboard.putData("Autonomous Operation", m_autonomousOperation);
-        }
+        //         SmartDashboard.putData("Autonomous Operation", m_autonomousOperation);
+        // }
 
         /**
          * Use this to pass the autonomous command to the main {@link Robot} class.
          *
          * @return the command to run in autonomous
          */
-        public Command getAutonomousCommand() {
-                AutoDrivePathPlannerTrajectory drivePath = new AutoDrivePathPlannerTrajectory(m_robotDrive,
-                m_pathPlannerPaths[0].name,
-                m_pathPlannerPaths[0].resetOdometry,
-                m_pathPlannerPaths[0].maxVelocity,
-                m_pathPlannerPaths[0].maxAcceleration);
-                paths.add(drivePath);
-                return new SequentialCommandGroup(
-                        new ElevatorGotoPosition(m_elevator, Constants.ElevatorSubsystem.kTopLayerHeight),
-                        new PivotGoToPosition(m_pivot, Constants.PivotSubsystem.kMaxOut),
-                        new ArmGoToPosition(m_arm, Constants.ArmSubsystem.kMaxExtend),
-                        new ClawOutake(m_claw),
-                        drivePath,
-                        new ElevatorGotoPosition(m_elevator, Constants.ElevatorSubsystem.kMinHeight),
-                        new PivotGoToPosition(m_pivot, Constants.PivotSubsystem.kMinOut),
-                        new ArmGoToPosition(m_arm, Constants.ArmSubsystem.kMinExtend)
-                );
-        }
+        // public Command getAutonomousCommand() {
+        //         AutoDrivePathPlannerTrajectory drivePath = new AutoDrivePathPlannerTrajectory(m_robotDrive,
+        //         m_pathPlannerPaths[0].name,
+        //         m_pathPlannerPaths[0].resetOdometry,
+        //         m_pathPlannerPaths[0].maxVelocity,
+        //         m_pathPlannerPaths[0].maxAcceleration);
+        //         paths.add(drivePath);
+        //         return new SequentialCommandGroup(
+        //                 new ElevatorGotoPosition(m_elevator, Constants.ElevatorSubsystem.kTopLayerHeight),
+        //                 new PivotGoToPosition(m_pivot, Constants.PivotSubsystem.kMaxOut),
+        //                 new ArmGoToPosition(m_arm, Constants.ArmSubsystem.kMaxExtend),
+        //                 new ClawOutake(m_claw),
+        //                 drivePath,
+        //                 new ElevatorGotoPosition(m_elevator, Constants.ElevatorSubsystem.kMinHeight),
+        //                 new PivotGoToPosition(m_pivot, Constants.PivotSubsystem.kMinOut),
+        //                 new ArmGoToPosition(m_arm, Constants.ArmSubsystem.kMinExtend)
+        //         );
+        // }
 
         /**
          * Sets the initial position and orientation of the robot based on the alliance start position.
