@@ -131,13 +131,17 @@ public class RobotContainer {
         private void configureButtonBindings() {
 
                 ///////////////////////////////////////////////////////
-                // DRIVER CONTROL
+                // DRIVERTRAIN
                 ///////////////////////////////////////////////////////
 
                 // Drive at half speed when the right bumper is held
                 new JoystickButton(m_driverController, Button.kRightBumper.value)// Xbox kRightBumper
                                 .onTrue(new InstantCommand(() -> m_robotDrive.setMaxOutput(0.5)))
                                 .onFalse(new InstantCommand(() -> m_robotDrive.setMaxOutput(1)));
+
+                ///////////////////////////////////////////////////////
+                // VISION
+                ///////////////////////////////////////////////////////
 
                 // Align robot with detected retro tape
                 new JoystickButton(m_driverController, Button.kLeftBumper.value) // Xbox kLeftBumper
@@ -146,6 +150,10 @@ public class RobotContainer {
                 // Align robot with detected april tag
                 new JoystickButton(m_driverController, Button.kX.value) // Xbox kX
                                 .whenHeld(new AutoAlignWithAprilTag(m_limeLight, m_robotDrive));
+
+                ///////////////////////////////////////////////////////
+                // DRIVE MISC
+                ///////////////////////////////////////////////////////
 
                 // Update smart dashboard values
                 new JoystickButton(m_driverController, Button.kA.value) // Xbox kA
@@ -157,8 +165,9 @@ public class RobotContainer {
                 
                 // #TODO add command for 180
 
+
                 ///////////////////////////////////////////////////////
-                // OPERATOR CONTROL
+                // ELEVATOR
                 ///////////////////////////////////////////////////////
 
                 // Move elevator to top layer
@@ -167,7 +176,7 @@ public class RobotContainer {
                                                 Constants.ElevatorSubsystem.kTopLayerHeight));
 
                 // Move elevator to middle layer
-                new JoystickButton(m_operatorController, Button.kX.value) // Xbox kX
+                new JoystickButton(m_operatorController, Button.kB.value) // Xbox kB
                                 .onTrue(new ElevatorGotoPosition(m_elevator,
                                                 Constants.ElevatorSubsystem.kMidLayerHeight));
 
@@ -176,25 +185,44 @@ public class RobotContainer {
                                 .onTrue(new ElevatorGotoPosition(m_elevator,
                                                 Constants.ElevatorSubsystem.kBottomLayerHeight));
 
-                // Extend arm if not, otherwise move in
-                new JoystickButton(m_operatorController, Button.kB.value) // Xbox kB
-                                .onTrue(new ArmGoToPosition(m_arm,
-                                                m_arm.getPosition() > 0.5 ? Constants.ArmSubsystem.kMinExtend
-                                                                : Constants.ArmSubsystem.kMaxExtend));
+                ///////////////////////////////////////////////////////
+                // ARM
+                ///////////////////////////////////////////////////////
 
-                // Open pivot if closed, otherwise close
+                // Retract arm
+                new JoystickButton(m_operatorController, Button.kLeftStick.value) // Xbox kLeftStick
+                                .onTrue(new ArmGoToPosition(m_arm, Constants.ArmSubsystem.kMinExtend));
+                
+                // Extend arm
+                new JoystickButton(m_operatorController, Button.kRightStick.value) // Xbox kRightStick
+                                .onTrue(new ArmGoToPosition(m_arm, Constants.ArmSubsystem.kMaxExtend));
+
+                ///////////////////////////////////////////////////////
+                // PIVOT
+                ///////////////////////////////////////////////////////
+
+                // Open pivot
                 new JoystickButton(m_operatorController, Button.kLeftBumper.value) // Xbox kLeftBumper
-                                .onTrue(new PivotGoToPosition(m_pivot,
-                                                m_pivot.getPosition() > 0.5 ? Constants.PivotSubsystem.kMinOut
-                                                                : Constants.PivotSubsystem.kMaxOut));
+                                .onTrue(new PivotGoToPosition(m_pivot,  Constants.PivotSubsystem.kMinOut));
+                
+                // Close pivot
+                new JoystickButton(m_operatorController, Button.kRightBumper.value) // Xbox kRightBumper
+                                .onTrue(new PivotGoToPosition(m_pivot, Constants.PivotSubsystem.kMaxOut));
 
-                new JoystickButton(m_operatorController, Button.kRightBumper.value)
+                ///////////////////////////////////////////////////////
+                // CLAW
+                ///////////////////////////////////////////////////////
+
+                // Open claw if closed, otherwise close
+                new JoystickButton(m_operatorController, Button.kX.value) // Xbox kB
                                 .onTrue(new InstantCommand(()->m_reach.use()));
-                if(m_operatorController.getRightTriggerAxis()>0.2){
-                        m_claw.spinIn();
-                } else if(m_operatorController.getLeftTriggerAxis()>0.2){
+
+                // Make claw motors spin in/out
+                if(m_operatorController.getLeftTriggerAxis()>0.2){ // Xbox getLeftTriggerAxis
+                        m_claw.spinIn();   
+                } else if(m_operatorController.getRightTriggerAxis()>0.2){ // Xbox getRightTriggerAxis
                         m_claw.spinOut();
-                } else{
+                } else {
                         m_claw.stop();
                 }
 
