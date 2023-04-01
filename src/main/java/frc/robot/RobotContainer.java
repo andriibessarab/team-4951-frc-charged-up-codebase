@@ -112,7 +112,7 @@ public class RobotContainer {
                                 () -> {
                                         var controllerRightY = m_operatorController.getRightY()
                                                         + Constants.OIConstants.OperatorControl.kZeroCalibrateLeftY;
-                                        m_pivot.setSpeed(-controllerRightY * 0.5);
+                                        m_pivot.setSpeed(controllerRightY * 0.5);
                                 },
                                 m_pivot));
         }
@@ -200,12 +200,12 @@ public class RobotContainer {
                 ///////////////////////////////////////////////////////
 
                 // Open pivot
-                new JoystickButton(m_operatorController, Button.kLeftBumper.value) // Xbox kLeftBumper
-                                .onTrue(new PivotGoToPosition(m_pivot,  Constants.PivotSubsystem.kMinOut));
+                new JoystickButton(m_operatorController, Button.kLeftBumper.value) // Xbox kLeftBumper, close
+                                .onTrue(new PivotGoToPosition(m_pivot,  Constants.PivotSubsystem.kCloseValue));
                 
                 // Close pivot
-                new JoystickButton(m_operatorController, Button.kRightBumper.value) // Xbox kRightBumper
-                                .onTrue(new PivotGoToPosition(m_pivot, Constants.PivotSubsystem.kMaxOut));
+                new JoystickButton(m_operatorController, Button.kRightBumper.value) // Xbox kRightBumper, open
+                                .onTrue(new PivotGoToPosition(m_pivot, Constants.PivotSubsystem.kOpenValue));
 
                 ///////////////////////////////////////////////////////
                 // CLAW

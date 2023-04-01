@@ -160,6 +160,9 @@ public final class Constants {
     public static double kMinOut = 0;
     public static double kMaxOut = 10; // #TODO value from smart dashboard
 
+    public static double kCloseValue = 3;
+    public static double kOpenValue = 6; // #TODO value from smart dashboard
+
     public static double kP = 0.1; // #TODO what shouldi t be?
     public static double kI = 0.0;
     public static double kD = 0.0;

@@ -21,12 +21,12 @@ public class ClawMotorsSubsystem {
         m_motor1.setIdleMode(CANSparkMax.IdleMode.kBrake);
     }
     public void spinIn(){
-        m_motor.set(0.4);
-        m_motor1.set(0.4);
+        m_motor.set(0.2);
+        m_motor1.set(0.2);
     }
     public void spinOut(){
-        m_motor.set(-0.4);
-        m_motor1.set(-0.4);
+        m_motor.set(-0.2);
+        m_motor1.set(-0.2);
     }
     public void stop(){
         m_motor.stopMotor();

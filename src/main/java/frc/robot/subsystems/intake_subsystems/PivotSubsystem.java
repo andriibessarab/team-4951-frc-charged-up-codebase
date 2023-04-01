@@ -28,8 +28,9 @@ public class PivotSubsystem extends SubsystemBase {
     public PivotSubsystem() {
         m_motor.restoreFactoryDefaults();
 
+        m_motor.setInverted(true);
+
         m_motor.setIdleMode(CANSparkMax.IdleMode.kBrake);
-        m_motor.setInverted(false);
         m_motor.setSmartCurrentLimit(kSmartCurrentLimit);
 
         m_encoder.setPositionConversionFactor(kDistancePerRevolution);
@@ -43,11 +44,11 @@ public class PivotSubsystem extends SubsystemBase {
         m_pidController.setIZone(kIZone);
         m_pidController.setOutputRange(kMinOut, kMaxOut);
 
-        // m_motor.enableSoftLimit(CANSparkMax.SoftLimitDirection.kForward, true);
-        // m_motor.enableSoftLimit(CANSparkMax.SoftLimitDirection.kReverse, true);
+        m_motor.enableSoftLimit(CANSparkMax.SoftLimitDirection.kForward, true);
+        m_motor.enableSoftLimit(CANSparkMax.SoftLimitDirection.kReverse, true);
 
-        // m_motor.setSoftLimit(CANSparkMax.SoftLimitDirection.kForward, (float)kMaxOut);  // Top distance limit
-        // m_motor.setSoftLimit(CANSparkMax.SoftLimitDirection.kReverse, (float)kMinOut);  // Bottom distance limit
+        m_motor.setSoftLimit(CANSparkMax.SoftLimitDirection.kForward, (float)kMaxOut);  // Top distance limit
+        m_motor.setSoftLimit(CANSparkMax.SoftLimitDirection.kReverse, (float)kMinOut);  // Bottom distance limit
 
         resetPosition();  // Assumes that it starts at the LOWEST position
 
