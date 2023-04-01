@@ -10,11 +10,12 @@ import edu.wpi.first.math.kinematics.MecanumDriveOdometry;
 import edu.wpi.first.math.kinematics.MecanumDriveWheelPositions;
 import edu.wpi.first.math.kinematics.MecanumDriveWheelSpeeds;
 import edu.wpi.first.wpilibj.ADIS16470_IMU;
+import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.drive.MecanumDrive;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-
+import com.kauailabs.navx.frc.AHRS;
 import frc.robot.Constants.DriveConstants;
 
 /**
@@ -41,7 +42,8 @@ public class DriveSubsystem extends SubsystemBase {
   private final RelativeEncoder m_rearRightEncoder = m_rearRight.getEncoder();
 
   // Gyro
-  private final ADIS16470_IMU m_gyro = new ADIS16470_IMU();
+  //private final ADIS16470_IMU m_gyro = new ADIS16470_IMU();
+  private final AHRS m_gyro = new AHRS(SPI.Port.kMXP);
   private long m_gyroLastResetTimeMS = 0;
   private double m_gyroYawOffset = 0.0;
   private double m_gyroPitchOffset = 0.0;
@@ -62,6 +64,11 @@ public class DriveSubsystem extends SubsystemBase {
     m_rearLeft.restoreFactoryDefaults();
     m_frontRight.restoreFactoryDefaults();
     m_rearRight.restoreFactoryDefaults();
+
+    m_frontLeft.setIdleMode(CANSparkMax.IdleMode.kBrake);
+    m_rearLeft.setIdleMode(CANSparkMax.IdleMode.kBrake);
+    m_frontRight.setIdleMode(CANSparkMax.IdleMode.kBrake);
+    m_rearRight.setIdleMode(CANSparkMax.IdleMode.kBrake);
 
     m_frontLeft.setSmartCurrentLimit(40);
     m_rearLeft.setSmartCurrentLimit(40);
@@ -318,7 +325,7 @@ public class DriveSubsystem extends SubsystemBase {
     // See: https://firstfrc.blob.core.windows.net/frc2023/Manual/Sections/2023FRCGameManual-05.pdf
     // Page 23 indicates the charge station angle when weighted down is 11 degrees and
     // 34.25 degrees when nobody is holding it down.
-    return (m_gyro.getYComplementaryAngle() % 360.0) - m_gyroPitchOffset;
+    return 0;//(m_gyro.getYComplementaryAngle() % 360.0) - m_gyroPitchOffset;
   }
 
   public double getRoll() {
@@ -328,7 +335,7 @@ public class DriveSubsystem extends SubsystemBase {
     // Our gyro is rotated 180 degrees on the RoboRio from the image
     // https://wiki.analog.com/first/adis16470_imu_frc which flips our values so the
     // value is negated to oriented the values correctly according to the image.
-    return -((m_gyro.getXComplementaryAngle() % 360.0) - m_gyroRollOffset);
+    return 0;//-((m_gyro.getXComplementaryAngle() % 360.0) - m_gyroRollOffset);
   }
 
   /**
@@ -338,6 +345,10 @@ public class DriveSubsystem extends SubsystemBase {
    */
   public double getHeading() {
     return getGyroRotation2d().getDegrees();
+  }
+
+  public void ResetHeading(){
+    m_gyro.reset();
   }
 //    double yaw = getYaw();  // Range [-360, 360]
 //    if (Math.abs(yaw) <= 180.0) {
