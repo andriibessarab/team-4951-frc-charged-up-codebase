@@ -115,6 +115,36 @@ public class RobotContainer {
                                         m_pivot.setSpeed(controllerRightY * 0.5);
                                 },
                                 m_pivot));
+                
+                //TODO: test to see if work, might keep for actual use
+                // m_claw.setDefaultCommand(new RunCommand(
+                //                 () -> {
+                //                         var rTrigger = m_operatorController.getRightTriggerAxis();
+                //                         var lTrigger = m_operatorController.getLeftTriggerAxis();
+                //                         if(rTrigger>0.2){
+                //                                 m_claw.spinIn();
+                //                         } else if(lTrigger>0.2){
+                //                                 m_claw.spinOut();
+                //                         } else{
+                //                                 m_claw.stop();
+                //                         }
+                //                 },
+                //                 m_claw));
+                
+                //TODO: will override the command above, testing only, allow command above to stay
+                m_elevator.setDefaultCommand(new RunCommand(
+                                () -> {
+                                        var rTrigger = m_operatorController.getRightTriggerAxis();
+                                        var lTrigger = m_operatorController.getLeftTriggerAxis();
+                                        if(rTrigger>0.2){
+                                                m_elevator.setSpeed(rTrigger/3);
+                                        } else if(lTrigger>0.2){
+                                                m_elevator.setSpeed(lTrigger/3);
+                                        } else{
+                                                m_elevator.stop();
+                                        }
+                                },
+                                m_elevator));
         }
 
         /**
@@ -212,7 +242,7 @@ public class RobotContainer {
                 ///////////////////////////////////////////////////////
 
                 // Open claw if closed, otherwise close
-                new JoystickButton(m_operatorController, Button.kX.value) // Xbox kB
+                new JoystickButton(m_operatorController, Button.kX.value) //pneumatic
                                 .onTrue(new InstantCommand(()->m_reach.use()));
 
                 new JoystickButton(m_operatorController, Button.kStart.value) // Xbox kB
@@ -272,7 +302,7 @@ public class RobotContainer {
         //                 new PivotGoToPosition(m_pivot, Constants.PivotSubsystem.kMinOut),
         //                 new ArmGoToPosition(m_arm, Constants.ArmSubsystem.kMinExtend)
         //         );
-        // } 741225
+        // }
 
                 /**
          * Use this to pass the autonomous command to the main {@link Robot} class.

@@ -2,9 +2,10 @@ package frc.robot.subsystems.intake_subsystems;
 
 import com.revrobotics.*;
 
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
-public class ClawMotorsSubsystem {
+public class ClawMotorsSubsystem extends SubsystemBase{
     private final CANSparkMax m_motor = new CANSparkMax(Constants.ClawSubsystemConstants.kLMotorPort, CANSparkMaxLowLevel.MotorType.kBrushless);
     private final CANSparkMax m_motor1 = new CANSparkMax(Constants.ClawSubsystemConstants.kRMotorPort, CANSparkMaxLowLevel.MotorType.kBrushless);
 

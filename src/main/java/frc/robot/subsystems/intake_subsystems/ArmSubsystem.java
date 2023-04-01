@@ -75,6 +75,8 @@ public class ArmSubsystem extends SubsystemBase {
     public void updateSmartDashboard() {
         SmartDashboard.putNumber("Arm/Position", m_encoder.getPosition());
         SmartDashboard.putNumber("Arm/Velocity", m_encoder.getVelocity());
+        //TODO: check if .setsoftlimit resets everytime it is called
+        m_motor.setSoftLimit(CANSparkMax.SoftLimitDirection.kForward, (float) SmartDashboard.getNumber("Arm/MaxExtend", kMaxExtend));
     }
 
     public final void resetPosition() {
