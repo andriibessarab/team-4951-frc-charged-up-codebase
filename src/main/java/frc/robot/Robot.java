@@ -60,7 +60,7 @@ public class Robot extends TimedRobot {
   public void autonomousInit() {
     timer.reset();
     timer.start();
-    // m_autonomousCommand = m_robotContainer.getAutonomousCommand();
+    m_autonomousCommand = m_robotContainer.getAutonomousCommand();
 
     /*
      * String autoSelected = SmartDashboard.getString("Auto Selector",
@@ -70,22 +70,22 @@ public class Robot extends TimedRobot {
      */
 
     // schedule the autonomous command (example)
-    // if (m_autonomousCommand != null) {
-    //   m_autonomousCommand.schedule();
-    // }
+    if (m_autonomousCommand != null) {
+      m_autonomousCommand.schedule();
+    }
   }
 
   /** This function is called periodically during autonomous. */
   @Override
   public void autonomousPeriodic() {
-    //m_robotContainer.m_robotDrive.driveMecanum(0.4, 0, 0);
-    if (timer.get() < 0.5) {
-      m_robotContainer.m_robotDrive.driveMecanum(0, -1, 0);
-    } else if(timer.get() < 2) {
-      m_robotContainer.m_robotDrive.driveMecanum(0, 1, 0);
-    } else {
-      m_robotContainer.m_robotDrive.driveMecanum(0, 0, 0);
-    }
+    // //m_robotContainer.m_robotDrive.driveMecanum(0.4, 0, 0);
+    // if (timer.get() < 0.5) {
+    //   m_robotContainer.m_robotDrive.driveMecanum(0, -0.75, 0);
+    // } else if(timer.get() < 1.25) {
+    //   m_robotContainer.m_robotDrive.driveMecanum(0, 0.75, 0);
+    // } else {
+    //   m_robotContainer.m_robotDrive.driveMecanum(0, 0, 0);
+    // }
   }
 
   @Override

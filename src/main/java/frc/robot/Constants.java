@@ -16,6 +16,10 @@ import edu.wpi.first.math.util.Units;
  */
 public final class Constants {
 
+public static final double BalanceKp = 0.5;
+public static final double BalanceKi = 0.0;
+public static final double BalanceKd = 0.05; 
+
   // Operator Input Constants (Joystick)
   public static final class OIConstants {
     public static final class DriverControl {

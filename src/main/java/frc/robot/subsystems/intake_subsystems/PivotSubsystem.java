@@ -30,7 +30,8 @@ public class PivotSubsystem extends SubsystemBase {
 
         m_motor.setInverted(false);
 
-        m_motor.setIdleMode(CANSparkMax.IdleMode.kCoast);
+        // m_motor.setIdleMode(CANSparkMax.IdleMode.kCoast);
+        m_motor.setIdleMode(CANSparkMax.IdleMode.kBrake); // #TODO test
         m_motor.setSmartCurrentLimit(kSmartCurrentLimit);
 
         m_encoder.setPositionConversionFactor(kDistancePerRevolution);
@@ -47,8 +48,8 @@ public class PivotSubsystem extends SubsystemBase {
         //m_motor.enableSoftLimit(CANSparkMax.SoftLimitDirection.kForward, true);
         //m_motor.enableSoftLimit(CANSparkMax.SoftLimitDirection.kReverse, true);
 
-        m_motor.setSoftLimit(CANSparkMax.SoftLimitDirection.kForward, (float)kMaxOut);  // Top distance limit
-        m_motor.setSoftLimit(CANSparkMax.SoftLimitDirection.kReverse, (float)kMinOut);  // Bottom distance limit
+        //m_motor.setSoftLimit(CANSparkMax.SoftLimitDirection.kForward, (float)kMaxOut);  // Top distance limit
+        //m_motor.setSoftLimit(CANSparkMax.SoftLimitDirection.kReverse, (float)kMinOut);  // Bottom distance limit
 
         resetPosition();  // Assumes that it starts at the LOWEST position
 
@@ -84,6 +85,10 @@ public class PivotSubsystem extends SubsystemBase {
         SmartDashboard.putNumber("Pivot/Velocity", m_encoder.getVelocity());
         //TODO: check if .setsoftlimit resets everytime it is called
         m_motor.setSoftLimit(CANSparkMax.SoftLimitDirection.kForward, (float) SmartDashboard.getNumber("Pivot/MaxAngle", kMaxOut));
+        SmartDashboard.putNumber("close time", 0.5);
+        SmartDashboard.putNumber("close speed", -0.2);
+        SmartDashboard.putNumber("open time", 0.5);
+        SmartDashboard.putNumber("open speed", 0.2);
     }
 
     public final void resetPosition() {

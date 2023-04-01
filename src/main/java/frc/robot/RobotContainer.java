@@ -22,6 +22,8 @@ import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.Constants.OIConstants;
+import frc.robot.commands.autonomous_commands.BasicAutonomous;
+import frc.robot.commands.autonomous_commands.LeaveCommunityZone;
 import frc.robot.commands.drivetrain_commands.AutoDrivePathPlannerTrajectory;
 import frc.robot.commands.drivetrain_commands.MecanumDriveExample;
 import frc.robot.commands.intake_commands.*;
@@ -70,6 +72,7 @@ public class RobotContainer {
         /**
          * The container for the robot. Contains subsystems, OI devices, and commands.
          */
+
         public RobotContainer() {
                 configureButtonBindings();
                 //registerAutonomousOperations();
@@ -289,25 +292,37 @@ public class RobotContainer {
          * @return the command to run in autonomous
          */
         // public Command getAutonomousCommand() {
-        //         AutoDrivePathPlannerTrajectory drivePath = new AutoDrivePathPlannerTrajectory(m_robotDrive,
-        //         m_pathPlannerPaths[0].name,
-        //         m_pathPlannerPaths[0].resetOdometry,
-        //         m_pathPlannerPaths[0].maxVelocity,
-        //         m_pathPlannerPaths[0].maxAcceleration);
-        //         paths.add(drivePath);
         //         return new SequentialCommandGroup(
-        //                 new ElevatorGotoPosition(m_elevator, Constants.ElevatorSubsystem.kTopLayerHeight),
-        //                 new PivotGoToPosition(m_pivot, Constants.PivotSubsystem.kMaxOut),
-        //                 new ArmGoToPosition(m_arm, Constants.ArmSubsystem.kMaxExtend),
-        //                 new ClawOutake(m_claw),
-        //                 drivePath,
-        //                 new ElevatorGotoPosition(m_elevator, Constants.ElevatorSubsystem.kMinHeight),
-        //                 new PivotGoToPosition(m_pivot, Constants.PivotSubsystem.kMinOut),
-        //                 new ArmGoToPosition(m_arm, Constants.ArmSubsystem.kMinExtend)
+        //                 new BasicAutonomous(m_robotDrive),
+        //                 new InstantCommand(()->m_robotDrive.driveMecanum(0, 0, 0))
         //         );
         // }
 
-                /**
+        public Command getAutonomousCommand() {
+                return new SequentialCommandGroup(
+                          /////////////////////////////////////////
+                         // DRIVE BACK PUT CUBE LEAVE COM ZONE  //
+                        /////////////////////////////////////////
+                        // new BasicAutonomous(m_robotDrive),
+                        // new InstantCommand(()->m_robotDrive.driveMecanum(0, 0, 0))
+
+                          /////////////////////////////////////////
+                         //              DO NOTHING             //
+                        /////////////////////////////////////////
+
+                        // new InstantCommand(()->m_robotDrive.driveMecanum(0, 0, 0))
+
+                          /////////////////////////////////////////
+                         // PUT CUBE W/ INTAKE, LEAVE COM ZONE  //
+                        /////////////////////////////////////////
+                        new PivotOpen(m_pivot).andThen(()->m_pivot.stop(), m_pivot),
+                        new ClawOutake(m_claw).andThen(()->m_claw.stop(), m_claw),
+                        new PivotClose(m_pivot).andThen(()->m_pivot.stop(), m_pivot),
+                        new LeaveCommunityZone(m_robotDrive).andThen(()->m_robotDrive.driveMecanum(0, 0, 0), m_robotDrive)
+                );
+        }
+
+        /**
          * Use this to pass the autonomous command to the main {@link Robot} class.
          *
          * @return the command to run in autonomous

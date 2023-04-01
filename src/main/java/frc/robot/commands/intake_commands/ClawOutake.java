@@ -25,7 +25,7 @@ public class ClawOutake extends CommandBase{
 
     @Override
     public boolean isFinished() {
-        if (time.get()>0.5) {
+        if (time.get()>0.75) {
             return true;
         }
         return false;
