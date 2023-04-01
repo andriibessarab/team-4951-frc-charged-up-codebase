@@ -97,24 +97,6 @@ public class RobotContainer {
                                                         );
                                                 },
                                                 m_robotDrive));
-                                // new RunCommand(
-                                //         ()->{
-                                //                 var controllerLeftY = m_driverController.getLeftY()
-                                //                                         + Constants.OIConstants.DriverControl.kZeroCalibrateLeftY;
-                                //                         var controllerRightY = m_driverController.getRightX()
-                                //                                         + Constants.OIConstants.DriverControl.kZeroCalibrateRightX;
-                                //                         var controllerLeftX = m_driverController.getLeftX()
-                                //                                         + Constants.OIConstants.DriverControl.kZeroCalibrateLeftX;
-                                //                         m_robotDrive.driveMecanum(
-                                //                                         MathUtil.applyDeadband(-controllerLeftY,
-                                //                                                         Constants.OIConstants.DriverControl.kDriveDeadband),
-                                //                                         MathUtil.applyDeadband(-controllerRightY,
-                                //                                                         Constants.OIConstants.DriverControl.kDriveDeadband),
-                                //                                         MathUtil.applyDeadband(-controllerLeftX,
-                                //                                                         Constants.OIConstants.DriverControl.kRotationDeadband)
-                                //                         );
-                                //         }
-                                // );
 
                 // #TODO only for testing
                 m_arm.setDefaultCommand(new RunCommand(
@@ -130,7 +112,7 @@ public class RobotContainer {
                                 () -> {
                                         var controllerRightY = m_operatorController.getRightY()
                                                         + Constants.OIConstants.OperatorControl.kZeroCalibrateLeftY;
-                                        m_pivot.setSpeed(-controllerRightY);
+                                        m_pivot.setSpeed(-controllerRightY * 0.5);
                                 },
                                 m_pivot));
         }
@@ -233,14 +215,11 @@ public class RobotContainer {
                 new JoystickButton(m_operatorController, Button.kX.value) // Xbox kB
                                 .onTrue(new InstantCommand(()->m_reach.use()));
 
-                // Make claw motors spin in/out
-                if(m_operatorController.getLeftTriggerAxis()>0.2){ // Xbox getLeftTriggerAxis
-                        m_claw.spinIn();   
-                } else if(m_operatorController.getRightTriggerAxis()>0.2){ // Xbox getRightTriggerAxis
-                        m_claw.spinOut();
-                } else {
-                        m_claw.stop();
-                }
+                new JoystickButton(m_operatorController, Button.kStart.value) // Xbox kB
+                                .onTrue(new ClawIntake(m_claw).andThen(()->m_claw.stop()));
+
+                new JoystickButton(m_operatorController, Button.kBack.value) // Xbox kB
+                                .onTrue(new ClawOutake(m_claw).andThen(()->m_claw.stop()));
 
         }
 

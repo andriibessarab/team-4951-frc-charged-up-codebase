@@ -3,6 +3,7 @@ package frc.robot.subsystems.intake_subsystems;
 import com.revrobotics.*;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.util.sendable.SendableBuilder;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
@@ -18,11 +19,17 @@ public class PivotSubsystem extends SubsystemBase {
     private final RelativeEncoder m_encoder = m_motor.getEncoder();
     private final SparkMaxPIDController m_pidController = m_motor.getPIDController();
 
+    @Override
+    public void periodic() {
+        // TODO Auto-generated method stub
+
+    }
+
     public PivotSubsystem() {
         m_motor.restoreFactoryDefaults();
 
         m_motor.setIdleMode(CANSparkMax.IdleMode.kBrake);
-        m_motor.setInverted(true);
+        m_motor.setInverted(false);
         m_motor.setSmartCurrentLimit(kSmartCurrentLimit);
 
         m_encoder.setPositionConversionFactor(kDistancePerRevolution);
@@ -36,11 +43,11 @@ public class PivotSubsystem extends SubsystemBase {
         m_pidController.setIZone(kIZone);
         m_pidController.setOutputRange(kMinOut, kMaxOut);
 
-        m_motor.enableSoftLimit(CANSparkMax.SoftLimitDirection.kForward, true);
-        m_motor.enableSoftLimit(CANSparkMax.SoftLimitDirection.kReverse, true);
+        // m_motor.enableSoftLimit(CANSparkMax.SoftLimitDirection.kForward, true);
+        // m_motor.enableSoftLimit(CANSparkMax.SoftLimitDirection.kReverse, true);
 
-        m_motor.setSoftLimit(CANSparkMax.SoftLimitDirection.kForward, (float)kMaxOut);  // Top distance limit
-        m_motor.setSoftLimit(CANSparkMax.SoftLimitDirection.kReverse, (float)kMinOut);  // Bottom distance limit
+        // m_motor.setSoftLimit(CANSparkMax.SoftLimitDirection.kForward, (float)kMaxOut);  // Top distance limit
+        // m_motor.setSoftLimit(CANSparkMax.SoftLimitDirection.kReverse, (float)kMinOut);  // Bottom distance limit
 
         resetPosition();  // Assumes that it starts at the LOWEST position
 
@@ -52,7 +59,7 @@ public class PivotSubsystem extends SubsystemBase {
 
     public void setSpeed(double speed) {
         double clampedSpeed = MathUtil.clamp(speed, kMaxControllerDownSpeed, kMaxControllerUpSpeed);
-        clampedSpeed = MathUtil.applyDeadband(clampedSpeed, kControllerDeadband);
+        //clampedSpeed = MathUtil.applyDeadband(clampedSpeed, kControllerDeadband);
         m_pidController.setReference(clampedSpeed, CANSparkMax.ControlType.kDutyCycle, 0, kFeedForwardVelocity);
         updateSmartDashboard();
     }

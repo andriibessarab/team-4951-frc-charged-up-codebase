@@ -81,7 +81,7 @@ public class Robot extends TimedRobot {
     //m_robotContainer.m_robotDrive.driveMecanum(0.4, 0, 0);
     if (timer.get() < 0.5) {
       m_robotContainer.m_robotDrive.driveMecanum(0, -0.5, 0);
-    } else if(timer.get() < 2) {
+    } else if(timer.get() < 2.5) {
       m_robotContainer.m_robotDrive.driveMecanum(0, 0.5, 0);
     } else {
       m_robotContainer.m_robotDrive.driveMecanum(0, 0, 0);

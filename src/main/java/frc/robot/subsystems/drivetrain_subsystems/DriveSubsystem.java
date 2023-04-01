@@ -63,10 +63,10 @@ public class DriveSubsystem extends SubsystemBase {
     m_frontRight.restoreFactoryDefaults();
     m_rearRight.restoreFactoryDefaults();
 
-    m_frontLeft.setSmartCurrentLimit(30);
-    m_rearLeft.setSmartCurrentLimit(30);
-    m_frontRight.setSmartCurrentLimit(30);
-    m_rearRight.setSmartCurrentLimit(30);
+    m_frontLeft.setSmartCurrentLimit(40);
+    m_rearLeft.setSmartCurrentLimit(40);
+    m_frontRight.setSmartCurrentLimit(40);
+    m_rearRight.setSmartCurrentLimit(40);
 
     // Set the distance per pulse for the encoders
     m_frontLeftEncoder.setPositionConversionFactor(DriveConstants.kRotationsToMeterConversionFactor);
@@ -162,11 +162,11 @@ public class DriveSubsystem extends SubsystemBase {
 
     // Scale the motor powers if necessary to avoid exceeding the maximum power
     if ((power + Math.abs(zRot)) > 1) {
-        leftFront /= power + Math.abs(zRot);
-        rightFront /= power + Math.abs(zRot);
-        leftRear /= power + Math.abs(zRot);
-        rightRear /= power + Math.abs(zRot);
-      }
+      leftFront /= power + Math.abs(zRot);
+      rightFront /= power + Math.abs(zRot);
+      leftRear /= power + Math.abs(zRot);
+      rightRear /= power + Math.abs(zRot);
+    }
 
     if(leftFront==0&&leftRear==0&&rightFront==0&&rightRear==0){
       this.m_frontLeft.stopMotor();

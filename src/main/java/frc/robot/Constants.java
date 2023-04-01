@@ -153,12 +153,12 @@ public final class Constants {
 
   public static final class PivotSubsystem {
     public static int kMotorPort = 7;
-    public static int kSmartCurrentLimit = 20;
+    public static int kSmartCurrentLimit = 80;
     public static double kDistancePerRevolution = Units.inchesToMeters(28.0/7.0); // measured 7 rotations = 28"
     public static double kVelocityMetersPerSecond = kDistancePerRevolution/60.0;
 
-    public static double kMinOut = 0.0;
-    public static double kMaxOut = 9.5; // #TODO value from smart dashboard
+    public static double kMinOut = 0;
+    public static double kMaxOut = 10; // #TODO value from smart dashboard
 
     public static double kP = 0.1; // #TODO what shouldi t be?
     public static double kI = 0.0;
@@ -166,8 +166,8 @@ public final class Constants {
     public static double kIZone = 0.0;
     public static double kFeedForwardVelocity = 0;
 
-    public static double kMaxControllerUpSpeed = 0.6; // #TODO test those
-    public static double kMaxControllerDownSpeed = -0.6;
+    public static double kMaxControllerUpSpeed = 0.5; // #TODO test those
+    public static double kMaxControllerDownSpeed = -0.5;
     public static double kControllerDeadband = 0.1;
   }
 
