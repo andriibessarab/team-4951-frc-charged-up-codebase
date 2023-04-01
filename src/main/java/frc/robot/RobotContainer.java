@@ -101,9 +101,9 @@ public class RobotContainer {
                 // #TODO only for testing
                 m_arm.setDefaultCommand(new RunCommand(
                                 () -> {
-                                        var controllerLeftX = m_operatorController.getLeftX()
+                                        var controllerLeftY = m_operatorController.getLeftY()
                                                         + Constants.OIConstants.OperatorControl.kZeroCalibrateLeftY;
-                                        m_arm.setSpeed(controllerLeftX);
+                                        m_arm.setSpeed(controllerLeftY);
                                 },
                                 m_arm));
 
@@ -112,7 +112,7 @@ public class RobotContainer {
                                 () -> {
                                         var controllerRightY = m_operatorController.getRightY()
                                                         + Constants.OIConstants.OperatorControl.kZeroCalibrateLeftY;
-                                        m_pivot.setSpeed(controllerRightY * 0.5);
+                                        m_pivot.setSpeed(-controllerRightY * 0.2);
                                 },
                                 m_pivot));
                 
@@ -139,7 +139,7 @@ public class RobotContainer {
                                         if(rTrigger>0.2){
                                                 m_elevator.setSpeed(rTrigger/3);
                                         } else if(lTrigger>0.2){
-                                                m_elevator.setSpeed(lTrigger/3);
+                                                m_elevator.setSpeed(-lTrigger/3);
                                         } else{
                                                 m_elevator.stop();
                                         }
@@ -230,12 +230,13 @@ public class RobotContainer {
                 ///////////////////////////////////////////////////////
 
                 // Open pivot
-                new JoystickButton(m_operatorController, Button.kLeftBumper.value) // Xbox kLeftBumper, close
-                                .onTrue(new PivotGoToPosition(m_pivot,  Constants.PivotSubsystem.kCloseValue));
-                
+                new JoystickButton(m_operatorController, Button.kLeftBumper.value) // Xbox kLeftBumper
+                                .onTrue(new PivotOpen(m_pivot).andThen(()->m_pivot.stop()));
+
                 // Close pivot
-                new JoystickButton(m_operatorController, Button.kRightBumper.value) // Xbox kRightBumper, open
-                                .onTrue(new PivotGoToPosition(m_pivot, Constants.PivotSubsystem.kOpenValue));
+                new JoystickButton(m_operatorController, Button.kRightBumper.value) // Xbox kRightBumper
+                                .onTrue(new PivotClose(m_pivot).andThen(()->m_pivot.stop()));
+                
 
                 ///////////////////////////////////////////////////////
                 // CLAW
@@ -245,10 +246,12 @@ public class RobotContainer {
                 new JoystickButton(m_operatorController, Button.kX.value) //pneumatic
                                 .onTrue(new InstantCommand(()->m_reach.use()));
 
-                new JoystickButton(m_operatorController, Button.kStart.value) // Xbox kB
+                // Spin claw motors inwards
+                new JoystickButton(m_operatorController, Button.kStart.value) // Xbox start
                                 .onTrue(new ClawIntake(m_claw).andThen(()->m_claw.stop()));
 
-                new JoystickButton(m_operatorController, Button.kBack.value) // Xbox kB
+                // Spin claw motors outwards
+                new JoystickButton(m_operatorController, Button.kBack.value) // Xbox back
                                 .onTrue(new ClawOutake(m_claw).andThen(()->m_claw.stop()));
 
         }

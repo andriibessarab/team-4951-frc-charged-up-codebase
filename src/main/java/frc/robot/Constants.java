@@ -113,7 +113,7 @@ public final class Constants {
     }
   
     public static class MOVE_DOWN {
-      public static double kP = -1.0;
+      public static double kP = 0.0;
       public static double kI = 0.0;
       public static double kD = 0.0;
       public static double kIZone = 0.0;
@@ -157,8 +157,8 @@ public final class Constants {
     public static double kDistancePerRevolution = Units.inchesToMeters(28.0/7.0); // measured 7 rotations = 28"
     public static double kVelocityMetersPerSecond = kDistancePerRevolution/60.0;
 
-    public static double kMinOut = 0;
-    public static double kMaxOut = 10; // #TODO value from smart dashboard
+    public static double kMinOut = 0.5;
+    public static double kMaxOut = 2; // #TODO value from smart dashboard
 
     public static double kCloseValue = 3;
     public static double kOpenValue = 6; // #TODO value from smart dashboard
