@@ -25,6 +25,7 @@ import frc.robot.Constants.OIConstants;
 import frc.robot.commands.autonomous_commands.BasicAutonomous;
 import frc.robot.commands.autonomous_commands.LeaveCommunityZone;
 import frc.robot.commands.drivetrain_commands.AutoDrivePathPlannerTrajectory;
+import frc.robot.commands.drivetrain_commands.AutoSQ_NewBalance;
 import frc.robot.commands.drivetrain_commands.MecanumDriveExample;
 import frc.robot.commands.intake_commands.*;
 import frc.robot.commands.vision_commands.*;
@@ -170,6 +171,10 @@ public class RobotContainer {
                                 .onTrue(new InstantCommand(() -> m_robotDrive.setMaxOutput(0.5)))
                                 .onFalse(new InstantCommand(() -> m_robotDrive.setMaxOutput(1)));
 
+                new JoystickButton(m_driverController, Button.kA.value)
+                                .onTrue(new AutoSQ_NewBalance(0, m_robotDrive));
+
+
                 ///////////////////////////////////////////////////////
                 // VISION
                 ///////////////////////////////////////////////////////
@@ -234,7 +239,8 @@ public class RobotContainer {
 
                 // Open pivot
                 new JoystickButton(m_operatorController, Button.kLeftBumper.value) // Xbox kLeftBumper
-                                .onTrue(new PivotOpen(m_pivot).andThen(()->m_pivot.stop()));
+                                //.onTrue(new PivotOpen(m_pivot).andThen(()->m_pivot.stop()));
+                                .onTrue(new PivotGoToPosition(m_pivot, 1.7));
 
                 // Close pivot
                 new JoystickButton(m_operatorController, Button.kRightBumper.value) // Xbox kRightBumper
@@ -314,11 +320,21 @@ public class RobotContainer {
 
                           /////////////////////////////////////////
                          // PUT CUBE W/ INTAKE, LEAVE COM ZONE  //
-                        /////////////////////////////////////////
-                        new PivotOpen(m_pivot).andThen(()->m_pivot.stop(), m_pivot),
-                        new ClawOutake(m_claw).andThen(()->m_claw.stop(), m_claw),
-                        new PivotClose(m_pivot).andThen(()->m_pivot.stop(), m_pivot),
-                        new LeaveCommunityZone(m_robotDrive).andThen(()->m_robotDrive.driveMecanum(0, 0, 0), m_robotDrive)
+                        // /////////////////////////////////////////
+                        // new PivotOpen(m_pivot).andThen(()->m_pivot.stop(), m_pivot),
+                        // new ClawOutake(m_claw).andThen(()->m_claw.stop(), m_claw),
+                        // new PivotClose(m_pivot).andThen(()->m_pivot.stop(), m_pivot),
+                        // new LeaveCommunityZone(m_robotDrive).andThen(()->m_robotDrive.driveMecanum(0, 0, 0), m_robotDrive)
+
+
+                        new ElevatorGotoPosition(m_elevator, Constants.ElevatorSubsystem.kTopLayerHeight),
+                        new PivotGoToPosition(m_pivot, 1.7),
+                        new ClawOutake(m_claw),
+                        new PivotClose(m_pivot),
+                        new ElevatorGotoDown(m_elevator,0.0),
+                        new LeaveCommunityZone(m_robotDrive)
+                        //new 
+
                 );
         }
 

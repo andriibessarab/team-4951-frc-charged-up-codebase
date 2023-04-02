@@ -68,6 +68,10 @@ public class ElevatorSubsystem extends SubsystemBase {
         updateSmartDashboard();
     }
 
+    public void setSpeed1(double speed){
+        m_motor.set(speed);
+    }
+
     public void setPosition(double position) {
         double reference = MathUtil.clamp(position, kMinHeight, kMaxHeight);
         double current = m_encoder.getPosition();
@@ -88,6 +92,10 @@ public class ElevatorSubsystem extends SubsystemBase {
 
     public void stop() {
         m_pidController.setReference(0, CANSparkMax.ControlType.kDutyCycle, MOVE_UP_PID_SLOT, MOVE_UP.kFeedForwardVelocity);
+    }
+
+    public void stop1(){
+        m_motor.stopMotor();
     }
 
     public void updateSmartDashboard() {

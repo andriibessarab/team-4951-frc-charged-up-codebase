@@ -72,12 +72,15 @@ public class PivotSubsystem extends SubsystemBase {
         updateSmartDashboard();
     }
 
+
+
     public double getPosition() {
         return m_encoder.getPosition();
     }
 
     public void stop() {
-        m_pidController.setReference(0, CANSparkMax.ControlType.kDutyCycle, 0, kFeedForwardVelocity);
+        
+        m_motor.set(0);
     }
 
     public void updateSmartDashboard() {

@@ -1,4 +1,4 @@
-package frc.robot.commands.drivetrain_commands;
+package frc.robot.commands;
 /*
  * Balances the robot on the Charge Station
  * Robot should start on the Charge station at an non zero pitch

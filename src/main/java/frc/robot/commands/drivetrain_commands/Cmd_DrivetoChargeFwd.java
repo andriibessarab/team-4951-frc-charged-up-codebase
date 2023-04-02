@@ -1,4 +1,4 @@
-package frc.robot.commands;
+package frc.robot.commands.drivetrain_commands;
 /*
  * Balances the robot on the Charge Station
  * Robot should start on the Charge station at an non zero pitch
@@ -8,7 +8,7 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
-import frc.robot.subsystems.DriveSubsystem;
+import frc.robot.subsystems.drivetrain_subsystems.*;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.MathUtil;
 
@@ -49,7 +49,7 @@ public class Cmd_DrivetoChargeFwd extends CommandBase {
         //    DriveSpeed =0;
         DriveSpeed = MathUtil.clamp(DriveSpeed, -1, 1);
         
-         m_driveTrain.arcadeDrive(DriveSpeed,0);  
+         m_driveTrain.driveMecanum(0.0,DriveSpeed,0);  
 
          SmartDashboard.putNumber("Pitch", m_driveTrain.getPitch());
          SmartDashboard.putNumber("Roll", m_driveTrain.getRoll());
@@ -61,7 +61,7 @@ public class Cmd_DrivetoChargeFwd extends CommandBase {
     // Called once the command ends or is interrupted.
     @Override
     public void end(boolean interrupted) {
-        m_driveTrain.arcadeDrive(0.0, 0.0);
+        m_driveTrain.driveMecanum(0.0, 0.0,0.0);
     }
 
     // Returns true when the command should end.

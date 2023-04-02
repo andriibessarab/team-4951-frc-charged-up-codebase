@@ -8,8 +8,8 @@ import frc.robot.subsystems.intake_subsystems.PivotSubsystem;
 public class PivotClose extends CommandBase{
     private PivotSubsystem motor;
     Timer time = new Timer();
-    double m_runTime = 0.5;
-    double m_speed = -0.2;
+    double m_runTime = 1.25;
+    double m_speed = -0.15;
 
     public PivotClose(PivotSubsystem m){
         motor = m;
@@ -19,8 +19,6 @@ public class PivotClose extends CommandBase{
     public void initialize() {
         time.reset();
         time.start();
-        m_runTime = SmartDashboard.getNumber("close time", 0.0);
-        m_runTime = SmartDashboard.getNumber("close speed", 0.0);
     }
 
     @Override

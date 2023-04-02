@@ -11,7 +11,7 @@ public class PivotGoToPosition extends CommandBase {
     public PivotGoToPosition(PivotSubsystem pivot, double position) {
         m_pivot = pivot;
         m_position = position;
-        addRequirements(pivot);
+        addRequirements(m_pivot);
     }
 
     @Override
@@ -26,5 +26,10 @@ public class PivotGoToPosition extends CommandBase {
             return true;
         }
         return false;
+    }
+
+    @Override
+    public void end(boolean bool){
+        m_pivot.setSpeed(0.0);
     }
 }

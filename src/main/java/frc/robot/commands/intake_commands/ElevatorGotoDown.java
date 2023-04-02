@@ -1,18 +1,20 @@
 package frc.robot.commands.intake_commands;
 
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.intake_subsystems.PivotSubsystem;
+import frc.robot.subsystems.intake_subsystems.ElevatorSubsystem;
 
-public class PivotOpen extends CommandBase{
-    private PivotSubsystem motor;
+public class ElevatorGotoDown extends CommandBase {
+    private final ElevatorSubsystem m_elevator;
+    private final double m_position;
     Timer time = new Timer();
-    double m_runTime = 0.5;
-    double m_speed = 0.2;
+    double m_runTime = 2.0;
+    double m_speed = -0.2;
 
-    public PivotOpen(PivotSubsystem m){
-        motor = m;
+    public ElevatorGotoDown(ElevatorSubsystem elevator, double position) {
+        m_elevator = elevator;
+        m_position = position;
+        addRequirements(elevator);
     }
 
     @Override
@@ -23,7 +25,7 @@ public class PivotOpen extends CommandBase{
 
     @Override
     public void execute(){
-        motor.setSpeed(m_speed);
+        m_elevator.setSpeed1(m_speed);
     }
 
     @Override
@@ -36,6 +38,6 @@ public class PivotOpen extends CommandBase{
 
     @Override
     public void end(boolean bool){
-        motor.stop();
+        m_elevator.stop1();
     }
 }

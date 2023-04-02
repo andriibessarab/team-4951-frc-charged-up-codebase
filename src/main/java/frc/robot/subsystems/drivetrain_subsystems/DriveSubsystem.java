@@ -17,6 +17,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import com.kauailabs.navx.frc.AHRS;
 import frc.robot.Constants.DriveConstants;
+import edu.wpi.first.wpilibj.BuiltInAccelerometer;
 
 /**
  * Uses MecanumDrive for movement:
@@ -43,7 +44,8 @@ public class DriveSubsystem extends SubsystemBase {
 
   // Gyro
   //private final ADIS16470_IMU m_gyro = new ADIS16470_IMU();
-  private final AHRS m_gyro = new AHRS(SPI.Port.kMXP);
+  // private final AHRS m_gyro = new AHRS(SPI.Port.kMXP);
+  private final BuiltInAccelerometer m_gyro = new BuiltInAccelerometer();
   private long m_gyroLastResetTimeMS = 0;
   private double m_gyroYawOffset = 0.0;
   private double m_gyroPitchOffset = 0.0;
@@ -97,8 +99,8 @@ public class DriveSubsystem extends SubsystemBase {
     SmartDashboard.putData(m_field);
 
     // Assume zero is straight forward
-    zeroHeading();
-    resetEncoders();
+    // zeroHeading();
+    // resetEncoders();
 
     m_odometry = new MecanumDriveOdometry(
             DriveConstants.kDriveKinematics,
@@ -112,7 +114,10 @@ public class DriveSubsystem extends SubsystemBase {
   public void periodic() {
     // Update the odometry in the periodic block
     m_odometry.update(getGyroRotation2d(), getCurrentWheelDistances());
-
+    SmartDashboard.putNumber("yaw", getTilt());
+    SmartDashboard.putNumber("pitch", getPitch());
+    SmartDashboard.putNumber("roll", getRoll());
+    // SmartDashboard.putBoolean("isEnabled", m_gyro.isConnected());
     m_field.setRobotPose(getPose());
   }
 
@@ -293,7 +298,7 @@ public class DriveSubsystem extends SubsystemBase {
     m_gyroRollOffset = 0.0;
 
     // Use normal functions, so clear the offsets above first.
-    m_gyroYawOffset = getYaw();
+    m_gyroYawOffset = getTilt();
     m_gyroPitchOffset = getPitch();
     m_gyroRollOffset = getRoll();
   }
@@ -301,44 +306,30 @@ public class DriveSubsystem extends SubsystemBase {
   public Rotation2d getGyroRotation2d() {
     // https://www.chiefdelphi.com/t/1-does-legacy-navx-work-today-and-2-why-is-adis16470-imu-missing-getrotation2d/420343
     // https://github.com/wpilibsuite/allwpilib/issues/4876
-    return Rotation2d.fromDegrees(getYaw());
-  }
-
-  public double getYaw() {
-    // By default the primary axis is kZ for ADIS16470 which is means the getAngle() will
-    // be the yaw angle where CCW is positive. This is the typical number used for steering
-    // the robot, facing forward left would be CCW positive and right would be CW negative.
-    // The angle is counts continuously and so wrapping past 360 means it is 361 not 0,
-    // which makes it easier to know it has wrapped but also means we need to mod by 360.
-    // NOTE: This is all relative to how the IMU is actually mounted on the bot.
-    // See: https://wiki.analog.com/first/adis16470_imu_frc
-    // See: https://wiki.analog.com/first/adis16470_imu_frc/java
-    return (m_gyro.getAngle() % 360.0) - m_gyroYawOffset;
+    return Rotation2d.fromDegrees(getPitch());
   }
 
   public double getPitch() {
-    // Positive CW would be down through the floor if the robot tipped over front ways
-    // that would be 90 degrees. Negative is CCW upwards if the robot fell on it's back
-    // that would be -90 degrees. For consistency, the numbers are modded 360 but
-    // realistically if we pitch more than +/- 60 degrees something is horribly wrong.
-    //
-    // See: https://firstfrc.blob.core.windows.net/frc2023/Manual/Sections/2023FRCGameManual-05.pdf
-    // Page 23 indicates the charge station angle when weighted down is 11 degrees and
-    // 34.25 degrees when nobody is holding it down.
-    return 0;//(m_gyro.getYComplementaryAngle() % 360.0) - m_gyroPitchOffset;
-  }
+    return Math.atan2((-m_gyro.getX()),
+            Math.sqrt(m_gyro.getY() * m_gyro.getY() + m_gyro.getZ() * m_gyro.getZ())) * 57.3;
+}
 
-  public double getRoll() {
-    // Rolling to the right side CW of robot (modem side) returns a positive roll and
-    // rolling to the left side CCW (pneumatics) returns a negative roll to match
-    // image.
-    // Our gyro is rotated 180 degrees on the RoboRio from the image
-    // https://wiki.analog.com/first/adis16470_imu_frc which flips our values so the
-    // value is negated to oriented the values correctly according to the image.
-    return 0;//-((m_gyro.getXComplementaryAngle() % 360.0) - m_gyroRollOffset);
-  }
+public double getRoll() {
+    return Math.atan2(m_gyro.getY(), m_gyro.getZ()) * 57.3;
+}
 
-  /**
+// returns the magnititude of the robot's tilt calculated by the root of
+// pitch^2 + roll^2, used to compensate for diagonally mounted rio
+public double getTilt() {
+    double pitch = getPitch();
+    double roll = getRoll();
+    if ((pitch + roll) >= 0) {
+        return Math.sqrt(pitch * pitch + roll * roll);
+    } else {
+        return -Math.sqrt(pitch * pitch + roll * roll);
+    }
+  }
+    /**
    * Returns the heading of the robot.
    *
    * @return the robot's heading in degrees, from -180 to 180
@@ -347,9 +338,6 @@ public class DriveSubsystem extends SubsystemBase {
     return getGyroRotation2d().getDegrees();
   }
 
-  public void ResetHeading(){
-    m_gyro.reset();
-  }
 //    double yaw = getYaw();  // Range [-360, 360]
 //    if (Math.abs(yaw) <= 180.0) {
 //      return yaw;
@@ -369,7 +357,8 @@ public class DriveSubsystem extends SubsystemBase {
    * @return The turn rate of the robot, in degrees per second
    */
   public double getTurnRate() {
-    return m_gyro.getRate();
+    // return m_gyro.getRate();
+    return 0;
   }
 
   // https://github.com/mjansen4857/pathplanner/wiki/PathPlannerLib:-Java-Usage#ppmecanumcontrollercommand
@@ -381,12 +370,14 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
   public void updateSmartDashboard() {
+    /*
     SmartDashboard.putNumber("drive/gyro/seconds since reset", (System.currentTimeMillis()- m_gyroLastResetTimeMS)/1000.0);
     SmartDashboard.putNumber("drive/gyro/rate [degrees per sec]", getTurnRate());
     SmartDashboard.putNumber("drive/gyro/heading [-180,180]", getHeading());
     SmartDashboard.putNumber("drive/gyro/yaw [-360,360]", getYaw());
     SmartDashboard.putNumber("drive/gyro/pitch [-360,360]", getPitch());
     SmartDashboard.putNumber("drive/gyro/roll [-360,360]", getRoll());
+     */
 
     var wheelPositions = getCurrentWheelDistances();
     SmartDashboard.putNumber("drive/front left/position [m]", wheelPositions.frontLeftMeters);
