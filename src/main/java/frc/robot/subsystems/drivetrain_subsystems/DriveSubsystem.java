@@ -1,5 +1,6 @@
 package frc.robot.subsystems.drivetrain_subsystems;
 
+import com.ctre.phoenix.sensors.PigeonIMU;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel;
 import com.revrobotics.RelativeEncoder;
@@ -15,7 +16,7 @@ import edu.wpi.first.wpilibj.drive.MecanumDrive;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import com.kauailabs.navx.frc.AHRS;
+//import com.kauailabs.navx.frc.AHRS;
 import frc.robot.Constants.DriveConstants;
 import edu.wpi.first.wpilibj.BuiltInAccelerometer;
 
@@ -45,7 +46,7 @@ public class DriveSubsystem extends SubsystemBase {
   // Gyro
   //private final ADIS16470_IMU m_gyro = new ADIS16470_IMU();
   // private final AHRS m_gyro = new AHRS(SPI.Port.kMXP);
-  private final BuiltInAccelerometer m_gyro = new BuiltInAccelerometer();
+  private final PigeonIMU m_gyro = new PigeonIMU(DriveConstants.k);
   private long m_gyroLastResetTimeMS = 0;
   private double m_gyroYawOffset = 0.0;
   private double m_gyroPitchOffset = 0.0;

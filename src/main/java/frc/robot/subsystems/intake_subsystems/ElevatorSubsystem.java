@@ -7,14 +7,14 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
-import static frc.robot.Constants.ElevatorSubsystem.*;
+import static frc.robot.Constants.ElevatorSubsystemConstants.*;
 
 /**
  * Responsible for raising/lowering the elevator.
  */
 public class ElevatorSubsystem extends SubsystemBase {
 
-    private final CANSparkMax m_motor = new CANSparkMax(Constants.ElevatorSubsystem.kMotorPort, CANSparkMaxLowLevel.MotorType.kBrushless);;
+    private final CANSparkMax m_motor = new CANSparkMax(Constants.ElevatorSubsystemConstants.kMotorPort, CANSparkMaxLowLevel.MotorType.kBrushless);;
     private final RelativeEncoder m_encoder = m_motor.getEncoder();
     private final SparkMaxPIDController m_pidController = m_motor.getPIDController();
 
@@ -24,27 +24,27 @@ public class ElevatorSubsystem extends SubsystemBase {
     public ElevatorSubsystem() {
         m_motor.restoreFactoryDefaults();
 
-        m_motor.setIdleMode(CANSparkMax.IdleMode.kBrake);
-        m_motor.setInverted(true);
-        m_motor.setSmartCurrentLimit(Constants.ElevatorSubsystem.kSmartCurrentLimit);
+        m_motor.setIdleMode(Constants.ElevatorSubsystemConstants.kMotorMode);
+        m_motor.setInverted(Constants.ElevatorSubsystemConstants.kMotorInverted);
+        m_motor.setSmartCurrentLimit(Constants.ElevatorSubsystemConstants.kSmartCurrentLimit);
 
-        m_encoder.setPositionConversionFactor(Constants.ElevatorSubsystem.kDistancePerRevolution);
-        m_encoder.setVelocityConversionFactor(Constants.ElevatorSubsystem.kVelocityMetersPerSecond);
+        m_encoder.setPositionConversionFactor(Constants.ElevatorSubsystemConstants.kDistancePerRevolution);
+        m_encoder.setVelocityConversionFactor(Constants.ElevatorSubsystemConstants.kVelocityMetersPerSecond);
 
         m_pidController.setFeedbackDevice(m_encoder);
 
         // Setup PID Slot for moving upwards
-        m_pidController.setP(Constants.ElevatorSubsystem.MOVE_UP.kP, MOVE_UP_PID_SLOT);
-        m_pidController.setI(Constants.ElevatorSubsystem.MOVE_UP.kI, MOVE_UP_PID_SLOT);
-        m_pidController.setD(Constants.ElevatorSubsystem.MOVE_UP.kD, MOVE_UP_PID_SLOT);
-        m_pidController.setIZone(Constants.ElevatorSubsystem.MOVE_UP.kIZone, MOVE_UP_PID_SLOT);
+        m_pidController.setP(Constants.ElevatorSubsystemConstants.MOVE_UP.kP, MOVE_UP_PID_SLOT);
+        m_pidController.setI(Constants.ElevatorSubsystemConstants.MOVE_UP.kI, MOVE_UP_PID_SLOT);
+        m_pidController.setD(Constants.ElevatorSubsystemConstants.MOVE_UP.kD, MOVE_UP_PID_SLOT);
+        m_pidController.setIZone(Constants.ElevatorSubsystemConstants.MOVE_UP.kIZone, MOVE_UP_PID_SLOT);
         m_pidController.setOutputRange(kMinHeight, kMaxHeight, MOVE_UP_PID_SLOT);
 
         // Setup PID Slot for moving downwards
-        m_pidController.setP(Constants.ElevatorSubsystem.MOVE_DOWN.kP, MOVE_DOWN_PID_SLOT);
-        m_pidController.setI(Constants.ElevatorSubsystem.MOVE_DOWN.kI, MOVE_DOWN_PID_SLOT);
-        m_pidController.setD(Constants.ElevatorSubsystem.MOVE_DOWN.kD, MOVE_DOWN_PID_SLOT);
-        m_pidController.setIZone(Constants.ElevatorSubsystem.MOVE_DOWN.kIZone, MOVE_DOWN_PID_SLOT);
+        m_pidController.setP(Constants.ElevatorSubsystemConstants.MOVE_DOWN.kP, MOVE_DOWN_PID_SLOT);
+        m_pidController.setI(Constants.ElevatorSubsystemConstants.MOVE_DOWN.kI, MOVE_DOWN_PID_SLOT);
+        m_pidController.setD(Constants.ElevatorSubsystemConstants.MOVE_DOWN.kD, MOVE_DOWN_PID_SLOT);
+        m_pidController.setIZone(Constants.ElevatorSubsystemConstants.MOVE_DOWN.kIZone, MOVE_DOWN_PID_SLOT);
         m_pidController.setOutputRange(kMinHeight, kMaxHeight, MOVE_DOWN_PID_SLOT);
 
         m_motor.enableSoftLimit(CANSparkMax.SoftLimitDirection.kForward, true);
@@ -55,8 +55,8 @@ public class ElevatorSubsystem extends SubsystemBase {
 
         resetPosition();  // Assumes that it starts at the LOWEST position
 
-        SmartDashboard.putNumber("Elevator/PosFactor", Constants.ElevatorSubsystem.kDistancePerRevolution);
-        SmartDashboard.putNumber("Elevator/VelFactor", Constants.ElevatorSubsystem.kVelocityMetersPerSecond);
+        SmartDashboard.putNumber("Elevator/PosFactor", Constants.ElevatorSubsystemConstants.kDistancePerRevolution);
+        SmartDashboard.putNumber("Elevator/VelFactor", Constants.ElevatorSubsystemConstants.kVelocityMetersPerSecond);
         SmartDashboard.putNumber("Elevator/MaxHeight", kMaxHeight);
         SmartDashboard.putNumber("Elevator/MinHeight", kMinHeight);
     }

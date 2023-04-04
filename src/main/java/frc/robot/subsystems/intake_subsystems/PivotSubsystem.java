@@ -3,12 +3,11 @@ package frc.robot.subsystems.intake_subsystems;
 import com.revrobotics.*;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.util.sendable.SendableBuilder;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
-import static frc.robot.Constants.PivotSubsystem.*;
+import static frc.robot.Constants.PivotSubsystemConstants.*;
 
 /**
  * Responsible for moving claw inwards/outwards.
@@ -19,19 +18,12 @@ public class PivotSubsystem extends SubsystemBase {
     private final RelativeEncoder m_encoder = m_motor.getEncoder();
     private final SparkMaxPIDController m_pidController = m_motor.getPIDController();
 
-    @Override
-    public void periodic() {
-        // TODO Auto-generated method stub
-
-    }
-
     public PivotSubsystem() {
         m_motor.restoreFactoryDefaults();
 
-        m_motor.setInverted(false);
+        m_motor.setInverted(kMotorInverted);
 
-        // m_motor.setIdleMode(CANSparkMax.IdleMode.kCoast);
-        m_motor.setIdleMode(CANSparkMax.IdleMode.kBrake); // #TODO test
+        m_motor.setIdleMode(kMotorMode);
         m_motor.setSmartCurrentLimit(kSmartCurrentLimit);
 
         m_encoder.setPositionConversionFactor(kDistancePerRevolution);
@@ -53,8 +45,8 @@ public class PivotSubsystem extends SubsystemBase {
 
         resetPosition();  // Assumes that it starts at the LOWEST position
 
-        SmartDashboard.putNumber("Pivot/PosFactor", Constants.PivotSubsystem.kDistancePerRevolution);
-        SmartDashboard.putNumber("Pivot/VelFactor", Constants.PivotSubsystem.kVelocityMetersPerSecond);
+        SmartDashboard.putNumber("Pivot/PosFactor", Constants.PivotSubsystemConstants.kDistancePerRevolution);
+        SmartDashboard.putNumber("Pivot/VelFactor", Constants.PivotSubsystemConstants.kVelocityMetersPerSecond);
         SmartDashboard.putNumber("Pivot/MaxAngle", kMaxOut);
         SmartDashboard.putNumber("Pivot/MinAngle", kMinOut);
     }

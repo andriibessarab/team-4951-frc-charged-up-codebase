@@ -7,14 +7,13 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
-import static frc.robot.Constants.ArmSubsystem.*;
+import static frc.robot.Constants.ArmSubsystemConstants.*;
 
 /**
  * Responsible for moving intake system inwards/ouwards.
  * Act as horizontal lift.
  */
 public class ArmSubsystem extends SubsystemBase {
-
     private final CANSparkMax m_motor = new CANSparkMax(kMotorPort, CANSparkMaxLowLevel.MotorType.kBrushless);;
     private final RelativeEncoder m_encoder = m_motor.getEncoder();
     private final SparkMaxPIDController m_pidController = m_motor.getPIDController();
@@ -23,7 +22,7 @@ public class ArmSubsystem extends SubsystemBase {
         m_motor.restoreFactoryDefaults();
 
         m_motor.setIdleMode(CANSparkMax.IdleMode.kBrake);
-        m_motor.setInverted(true);
+        m_motor.setInverted(kMotorInverted);
         m_motor.setSmartCurrentLimit(kSmartCurrentLimit);
 
         m_encoder.setPositionConversionFactor(kDistancePerRevolution);
@@ -45,8 +44,8 @@ public class ArmSubsystem extends SubsystemBase {
 
         resetPosition();  // Assumes that it starts at the LOWEST position
 
-        SmartDashboard.putNumber("Arm/PosFactor", Constants.ArmSubsystem.kDistancePerRevolution);
-        SmartDashboard.putNumber("Arm/VelFactor", Constants.ArmSubsystem.kVelocityMetersPerSecond);
+        SmartDashboard.putNumber("Arm/PosFactor", Constants.ArmSubsystemConstants.kDistancePerRevolution);
+        SmartDashboard.putNumber("Arm/VelFactor", Constants.ArmSubsystemConstants.kVelocityMetersPerSecond);
         SmartDashboard.putNumber("Arm/MaxExtend", kMaxExtend);
         SmartDashboard.putNumber("Arm/MinExtend", kMinExtend);
     }

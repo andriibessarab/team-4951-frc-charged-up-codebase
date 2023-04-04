@@ -39,7 +39,7 @@ public class LimelightSubsystem extends SubsystemBase {
         // Could check if something in view - but unless using getLatestResults()
         // to atomically have all the data and consume 2.5ms, by the time I read
         // the pose it was sometimes missing.
-        double[] botPose = LimelightHelpers.getBotpose(getLimelightName());
+        double[] botPose = LimelightHelpers.getBotPose(getLimelightName());
 
         // If Limelight having difficulty, it may not be able to present the Pose (ie. not connected)
         if (botPose.length != 6) {
