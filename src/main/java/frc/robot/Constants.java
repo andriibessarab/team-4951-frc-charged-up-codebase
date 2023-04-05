@@ -53,6 +53,9 @@ public final class Constants {
         public static final boolean kRearLeftInverted = false;
         public static final boolean kRearRightInverted = true;
 
+        // Misc motor constants
+        public static final int kSmartCurrentLimitAmps = 40;
+
         // Distance between centers of right and left wheels on robot
         public static final double kTrackWidth = Units.inchesToMeters(23.0);;
         // Distance between centers of front and back wheels on robot
@@ -107,7 +110,7 @@ public final class Constants {
         public static int kMotorPort = 5;
         public static int kSmartCurrentLimit = 20;
         public static CANSparkMax.IdleMode kMotorMode = CANSparkMax.IdleMode.kBrake;
-        public static boolean kMotorInverted = false;
+        public static boolean kMotorInverted = true;
 
         // Encoder constants
         public static double kDistancePerRevolution = Units.inchesToMeters(28.0 / 7.0); // measured 7 rotations = 28"
@@ -128,7 +131,7 @@ public final class Constants {
 
         // PID for moving down constants
         public static class MOVE_DOWN {
-            public static double kP = 0.0;
+            public static double kP = -1.0;
             public static double kI = 0.0;
             public static double kD = 0.0;
             public static double kIZone = 0.0;

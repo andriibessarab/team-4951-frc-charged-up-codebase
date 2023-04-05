@@ -1,6 +1,7 @@
 package frc.robot.subsystems.drivetrain_subsystems;
 
 import com.ctre.phoenix.sensors.PigeonIMU;
+import com.ctre.phoenix.sensors.PigeonIMU.PigeonState;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel;
 import com.revrobotics.RelativeEncoder;
@@ -46,7 +47,7 @@ public class DriveSubsystem extends SubsystemBase {
   // Gyro
   //private final ADIS16470_IMU m_gyro = new ADIS16470_IMU();
   // private final AHRS m_gyro = new AHRS(SPI.Port.kMXP);
-  private final PigeonIMU m_gyro = new PigeonIMU(DriveConstants.k);
+  private final PigeonIMU m_gyro = new PigeonIMU(40);
   private long m_gyroLastResetTimeMS = 0;
   private double m_gyroYawOffset = 0.0;
   private double m_gyroPitchOffset = 0.0;
@@ -73,10 +74,10 @@ public class DriveSubsystem extends SubsystemBase {
     m_frontRight.setIdleMode(CANSparkMax.IdleMode.kBrake);
     m_rearRight.setIdleMode(CANSparkMax.IdleMode.kBrake);
 
-    m_frontLeft.setSmartCurrentLimit(40);
-    m_rearLeft.setSmartCurrentLimit(40);
-    m_frontRight.setSmartCurrentLimit(40);
-    m_rearRight.setSmartCurrentLimit(40);
+    m_frontLeft.setSmartCurrentLimit(DriveConstants.kSmartCurrentLimitAmps);
+    m_rearLeft.setSmartCurrentLimit(DriveConstants.kSmartCurrentLimitAmps);
+    m_frontRight.setSmartCurrentLimit(DriveConstants.kSmartCurrentLimitAmps);
+    m_rearRight.setSmartCurrentLimit(DriveConstants.kSmartCurrentLimitAmps);
 
     // Set the distance per pulse for the encoders
     m_frontLeftEncoder.setPositionConversionFactor(DriveConstants.kRotationsToMeterConversionFactor);
@@ -99,6 +100,8 @@ public class DriveSubsystem extends SubsystemBase {
 
     SmartDashboard.putData(m_field);
 
+
+
     // Assume zero is straight forward
     // zeroHeading();
     // resetEncoders();
@@ -108,18 +111,18 @@ public class DriveSubsystem extends SubsystemBase {
             getGyroRotation2d(),
             new MecanumDriveWheelPositions());
     
-            m_drive.setSafetyEnabled(false);
+    m_drive.setSafetyEnabled(false);
   }
 
   @Override
   public void periodic() {
     // Update the odometry in the periodic block
     m_odometry.update(getGyroRotation2d(), getCurrentWheelDistances());
-    SmartDashboard.putNumber("yaw", getTilt());
-    SmartDashboard.putNumber("pitch", getPitch());
-    SmartDashboard.putNumber("roll", getRoll());
-    // SmartDashboard.putBoolean("isEnabled", m_gyro.isConnected());
     m_field.setRobotPose(getPose());
+
+    // Smart dashboard
+    updateSmartDashboardGyro(m_gyro);
+
   }
 
   /**
@@ -304,33 +307,29 @@ public class DriveSubsystem extends SubsystemBase {
     m_gyroRollOffset = getRoll();
   }
 
+  public double getRoll() {
+    return m_gyro.getRoll();
+  }
+
+  public double getPitch() {
+    return m_gyro.getPitch();
+  }
+
+  public double getTilt() {
+    return m_gyro.getYaw() % 360;
+  }
+
+  // public void ResetHeading() {
+  //   return m_gyro.reset()
+  // }
+
   public Rotation2d getGyroRotation2d() {
     // https://www.chiefdelphi.com/t/1-does-legacy-navx-work-today-and-2-why-is-adis16470-imu-missing-getrotation2d/420343
     // https://github.com/wpilibsuite/allwpilib/issues/4876
     return Rotation2d.fromDegrees(getPitch());
   }
 
-  public double getPitch() {
-    return Math.atan2((-m_gyro.getX()),
-            Math.sqrt(m_gyro.getY() * m_gyro.getY() + m_gyro.getZ() * m_gyro.getZ())) * 57.3;
-}
-
-public double getRoll() {
-    return Math.atan2(m_gyro.getY(), m_gyro.getZ()) * 57.3;
-}
-
-// returns the magnititude of the robot's tilt calculated by the root of
-// pitch^2 + roll^2, used to compensate for diagonally mounted rio
-public double getTilt() {
-    double pitch = getPitch();
-    double roll = getRoll();
-    if ((pitch + roll) >= 0) {
-        return Math.sqrt(pitch * pitch + roll * roll);
-    } else {
-        return -Math.sqrt(pitch * pitch + roll * roll);
-    }
-  }
-    /**
+  /**
    * Returns the heading of the robot.
    *
    * @return the robot's heading in degrees, from -180 to 180
@@ -358,7 +357,6 @@ public double getTilt() {
    * @return The turn rate of the robot, in degrees per second
    */
   public double getTurnRate() {
-    // return m_gyro.getRate();
     return 0;
   }
 
@@ -369,6 +367,10 @@ public double getTilt() {
       m_frontRight.set(speeds.frontRightMetersPerSecond);
       m_rearRight.set(speeds.rearRightMetersPerSecond);
   }
+
+  /////////////////////////////
+  //     SMART DASHBOARD     //
+  /////////////////////////////
 
   public void updateSmartDashboard() {
     /*
@@ -427,4 +429,59 @@ public double getTilt() {
     SmartDashboard.putNumber("drive/"+name+"/encoder/position conversion factor", encoder.getPositionConversionFactor());
     SmartDashboard.putNumber("drive/"+name+"/encoder/velocity conversion factor", encoder.getVelocityConversionFactor());
   }
+
+  void updateSmartDashboardGyro(PigeonIMU gyro) {
+    PigeonState state = m_gyro.getState();
+
+  // Yaw: Continuous angle (Degrees) of the robot’s heading. Value will overflow at ±23040 degrees.
+  SmartDashboard.putNumber("gyro/yaw", gyro.getYaw() % 360);
+  
+  // Pitch: (Degrees: -90 to 90)
+  SmartDashboard.putNumber("gyro/pitch", gyro.getPitch());
+
+  // Roll: (Degrees: -90 to 90)
+  SmartDashboard.putNumber("gyro/roll", gyro.getRoll());
+
+  // Compass Heading (Degrees) and Magnitude (µT)
+  SmartDashboard.putNumber("gyro/compassHeading", gyro.getCompassHeading());
+
+  // - Fused Heading (Degrees) and Fusion Status (Booleans)
+  SmartDashboard.putNumber("gyro/fusedHeading", gyro.getFusedHeading());
+
+  // Temperature (ºC)
+  SmartDashboard.putNumber("gyro/temperature", gyro.getTemp());
+
+  // Uptime (ms): How long the Pigeon has been powered (Capped at 255 seconds).
+  SmartDashboard.putNumber("gyro/uptime", gyro.getUpTime());
+
+  switch(state) {
+    case NoComm:
+      SmartDashboard.putString("gyro/state", "no comm");
+      break;
+    case Initializing:
+      SmartDashboard.putString("gyro/state", "initializing");
+      break;
+    case Ready:
+      SmartDashboard.putString("gyro/state", "ready");
+      break;
+    case UserCalibration:
+      SmartDashboard.putString("gyro/state", "user calibrated");
+      break;
+    case Unknown:
+      SmartDashboard.putString("gyro/state", "unknown");
+      break;
+    default:
+      SmartDashboard.putString("gyro/state", "really unknown");
+  }
+
+  // UNPRINTED DATA
+  // - Pigeon State: Used to determine when Pigeon is finished initializing, and that Pigeon is connected.
+  // - Quaternion (6D)
+  // - Accelerometer Angles (tilt angles in degrees between two axis, XZ, YZ, XY respectively)
+  // - Magnetometer Axes (µT)
+  // - Gyro Angles (Degrees) (accumulated using gyroscope only)
+  }
+
+
+
 }

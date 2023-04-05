@@ -80,6 +80,7 @@ public class ElevatorSubsystem extends SubsystemBase {
             m_pidController.setReference(reference, CANSparkMax.ControlType.kPosition, MOVE_DOWN_PID_SLOT,
                     MOVE_DOWN.kFeedForwardVelocity);
         } else {
+            
             m_pidController.setReference(reference, CANSparkMax.ControlType.kPosition, MOVE_UP_PID_SLOT,
                     MOVE_UP.kFeedForwardVelocity);
         }

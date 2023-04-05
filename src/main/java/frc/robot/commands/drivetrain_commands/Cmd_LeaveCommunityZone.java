@@ -1,15 +1,17 @@
-package frc.robot.commands.autonomous_commands;
+package frc.robot.commands.drivetrain_commands;
 
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.drivetrain_subsystems.DriveSubsystem;
 
-public class LeaveCommunityZone extends CommandBase {
+public class Cmd_LeaveCommunityZone extends CommandBase {
     private final DriveSubsystem m_drive;
+    private final boolean m_positionedForward;
     Timer m_timer = new Timer();
 
-    public LeaveCommunityZone(DriveSubsystem drive) {
+    public Cmd_LeaveCommunityZone(DriveSubsystem drive, boolean positionedForward) {
         m_drive = drive;
+        m_positionedForward = positionedForward;
         addRequirements(m_drive);
     }
 
@@ -21,7 +23,11 @@ public class LeaveCommunityZone extends CommandBase {
 
     @Override
     public void execute() {
-        m_drive.driveMecanum(0, -0.3, 0);
+        m_drive.driveMecanum(
+            0,
+            (m_positionedForward ? 0.3 : -0.3),
+            0
+        );
     }
 
     @Override

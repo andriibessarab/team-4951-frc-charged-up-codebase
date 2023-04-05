@@ -4,28 +4,30 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.intake_subsystems.ClawMotorsSubsystem;
 
-public class ClawIntake extends CommandBase{
-    private ClawMotorsSubsystem motor;
-    Timer time = new Timer();
+public class Cmd_ClawOuttake extends CommandBase{
+    private final ClawMotorsSubsystem m_claw;
+    private final Timer m_timer;
 
-    public ClawIntake(ClawMotorsSubsystem m){
-        motor = m;
+    public Cmd_ClawOuttake(ClawMotorsSubsystem claw){
+        m_claw = claw;
+        m_timer = new Timer();
+        addRequirements(m_claw);
     }
 
     @Override
     public void initialize() {
-        time.reset();
-        time.start();
+        m_timer.reset();
+        m_timer.start();
     }
 
     @Override
     public void execute(){
-        motor.spinIn();
+        m_claw.spinIn();
     }
 
     @Override
     public boolean isFinished() {
-        if (time.get()>0.5) {
+        if (m_timer.get() > 0.5) {
             return true;
         }
         return false;
@@ -33,6 +35,6 @@ public class ClawIntake extends CommandBase{
 
     @Override
     public void end(boolean bool){
-        motor.stop();
+        m_claw.stop();
     }
 }
