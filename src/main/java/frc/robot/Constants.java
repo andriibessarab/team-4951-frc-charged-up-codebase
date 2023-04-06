@@ -121,21 +121,12 @@ public final class Constants {
         public static double kMaxHeight = 8; // value from smart dashboard
 
         // PID for moving up constants
-        public static class MOVE_UP {
+        public static class ElevatorPIDConstants {
             public static double kP = 1.0;
             public static double kI = 0.0;
             public static double kD = 0.0;
             public static double kIZone = 0.0;
             public static double kFeedForwardVelocity = 0.3149; // Input to keep it from falling
-        }
-
-        // PID for moving down constants
-        public static class MOVE_DOWN {
-            public static double kP = -1.0;
-            public static double kI = 0.0;
-            public static double kD = 0.0;
-            public static double kIZone = 0.0;
-            public static double kFeedForwardVelocity = 0.3149;
         }
 
         // Controller constants
@@ -145,7 +136,7 @@ public final class Constants {
 
         // Links heights
         public static double kTopLayerHeight = 7.45;
-        public static double kMidLayerHeight = 5; // #TODO determine actual height
+        public static double kMidLayerHeight = 5.54;
         public static double kBottomLayerHeight = kMinHeight;
 
     }

@@ -17,11 +17,12 @@ public class Cmd_ElevatorGoToPosition extends CommandBase {
 
     @Override
     public void execute() {
-        if (m_refPosition < m_elevator.getPosition()) {
-            m_elevator.setSpeed(-0.5);
-        } else {
-            m_elevator.setSpeed(0.5);
-        }
+        // if (m_refPosition < m_elevator.getPosition()) {
+        //     m_elevator.setSpeed(-0.5);
+        // } else {
+        //     m_elevator.setSpeed(0.5);
+        // }
+        m_elevator.setPosition(m_refPosition);
     }
 
     @Override

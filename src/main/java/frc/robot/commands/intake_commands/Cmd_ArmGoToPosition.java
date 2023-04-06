@@ -17,11 +17,12 @@ public class Cmd_ArmGoToPosition extends CommandBase {
 
     @Override
     public void execute() {
-        if (m_refPosition < m_arm.getPosition()) {
-            m_arm.setSpeed(-0.5);
-        } else {
-            m_arm.setSpeed(0.5);
-        }
+        // if (m_refPosition < m_arm.getPosition()) {
+        //     m_arm.setSpeed(-0.5);
+        // } else {
+        //     m_arm.setSpeed(0.5);
+        // }
+        m_arm.setPosition(m_refPosition);
     }
 
     @Override

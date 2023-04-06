@@ -3,6 +3,8 @@ package frc.robot.subsystems.intake_subsystems;
 import com.revrobotics.*;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.util.sendable.SendableBuilder;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
@@ -13,13 +15,11 @@ import static frc.robot.Constants.ElevatorSubsystemConstants.*;
  * Responsible for raising/lowering the elevator.
  */
 public class ElevatorSubsystem extends SubsystemBase {
-
     private final CANSparkMax m_motor = new CANSparkMax(Constants.ElevatorSubsystemConstants.kMotorPort, CANSparkMaxLowLevel.MotorType.kBrushless);;
     private final RelativeEncoder m_encoder = m_motor.getEncoder();
     private final SparkMaxPIDController m_pidController = m_motor.getPIDController();
 
     private final int MOVE_UP_PID_SLOT = 0;
-    private final int MOVE_DOWN_PID_SLOT = 1;
 
     public ElevatorSubsystem() {
         m_motor.restoreFactoryDefaults();
@@ -34,18 +34,11 @@ public class ElevatorSubsystem extends SubsystemBase {
         m_pidController.setFeedbackDevice(m_encoder);
 
         // Setup PID Slot for moving upwards
-        m_pidController.setP(Constants.ElevatorSubsystemConstants.MOVE_UP.kP, MOVE_UP_PID_SLOT);
-        m_pidController.setI(Constants.ElevatorSubsystemConstants.MOVE_UP.kI, MOVE_UP_PID_SLOT);
-        m_pidController.setD(Constants.ElevatorSubsystemConstants.MOVE_UP.kD, MOVE_UP_PID_SLOT);
-        m_pidController.setIZone(Constants.ElevatorSubsystemConstants.MOVE_UP.kIZone, MOVE_UP_PID_SLOT);
-        m_pidController.setOutputRange(kMinHeight, kMaxHeight, MOVE_UP_PID_SLOT);
-
-        // Setup PID Slot for moving downwards
-        m_pidController.setP(Constants.ElevatorSubsystemConstants.MOVE_DOWN.kP, MOVE_DOWN_PID_SLOT);
-        m_pidController.setI(Constants.ElevatorSubsystemConstants.MOVE_DOWN.kI, MOVE_DOWN_PID_SLOT);
-        m_pidController.setD(Constants.ElevatorSubsystemConstants.MOVE_DOWN.kD, MOVE_DOWN_PID_SLOT);
-        m_pidController.setIZone(Constants.ElevatorSubsystemConstants.MOVE_DOWN.kIZone, MOVE_DOWN_PID_SLOT);
-        m_pidController.setOutputRange(kMinHeight, kMaxHeight, MOVE_DOWN_PID_SLOT);
+        m_pidController.setP(Constants.ElevatorSubsystemConstants.ElevatorPIDConstants.kP, MOVE_UP_PID_SLOT);
+        m_pidController.setI(Constants.ElevatorSubsystemConstants.ElevatorPIDConstants.kI, MOVE_UP_PID_SLOT);
+        m_pidController.setD(Constants.ElevatorSubsystemConstants.ElevatorPIDConstants.kD, MOVE_UP_PID_SLOT);
+        m_pidController.setIZone(Constants.ElevatorSubsystemConstants.ElevatorPIDConstants.kIZone, MOVE_UP_PID_SLOT);
+        m_pidController.setOutputRange(-0.7 , 0.7, MOVE_UP_PID_SLOT);
 
         m_motor.enableSoftLimit(CANSparkMax.SoftLimitDirection.kForward, true);
         m_motor.enableSoftLimit(CANSparkMax.SoftLimitDirection.kReverse, true);
@@ -54,36 +47,29 @@ public class ElevatorSubsystem extends SubsystemBase {
         m_motor.setSoftLimit(CANSparkMax.SoftLimitDirection.kReverse, (float)kMinHeight);  // Bottom distance limit
 
         resetPosition();  // Assumes that it starts at the LOWEST position
+    }
 
-        SmartDashboard.putNumber("Elevator/PosFactor", Constants.ElevatorSubsystemConstants.kDistancePerRevolution);
-        SmartDashboard.putNumber("Elevator/VelFactor", Constants.ElevatorSubsystemConstants.kVelocityMetersPerSecond);
-        SmartDashboard.putNumber("Elevator/MaxHeight", kMaxHeight);
-        SmartDashboard.putNumber("Elevator/MinHeight", kMinHeight);
+    @Override
+    public void periodic() {
+        updateSmartDashboard();
     }
 
     public void setSpeed(double speed) {
         double clampedSpeed = MathUtil.clamp(speed, kMaxControllerDownSpeed, kMaxControllerUpSpeed);
         clampedSpeed = MathUtil.applyDeadband(clampedSpeed, kControllerDeadband);
-        m_pidController.setReference(clampedSpeed, CANSparkMax.ControlType.kDutyCycle, MOVE_UP_PID_SLOT, MOVE_UP.kFeedForwardVelocity);
+        m_pidController.setReference(clampedSpeed, CANSparkMax.ControlType.kDutyCycle, MOVE_UP_PID_SLOT, Constants.ElevatorSubsystemConstants.ElevatorPIDConstants.kFeedForwardVelocity);
         updateSmartDashboard();
     }
 
+    @Deprecated
     public void setSpeed1(double speed){
         m_motor.set(speed);
     }
 
     public void setPosition(double position) {
         double reference = MathUtil.clamp(position, kMinHeight, kMaxHeight);
-        double current = m_encoder.getPosition();
-        if (reference < current) {
-            // We want to go down... 
-            m_pidController.setReference(reference, CANSparkMax.ControlType.kPosition, MOVE_DOWN_PID_SLOT,
-                    MOVE_DOWN.kFeedForwardVelocity);
-        } else {
-            
-            m_pidController.setReference(reference, CANSparkMax.ControlType.kPosition, MOVE_UP_PID_SLOT,
-                    MOVE_UP.kFeedForwardVelocity);
-        }
+         m_pidController.setReference(reference, CANSparkMax.ControlType.kPosition, MOVE_UP_PID_SLOT,
+         Constants.ElevatorSubsystemConstants.ElevatorPIDConstants.kFeedForwardVelocity);
         updateSmartDashboard();
     }
 
@@ -92,16 +78,17 @@ public class ElevatorSubsystem extends SubsystemBase {
     }
 
     public void stop() {
-        m_pidController.setReference(0, CANSparkMax.ControlType.kDutyCycle, MOVE_UP_PID_SLOT, MOVE_UP.kFeedForwardVelocity);
+        m_pidController.setReference(0, CANSparkMax.ControlType.kDutyCycle, MOVE_UP_PID_SLOT, Constants.ElevatorSubsystemConstants.ElevatorPIDConstants.kFeedForwardVelocity);
     }
 
+    @Deprecated
     public void stop1(){
         m_motor.stopMotor();
     }
 
     public void updateSmartDashboard() {
-        SmartDashboard.putNumber("Elevator/Position", m_encoder.getPosition());
-        SmartDashboard.putNumber("Elevator/Velocity", m_encoder.getVelocity());
+        SmartDashboard.putNumber("Elevator Pos.", m_encoder.getPosition());
+        SmartDashboard.putNumber("Elevator Vel.", m_encoder.getVelocity());
     }
 
     public final void resetPosition() {

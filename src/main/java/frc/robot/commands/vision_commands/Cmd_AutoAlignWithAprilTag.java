@@ -5,7 +5,7 @@ import frc.robot.Constants;
 import frc.robot.subsystems.drivetrain_subsystems.DriveSubsystem;
 import frc.robot.subsystems.vision_subsystems.LimelightSubsystem;
 
-public class AutoAlignWithAprilTag extends CommandBase {
+public class Cmd_AutoAlignWithAprilTag extends CommandBase {
     private LimelightSubsystem m_limelight;
     private DriveSubsystem m_drive;
 
@@ -13,7 +13,7 @@ public class AutoAlignWithAprilTag extends CommandBase {
     private long consecutiveMissing = 0;
     private long maxConsecutiveMissing = 0;
 
-    public AutoAlignWithAprilTag(LimelightSubsystem limelight, DriveSubsystem drive) {
+    public Cmd_AutoAlignWithAprilTag(LimelightSubsystem limelight, DriveSubsystem drive) {
         m_limelight = limelight;
         m_drive = drive;
         addRequirements(m_limelight);

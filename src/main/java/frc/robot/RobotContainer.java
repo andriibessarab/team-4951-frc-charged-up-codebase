@@ -3,22 +3,35 @@
 // the WPILib BSD license file in the root directory of this project.
 
 package frc.robot;
+import java.util.ArrayList;
+
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.XboxController.Button;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.Constants.OIConstants;
+import frc.robot.commands.autonomous_commands.CmdSeqAuton_Drive;
 import frc.robot.commands.autonomous_commands.CmdSeqAuton_ElevatorPivotShootCubeDrive;
+import frc.robot.commands.autonomous_commands.CmdSeqAuton_ShootCubeBalance;
+import frc.robot.commands.drivetrain_commands.AutoDrivePathPlannerTrajectory;
 import frc.robot.commands.intake_commands.Cmd_ClawIntake;
 import frc.robot.commands.intake_commands.Cmd_ClawOuttake;
 import frc.robot.commands.intake_commands.Cmd_ArmGoToPosition;
 import frc.robot.commands.intake_commands.Cmd_ElevatorGoToPosition;
 import frc.robot.commands.intake_commands.Cmd_PivotGoToPosition;
+import frc.robot.commands.vision_commands.Cmd_AutoAlignWithRetroTape;
+import frc.robot.commands.vision_commands.Cmd_WatchForAprilTagPose;
+import frc.robot.helpers.PathPlannerPath;
 import frc.robot.subsystems.drivetrain_subsystems.*;
 import frc.robot.subsystems.intake_subsystems.*;
 import frc.robot.subsystems.vision_subsystems.*;
@@ -47,24 +60,23 @@ public class RobotContainer {
     XboxController m_driverController = new XboxController(OIConstants.DriverControl.kDriverControllerPort);
     XboxController m_operatorController = new XboxController(OIConstants.OperatorControl.kOperatorControllerPort);
 
-    // // Path planner trajectories
-    // PathPlannerPath[] m_pathPlannerPaths = {
-    //                 new PathPlannerPath("openSidePreload1", true, 0.4, 0.3),
-    //                 new PathPlannerPath("openSidePreload2", true, 0.4, 0.3),
-    //                 new PathPlannerPath("basictest", true, 0.3, 0.3),
-    //                 new PathPlannerPath("rotation", true, 0.3, 0.3),
-    // };
+    // Path planner trajectories
+    PathPlannerPath[] m_pathPlannerPaths = {
+                    new PathPlannerPath("openSidePreload1", true, 0.4, 0.3),
+                    new PathPlannerPath("openSidePreload2", true, 0.4, 0.3),
+                    new PathPlannerPath("basictest", true, 0.3, 0.3),
+                    new PathPlannerPath("rotation", true, 0.3, 0.3),
+    };
 
-    // // Autonomous command selecter
-    // SendableChooser m_autonomousOperation = new SendableChooser();
+    // Autonomous command selecter
+    private final SendableChooser<Command> m_autonomousOperation = new SendableChooser<>();
 
     /**
      * The container for the robot. Contains subsystems, OI devices, and commands.
      */
-
     public RobotContainer() {
         configureButtonBindings();
-        //registerAutonomousOperations();
+        registerAutonomousOperations();
 
         // // Configure default commands set the default drive command
         m_robotDrive.setDefaultCommand(new RunCommand(() -> {
@@ -79,6 +91,8 @@ public class RobotContainer {
                 false
             );}, m_robotDrive));
 
+            //m_limeLight.setDefaultCommand(new Cmd_WatchForAprilTagPose(m_limeLight, m_robotDrive), m_limeLight);
+
         // #TODO only for testing
         // m_arm.setDefaultCommand(new RunCommand(() -> {
         //         var controllerLeftY = m_operatorController.getLeftY() + Constants.OIConstants.OperatorControl.kZeroCalibrateLeftY;
@@ -86,41 +100,55 @@ public class RobotContainer {
         //     },
         //     m_arm));
 
-        // // #TODO only for testing
-        // m_pivot.setDefaultCommand(new RunCommand(() -> {
-        //         var controllerRightY = m_operatorController.getRightY() + Constants.OIConstants.OperatorControl.kZeroCalibrateLeftY;
-        //         m_pivot.setSpeed(-controllerRightY * 0.2);
-        //     },
-        //     m_pivot));
+        // #TODO only for testing
+        m_pivot.setDefaultCommand(new RunCommand(() -> {
+                var controllerRightY = m_operatorController.getRightY() + Constants.OIConstants.OperatorControl.kZeroCalibrateLeftY;
+                m_pivot.setSpeed(-controllerRightY * 0.2);
+            },
+            m_pivot));
 
         //TODO: test to see if work, might keep for actual use
-        // m_claw.setDefaultCommand(new RunCommand(
+        // m_arm.setDefaultCommand(new RunCommand(
         //                 () -> {
         //                         var rTrigger = m_operatorController.getRightTriggerAxis();
         //                         var lTrigger = m_operatorController.getLeftTriggerAxis();
         //                         if(rTrigger>0.2){
-        //                                 m_claw.spinIn();
+        //                                 m_arm.setSpeed(-0.2);
         //                         } else if(lTrigger>0.2){
-        //                                 m_claw.spinOut();
+        //                                 m_arm.setSpeed(-0.2);
         //                         } else{
-        //                                 m_claw.stop();
+        //                                 m_arm.setSpeed(0);
         //                         }
         //                 },
-        //                 m_claw));
+        //                 m_arm));
 
         //TODO: will override the command above, testing only, allow command above to stay
-        m_elevator.setDefaultCommand(new RunCommand(() -> {
+        // m_elevator.setDefaultCommand(new RunCommand(() -> {
+        //         var rTrigger = m_operatorController.getRightTriggerAxis();
+        //         var lTrigger = m_operatorController.getLeftTriggerAxis();
+        //         if (rTrigger > 0.2) {
+        //             m_elevator.setSpeed1(rTrigger / 3);
+        //         } else if (lTrigger > 0.2) {
+        //             m_elevator.setSpeed1(-lTrigger / 3);
+        //         } else {
+        //             m_elevator.stop();
+        //         }
+        //     },
+        //     m_elevator));
+
+        //
+        m_arm.setDefaultCommand(new RunCommand(() -> {
                 var rTrigger = m_operatorController.getRightTriggerAxis();
                 var lTrigger = m_operatorController.getLeftTriggerAxis();
                 if (rTrigger > 0.2) {
-                    m_elevator.setSpeed1(rTrigger / 3);
+                    m_arm.setSpeed(rTrigger / 3);
                 } else if (lTrigger > 0.2) {
-                    m_elevator.setSpeed1(-lTrigger / 3);
+                    m_arm.setSpeed(-lTrigger / 3);
                 } else {
-                    m_elevator.stop();
+                    m_arm.stop();
                 }
             },
-            m_elevator));
+            m_arm));
     }
 
     /**
@@ -159,8 +187,8 @@ public class RobotContainer {
         ///////////////////////////////////////////////////////
 
         // Align robot with detected retro tape
-        // new JoystickButton(m_driverController, Button.kLeftBumper.value) // Xbox kLeftBumper
-        //     .whenHeld(new AutoAlignWithRetroTape(m_limeLight, m_robotDrive));
+        new JoystickButton(m_driverController, Button.kLeftBumper.value) // Xbox kLeftBumper
+            .whenHeld(new Cmd_AutoAlignWithRetroTape(m_limeLight, m_robotDrive));
 
         // // Align robot with detected april tag
         // new JoystickButton(m_driverController, Button.kX.value) // Xbox kX
@@ -225,14 +253,56 @@ public class RobotContainer {
     }
 
     /**
+     * Registers the available autonomous operations that the robot can perform during autonomous mode.
+     * This method populates the m_autonomousOperation object with available autonomous options.
+     */
+    ArrayList<AutoDrivePathPlannerTrajectory> paths = new ArrayList<>();
+    private void registerAutonomousOperations() {
+            m_autonomousOperation.setDefaultOption("Do Nothing",
+                new InstantCommand(() -> {
+                    m_robotDrive.drive(0.0, 0.0, 0.0, false);
+                }));
+
+            for (int index = 0; index < m_pathPlannerPaths.length; index++) {
+                    AutoDrivePathPlannerTrajectory drivePath = new AutoDrivePathPlannerTrajectory(m_robotDrive,
+                                    m_pathPlannerPaths[index].name,
+                                    m_pathPlannerPaths[index].resetOdometry,
+                                    m_pathPlannerPaths[index].maxVelocity,
+                                    m_pathPlannerPaths[index].maxAcceleration);
+                    paths.add(drivePath);
+                    m_autonomousOperation.addOption(m_pathPlannerPaths[index].name, drivePath);
+            }
+
+            // m_autonomousOperation.addOption("Mecanum Drive Example",
+            //                 new MecanumDriveExample(m_robotDrive, true));
+
+
+            // Autonomous routines
+            m_autonomousOperation.addOption("Leave Com Zone", new CmdSeqAuton_Drive(m_robotDrive));
+            m_autonomousOperation.addOption("Shoot Cube & Leave Com Zone", new CmdSeqAuton_ElevatorPivotShootCubeDrive(m_robotDrive, m_elevator, m_pivot, m_claw));
+            m_autonomousOperation.addOption("Shoot Cube & Balance", new CmdSeqAuton_ShootCubeBalance(m_robotDrive, m_elevator, m_pivot, m_claw));
+
+            SmartDashboard.putData("Autonomous Operation", m_autonomousOperation);
+    }
+
+    /**
+     * Use this to pass the autonomous command to the main {@link Robot} class.
+     *
+     * @return the command to run in autonomous
+     */
+    public Command getAutonomousCommand() {
+        return (Command) m_autonomousOperation.getSelected();
+    }
+
+    /**
      * Use this to pass the autonomous command to the main {@link Robot} class.
      *
      * @return the command to run in autonomous
      *
      */
-    public Command getAutonomousCommand() {
-        return new CmdSeqAuton_ElevatorPivotShootCubeDrive(m_robotDrive, m_elevator, m_pivot, m_claw);
-    }
+    // public Command getAutonomousCommand() {
+    //     return new CmdSeqAuton_ElevatorPivotShootCubeDrive(m_robotDrive, m_elevator, m_pivot, m_claw);
+    // }
 
     /**
      * Sets the initial position and orientation of the robot based on the alliance start position.

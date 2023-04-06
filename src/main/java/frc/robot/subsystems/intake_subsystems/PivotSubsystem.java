@@ -33,7 +33,7 @@ public class PivotSubsystem extends SubsystemBase {
         m_pidController.setI(kI);
         m_pidController.setD(kD);
         m_pidController.setIZone(kIZone);
-        m_pidController.setOutputRange(kMinOut, kMaxOut);
+        m_pidController.setOutputRange(-0.5, 0.5);
 
         // #TODO soft limit was disabled will it still work?
         m_motor.enableSoftLimit(CANSparkMax.SoftLimitDirection.kForward, true);
@@ -43,11 +43,6 @@ public class PivotSubsystem extends SubsystemBase {
         m_motor.setSoftLimit(CANSparkMax.SoftLimitDirection.kReverse, (float)kMinOut);  // Bottom distance limit
 
         resetPosition();  // Assumes that it starts at the LOWEST position
-
-        SmartDashboard.putNumber("Pivot/PosFactor", kDistancePerRevolution);
-        SmartDashboard.putNumber("Pivot/VelFactor", kVelocityMetersPerSecond);
-        SmartDashboard.putNumber("Pivot/MaxAngle", kMaxOut);
-        SmartDashboard.putNumber("Pivot/MinAngle", kMinOut);
     }
 
     public void setSpeed(double speed) {
@@ -62,8 +57,6 @@ public class PivotSubsystem extends SubsystemBase {
         m_pidController.setReference(reference, CANSparkMax.ControlType.kPosition, 0, kFeedForwardVelocity);
         updateSmartDashboard();
     }
-
-
 
     public double getPosition() {
         return m_encoder.getPosition();

@@ -17,11 +17,13 @@ public class Cmd_PivotGoToPosition extends CommandBase {
 
     @Override
     public void execute() {
-        if (m_refPosition < m_pivot.getPosition()) {
-            m_pivot.setSpeed(-0.5);
-        } else {
-            m_pivot.setSpeed(0.5);
-        }
+        // if (m_refPosition < m_pivot.getPosition()) {
+        //     m_pivot.setSpeed(-0.5);
+        // } else {
+        //     m_pivot.setSpeed(0.5);
+        // }
+
+        m_pivot.setPosition(m_refPosition);
     }
 
     @Override

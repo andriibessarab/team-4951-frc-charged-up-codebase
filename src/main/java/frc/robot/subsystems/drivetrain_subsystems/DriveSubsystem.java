@@ -11,9 +11,17 @@ import edu.wpi.first.math.kinematics.MecanumDriveMotorVoltages;
 import edu.wpi.first.math.kinematics.MecanumDriveOdometry;
 import edu.wpi.first.math.kinematics.MecanumDriveWheelPositions;
 import edu.wpi.first.math.kinematics.MecanumDriveWheelSpeeds;
+import edu.wpi.first.util.sendable.Sendable;
+import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.ADIS16470_IMU;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.drive.MecanumDrive;
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
+import edu.wpi.first.wpilibj.shuffleboard.ComplexWidget;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardComponent;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.wpilibj.shuffleboard.SimpleWidget;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -59,6 +67,122 @@ public class DriveSubsystem extends SubsystemBase {
   // Odometry class for tracking robot pose
   private MecanumDriveOdometry m_odometry;
 
+  
+  private final Sendable gyroYawSendable = new Sendable() {
+    @Override
+    public void initSendable(SendableBuilder builder) {
+        builder.addDoubleProperty("gyro/yaw", this::getYaw, this::setYaw);
+    }
+
+    public double getYaw() {
+        return m_gyro.getYaw();
+    }
+
+    public void setYaw(double x) {
+
+    }
+  };
+
+  private final Sendable gyroPitchSendable = new Sendable() {
+    @Override
+    public void initSendable(SendableBuilder builder) {
+        builder.addDoubleProperty("gyro/pitch", this::getPitch, this::setPitch);
+    }
+
+    public double getPitch() {
+        return m_gyro.getPitch();
+    }
+
+    public void setPitch(double x) {
+
+    }
+  };
+
+  private final Sendable gyroRollSendable = new Sendable() {
+    @Override
+    public void initSendable(SendableBuilder builder) {
+        builder.addDoubleProperty("gyro/roll", this::getRoll, this::setRoll);
+    }
+
+    public double getRoll() {
+        return m_gyro.getRoll();
+    }
+
+    public void setRoll(double x) {
+
+    }
+  };
+
+
+  private final Sendable gyroSendable = new Sendable() {
+      double[] yawPitchRoll = new double[3];
+
+      @Override
+      public void initSendable(SendableBuilder builder) {
+          builder.setSmartDashboardType("Accelerometer");
+          builder.addDoubleProperty("X", this::getX, this::setX);
+          builder.addDoubleProperty("Y", this::getY, this::setY);
+          builder.addDoubleProperty("Z", this::getZ, this::setZ);
+      }
+
+      public double getX() {
+          m_gyro.getYawPitchRoll(yawPitchRoll);
+          return yawPitchRoll[0];
+      }
+
+      public double getY() {
+        m_gyro.getYawPitchRoll(yawPitchRoll);
+        return yawPitchRoll[1];
+      }
+
+      public double getZ() {
+        m_gyro.getYawPitchRoll(yawPitchRoll);
+        return yawPitchRoll[2];
+      }
+
+      public void setX(double x) {}
+
+      public void setY(double y) {}
+
+      public void setZ(double z) {}
+  };
+
+  private final Sendable mecanumDrivSendable = new Sendable() {
+    double[] yawPitchRoll = new double[3];
+
+    @Override
+    public void initSendable(SendableBuilder builder) {
+        builder.setSmartDashboardType("Accelerometer");
+        builder.addDoubleProperty("X", this::getX, this::setX);
+        builder.addDoubleProperty("Y", this::getY, this::setY);
+        builder.addDoubleProperty("Z", this::getZ, this::setZ);
+    }
+
+    public double getX() {
+        m_gyro.getYawPitchRoll(yawPitchRoll);
+        return yawPitchRoll[0];
+    }
+
+    public double getY() {
+      m_gyro.getYawPitchRoll(yawPitchRoll);
+      return yawPitchRoll[1];
+    }
+
+    public double getZ() {
+      m_gyro.getYawPitchRoll(yawPitchRoll);
+      return yawPitchRoll[2];
+    }
+
+    public void setX(double x) {}
+
+    public void setY(double y) {}
+
+    public void setZ(double z) {}
+};
+
+  // Shufflebored tab & widgets
+  ShuffleboardTab m_driveShuffleboard;
+
   public final Field2d m_field = new Field2d();
 
   /** Creates a new DriveSubsystem. */
@@ -100,11 +224,7 @@ public class DriveSubsystem extends SubsystemBase {
 
     SmartDashboard.putData(m_field);
 
-
-
-    // Assume zero is straight forward
-    // zeroHeading();
-    // resetEncoders();
+    resetEncoders();
 
     m_odometry = new MecanumDriveOdometry(
             DriveConstants.kDriveKinematics,
@@ -112,7 +232,26 @@ public class DriveSubsystem extends SubsystemBase {
             new MecanumDriveWheelPositions());
     
     m_drive.setSafetyEnabled(false);
-  }
+
+    m_driveShuffleboard = Shuffleboard.getTab("Drive");
+
+    m_driveShuffleboard.add("Gyro Yaw", gyroYawSendable)
+    .withWidget(BuiltInWidgets.kGyro)
+    .withSize(2, 2)
+    .withPosition(0, 0);
+
+    m_driveShuffleboard.add("Gyro Pitch", gyroPitchSendable)
+    .withWidget(BuiltInWidgets.kGyro)
+    .withSize(2, 2)
+    .withPosition(3, 0);
+
+    m_driveShuffleboard.add("Gyro Roll", gyroRollSendable)
+    .withWidget(BuiltInWidgets.kGyro)
+    .withSize(2, 2)
+    .withPosition(5, 0);
+}
+
+
 
   @Override
   public void periodic() {
@@ -481,7 +620,5 @@ public class DriveSubsystem extends SubsystemBase {
   // - Magnetometer Axes (µT)
   // - Gyro Angles (Degrees) (accumulated using gyroscope only)
   }
-
-
 
 }

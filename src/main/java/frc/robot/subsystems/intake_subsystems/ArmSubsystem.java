@@ -34,7 +34,7 @@ public class ArmSubsystem extends SubsystemBase {
         m_pidController.setI(kI);
         m_pidController.setD(kD);
         m_pidController.setIZone(kIZone);
-        m_pidController.setOutputRange(kMinExtend, kMaxExtend);
+        m_pidController.setOutputRange(-0.5, 0.5);
 
         m_motor.enableSoftLimit(CANSparkMax.SoftLimitDirection.kForward, true);
         m_motor.enableSoftLimit(CANSparkMax.SoftLimitDirection.kReverse, true);
@@ -43,11 +43,6 @@ public class ArmSubsystem extends SubsystemBase {
         m_motor.setSoftLimit(CANSparkMax.SoftLimitDirection.kReverse, (float)kMinExtend);  // Bottom distance limit
 
         resetPosition();  // Assumes that it starts at the LOWEST position
-
-        SmartDashboard.putNumber("Arm/PosFactor", Constants.ArmSubsystemConstants.kDistancePerRevolution);
-        SmartDashboard.putNumber("Arm/VelFactor", Constants.ArmSubsystemConstants.kVelocityMetersPerSecond);
-        SmartDashboard.putNumber("Arm/MaxExtend", kMaxExtend);
-        SmartDashboard.putNumber("Arm/MinExtend", kMinExtend);
     }
 
     public void setSpeed(double speed) {

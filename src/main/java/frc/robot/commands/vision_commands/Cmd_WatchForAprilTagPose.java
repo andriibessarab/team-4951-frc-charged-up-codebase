@@ -6,11 +6,11 @@ import frc.robot.Constants;
 import frc.robot.subsystems.drivetrain_subsystems.DriveSubsystem;
 import frc.robot.subsystems.vision_subsystems.LimelightSubsystem;
 
-public class WatchForAprilTagPose extends CommandBase {
+public class Cmd_WatchForAprilTagPose extends CommandBase {
     private LimelightSubsystem m_limelight;
     private DriveSubsystem m_drive;
 
-    public WatchForAprilTagPose(LimelightSubsystem limelight, DriveSubsystem drive) {
+    public Cmd_WatchForAprilTagPose(LimelightSubsystem limelight, DriveSubsystem drive) {
         m_limelight = limelight;
         m_drive = drive;  // NOTE: Passively notify of AprilTag finds (do NOT invoke drive)
         addRequirements(m_limelight);

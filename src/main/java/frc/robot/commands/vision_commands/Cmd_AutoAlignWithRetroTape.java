@@ -5,11 +5,11 @@ import frc.robot.Constants;
 import frc.robot.subsystems.drivetrain_subsystems.DriveSubsystem;
 import frc.robot.subsystems.vision_subsystems.LimelightSubsystem;
 
-public class AutoAlignWithRetroTape extends CommandBase {
+public class Cmd_AutoAlignWithRetroTape extends CommandBase {
     private LimelightSubsystem m_limelight;
     private DriveSubsystem m_drive;
 
-    public AutoAlignWithRetroTape(LimelightSubsystem limelight, DriveSubsystem drive) {
+    public Cmd_AutoAlignWithRetroTape(LimelightSubsystem limelight, DriveSubsystem drive) {
         m_limelight = limelight;
         m_drive = drive;
         addRequirements(m_limelight);
