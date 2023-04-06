@@ -18,6 +18,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
@@ -91,13 +92,14 @@ public class RobotContainer {
                                                         var controllerLeftY = m_driverController.getLeftY();
                                                         var controllerRightX = m_driverController.getRightX();
 
-                                                        m_robotDrive.driveMecanum(
+                                                        m_robotDrive.drive(
+                                                                MathUtil.applyDeadband(-controllerLeftY,
+                                                                Constants.OIConstants.DriverControl.kDriveDeadband),
                                                                         MathUtil.applyDeadband(controllerLeftX,
                                                                                         Constants.OIConstants.DriverControl.kDriveDeadband),
-                                                                        MathUtil.applyDeadband(-controllerLeftY,
-                                                                                        Constants.OIConstants.DriverControl.kDriveDeadband),
+
                                                                         MathUtil.applyDeadband(controllerRightX * 0.67,
-                                                                                        Constants.OIConstants.DriverControl.kRotationDeadband)
+                                                                                        Constants.OIConstants.DriverControl.kRotationDeadband), false
                                                         );
                                                 },
                                                 m_robotDrive));
@@ -121,34 +123,37 @@ public class RobotContainer {
                                 m_pivot));
                 
                 //TODO: test to see if work, might keep for actual use
-                // m_claw.setDefaultCommand(new RunCommand(
-                //                 () -> {
-                //                         var rTrigger = m_operatorController.getRightTriggerAxis();
-                //                         var lTrigger = m_operatorController.getLeftTriggerAxis();
-                //                         if(rTrigger>0.2){
-                //                                 m_claw.spinIn();
-                //                         } else if(lTrigger>0.2){
-                //                                 m_claw.spinOut();
-                //                         } else{
-                //                                 m_claw.stop();
-                //                         }
-                //                 },
-                //                 m_claw));
-                
-                //TODO: will override the command above, testing only, allow command above to stay
-                m_elevator.setDefaultCommand(new RunCommand(
+                m_claw.setDefaultCommand(new RunCommand(
                                 () -> {
                                         var rTrigger = m_operatorController.getRightTriggerAxis();
                                         var lTrigger = m_operatorController.getLeftTriggerAxis();
                                         if(rTrigger>0.2){
-                                                m_elevator.setSpeed(rTrigger/3);
+                                                m_claw.spinOut(); //RT2 out
                                         } else if(lTrigger>0.2){
-                                                m_elevator.setSpeed(-lTrigger/3);
+                                                m_claw.spinIn(); //LT2 in
                                         } else{
-                                                m_elevator.stop();
+                                                m_claw.stop();
                                         }
                                 },
-                                m_elevator));
+                                m_claw));
+
+                
+                
+
+                //TODO: will override the command above, testing only, allow command above to stay
+                // m_elevator.setDefaultCommand(new RunCommand(
+                //                 () -> {
+                //                         var rTrigger = m_operatorController.getRightTriggerAxis();
+                //                         var lTrigger = m_operatorController.getLeftTriggerAxis();
+                //                         if(rTrigger>0.2){
+                //                                 m_elevator.setSpeed(rTrigger/3);
+                //                         } else if(lTrigger>0.2){
+                //                                 m_elevator.setSpeed(-lTrigger/3);
+                //                         } else{
+                //                                 m_elevator.stop();
+                //                         }
+                //                 },
+                //                 m_elevator));
         }
 
         /**
@@ -200,69 +205,49 @@ public class RobotContainer {
                                 .whenHeld(new InstantCommand(m_robotDrive::zeroHeading));
                 
                 // #TODO add command for 180
+        
+        
+        
+        
+                // Operator Controls
+                //
+                //     Lower Right Button onHeld - run OUTTAKE
+                //     Upper Right Button onHeld - Lower ARM
+                //
+                //     Lower Left Button onHeld - run INTAKE
+                //     Upper Left Button onHeld - Raise ARM
+                //
+                //  ELEVATOR FIXED POSITIONS:
+                //     Y Button - HIGH_ELEVATOR_POSITION
+                //     B Button - MIDDLE_ELEVATOR_POSITION
+                //     A Button - LOW_ELEVATOR_POSITION
+                //
+                // ARM FIXED POSITIONS:
+                //     X Button           - HIGH_ARM_POSITION
+                //     START (right side) - MIDDLE_ARM_POSITION
+                //     BACK (left side)   - LOW_ARM_POSITION
 
 
-                ///////////////////////////////////////////////////////
-                // ELEVATOR
-                ///////////////////////////////////////////////////////
+                new JoystickButton(m_operatorController, Button.kRightBumper.value)  // LOWER PIVOT
+                        .onTrue(new InstantCommand(() -> {} ));
+                new JoystickButton(m_operatorController, Button.kLeftBumper.value)   // UPPER PIVOT
+                        .onTrue(new InstantCommand(() -> {} ));
 
-                // Move elevator to top layer
-                new JoystickButton(m_operatorController, Button.kY.value) // Xbox kY
-                                .onTrue(new ElevatorGotoPosition(m_elevator,
-                                                Constants.ElevatorSubsystem.kTopLayerHeight));
+                // ELEVATOR FIXED POSITIONS
+                new JoystickButton(m_operatorController, Button.kY.value)       // HIGH_ELEVATOR_POSITION
+                        .onTrue(new InstantCommand(() -> m_elevator.setPosition( Constants.ElevatorSubsystem.kTopLayerHeight) ));
+                new JoystickButton(m_operatorController, Button.kB.value)       // MIDDLE_ELEVATOR_POSITION
+                        .onTrue(new InstantCommand(() -> m_elevator.setPosition( Constants.ElevatorSubsystem.kMidLayerHeight ) ));
+                new JoystickButton(m_operatorController, Button.kA.value)       // LOW_ELEVATOR_POSITION
+                        .onTrue(new InstantCommand(() -> m_elevator.setPosition( Constants.ElevatorSubsystem.kBottomLayerHeight ) ));
 
-                // Move elevator to middle layer
-                new JoystickButton(m_operatorController, Button.kB.value) // Xbox kB
-                                .onTrue(new ElevatorGotoPosition(m_elevator,
-                                                Constants.ElevatorSubsystem.kMidLayerHeight));
-
-                // Move elevator to bottom layer
-                new JoystickButton(m_operatorController, Button.kA.value) // Xbox kA
-                                .onTrue(new ElevatorGotoPosition(m_elevator,
-                                                Constants.ElevatorSubsystem.kBottomLayerHeight));
-
-                ///////////////////////////////////////////////////////
-                // ARM
-                ///////////////////////////////////////////////////////
-
-                // Retract arm
-                new JoystickButton(m_operatorController, Button.kLeftStick.value) // Xbox kLeftStick
-                                .onTrue(new ArmGoToPosition(m_arm, Constants.ArmSubsystem.kMinExtend));
-                
-                // Extend arm
-                new JoystickButton(m_operatorController, Button.kRightStick.value) // Xbox kRightStick
-                                .onTrue(new ArmGoToPosition(m_arm, Constants.ArmSubsystem.kMaxExtend));
-
-                ///////////////////////////////////////////////////////
-                // PIVOT
-                ///////////////////////////////////////////////////////
-
-                // Open pivot
-                new JoystickButton(m_operatorController, Button.kLeftBumper.value) // Xbox kLeftBumper
-                                //.onTrue(new PivotOpen(m_pivot).andThen(()->m_pivot.stop()));
-                                .onTrue(new PivotGoToPosition(m_pivot, 1.7));
-
-                // Close pivot
-                new JoystickButton(m_operatorController, Button.kRightBumper.value) // Xbox kRightBumper
-                                .onTrue(new PivotClose(m_pivot).andThen(()->m_pivot.stop()));
-                
-
-                ///////////////////////////////////////////////////////
-                // CLAW
-                ///////////////////////////////////////////////////////
-
-                // Open claw if closed, otherwise close
-                new JoystickButton(m_operatorController, Button.kX.value) //pneumatic
-                                .onTrue(new InstantCommand(()->m_reach.use()));
-
-                // Spin claw motors inwards
-                new JoystickButton(m_operatorController, Button.kStart.value) // Xbox start
-                                .onTrue(new ClawIntake(m_claw).andThen(()->m_claw.stop()));
-
-                // Spin claw motors outwards
-                new JoystickButton(m_operatorController, Button.kBack.value) // Xbox back
-                                .onTrue(new ClawOutake(m_claw).andThen(()->m_claw.stop()));
-
+                // ARM FIXED POSITIONS
+                new JoystickButton(m_operatorController, Button.kX.value)       // HIGH_ARM_POSITION
+                        .onTrue(new InstantCommand(() -> m_arm.setPosition( 0.0 ) ));
+                new JoystickButton(m_operatorController, Button.kStart.value)   // MIDDLE_ARM_POSITION
+                        .onTrue(new InstantCommand(() -> m_arm.setPosition( 0.0 ) ));
+                new JoystickButton(m_operatorController, Button.kBack.value)    // LOW_ARM_POSITION
+                        .onTrue(new InstantCommand(() -> m_arm.setPosition( 0.0 ) ));
         }
 
         // /**
@@ -326,14 +311,16 @@ public class RobotContainer {
                         // new PivotClose(m_pivot).andThen(()->m_pivot.stop(), m_pivot),
                         // new LeaveCommunityZone(m_robotDrive).andThen(()->m_robotDrive.driveMecanum(0, 0, 0), m_robotDrive)
 
-
-                        new ElevatorGotoPosition(m_elevator, Constants.ElevatorSubsystem.kTopLayerHeight),
-                        new PivotGoToPosition(m_pivot, 1.7),
+                        new ParallelCommandGroup(
+                                new ElevatorGotoPosition(m_elevator, Constants.ElevatorSubsystem.kTopLayerHeight),
+                                new PivotGoToPosition(m_pivot, 2.3)
+                        ),
                         new ClawOutake(m_claw),
-                        new PivotClose(m_pivot),
-                        new ElevatorGotoDown(m_elevator,0.0),
+                        new ParallelCommandGroup(
+                                new PivotGoToPosition(m_pivot, 0),
+                                new ElevatorGotoPosition(m_elevator, 0)
+                        ),
                         new LeaveCommunityZone(m_robotDrive)
-                        //new 
 
                 );
         }

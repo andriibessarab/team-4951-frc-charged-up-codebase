@@ -130,7 +130,7 @@ public static final double BalanceKd = 0.05;
 
     // #TODO determine actual heights
     public static double kTopLayerHeight = 7.45;
-    public static double kMidLayerHeight = 5;
+    public static double kMidLayerHeight = 5.74;
     public static double kBottomLayerHeight = 0.1;
 
   }

@@ -22,7 +22,7 @@ public class PivotGoToPosition extends CommandBase {
     @Override
     public boolean isFinished() {
         double current = m_pivot.getPosition();
-        if (Math.abs(current-m_position) < 0.2) {
+        if (Math.abs(current-m_position) < 0.1) {
             return true;
         }
         return false;

@@ -10,6 +10,8 @@ import frc.robot.Constants;
 
 import static frc.robot.Constants.PivotSubsystem.*;
 
+import org.opencv.imgproc.Moments;
+
 /**
  * Responsible for moving claw inwards/outwards.
  */
@@ -43,7 +45,7 @@ public class PivotSubsystem extends SubsystemBase {
         m_pidController.setI(kI);
         m_pidController.setD(kD);
         m_pidController.setIZone(kIZone);
-        m_pidController.setOutputRange(kMinOut, kMaxOut);
+        m_pidController.setOutputRange(-1, 1);
 
         //m_motor.enableSoftLimit(CANSparkMax.SoftLimitDirection.kForward, true);
         //m_motor.enableSoftLimit(CANSparkMax.SoftLimitDirection.kReverse, true);
@@ -80,7 +82,7 @@ public class PivotSubsystem extends SubsystemBase {
 
     public void stop() {
         
-        m_motor.set(0);
+        m_motor.stopMotor();
     }
 
     public void updateSmartDashboard() {

@@ -38,7 +38,7 @@ public class ElevatorSubsystem extends SubsystemBase {
         m_pidController.setI(Constants.ElevatorSubsystem.MOVE_UP.kI, MOVE_UP_PID_SLOT);
         m_pidController.setD(Constants.ElevatorSubsystem.MOVE_UP.kD, MOVE_UP_PID_SLOT);
         m_pidController.setIZone(Constants.ElevatorSubsystem.MOVE_UP.kIZone, MOVE_UP_PID_SLOT);
-        m_pidController.setOutputRange(kMinHeight, kMaxHeight, MOVE_UP_PID_SLOT);
+        m_pidController.setOutputRange(-0.7, 0.7, MOVE_UP_PID_SLOT);
 
         // Setup PID Slot for moving downwards
         m_pidController.setP(Constants.ElevatorSubsystem.MOVE_DOWN.kP, MOVE_DOWN_PID_SLOT);
@@ -74,15 +74,8 @@ public class ElevatorSubsystem extends SubsystemBase {
 
     public void setPosition(double position) {
         double reference = MathUtil.clamp(position, kMinHeight, kMaxHeight);
-        double current = m_encoder.getPosition();
-        if (reference < current) {
-            // We want to go down... 
-            m_pidController.setReference(reference, CANSparkMax.ControlType.kPosition, MOVE_DOWN_PID_SLOT,
-                    MOVE_DOWN.kFeedForwardVelocity);
-        } else {
-            m_pidController.setReference(reference, CANSparkMax.ControlType.kPosition, MOVE_UP_PID_SLOT,
+        m_pidController.setReference(reference, CANSparkMax.ControlType.kPosition, MOVE_UP_PID_SLOT,
                     MOVE_UP.kFeedForwardVelocity);
-        }
         updateSmartDashboard();
     }
 
