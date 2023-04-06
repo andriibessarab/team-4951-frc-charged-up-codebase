@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.XboxController.Button;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
@@ -32,6 +31,7 @@ import frc.robot.commands.intake_commands.Cmd_PivotGoToPosition;
 import frc.robot.commands.vision_commands.Cmd_AutoAlignWithRetroTape;
 import frc.robot.commands.vision_commands.Cmd_WatchForAprilTagPose;
 import frc.robot.helpers.PathPlannerPath;
+import frc.robot.controller.Controller;
 import frc.robot.subsystems.drivetrain_subsystems.*;
 import frc.robot.subsystems.intake_subsystems.*;
 import frc.robot.subsystems.vision_subsystems.*;
@@ -57,8 +57,8 @@ public class RobotContainer {
     private final LimelightSubsystem m_limeLight = new LimelightSubsystem(Constants.LimelightSubsystem.kLimelightName);
 
     // Operator input controllers
-    XboxController m_driverController = new XboxController(OIConstants.DriverControl.kDriverControllerPort);
-    XboxController m_operatorController = new XboxController(OIConstants.OperatorControl.kOperatorControllerPort);
+    Controller m_driverController = Controller.create(OIConstants.DriverControl.kDriverControllerPort);
+    Controller m_operatorController = Controller.create(OIConstants.OperatorControl.kOperatorControllerPort);
 
     // Path planner trajectories
     PathPlannerPath[] m_pathPlannerPaths = {
@@ -167,7 +167,7 @@ public class RobotContainer {
         ///////////////////////////////////////////////////////
 
         // Drive at half speed when the right bumper is held
-        new JoystickButton(m_driverController, Button.kRightBumper.value) // Xbox kRightBumper
+        new JoystickButton(m_driverController.getGenericHID(), Button.kRightBumper.value) // Xbox kRightBumper
             .onTrue(new InstantCommand(() -> m_robotDrive.setMaxOutput(0.5))).onFalse(new InstantCommand(() -> m_robotDrive.setMaxOutput(1)));
 
         ///////////////////////////////////////////////////////
@@ -187,7 +187,7 @@ public class RobotContainer {
         ///////////////////////////////////////////////////////
 
         // Align robot with detected retro tape
-        new JoystickButton(m_driverController, Button.kLeftBumper.value) // Xbox kLeftBumper
+        new JoystickButton(m_driverController.getGenericHID(), Button.kLeftBumper.value) // Xbox kLeftBumper
             .whenHeld(new Cmd_AutoAlignWithRetroTape(m_limeLight, m_robotDrive));
 
         // // Align robot with detected april tag
@@ -199,15 +199,15 @@ public class RobotContainer {
         ///////////////////////////////////////////////////////
 
         // Move elevator to top layer
-        new JoystickButton(m_operatorController, Button.kY.value) // Xbox kY
+        new JoystickButton(m_operatorController.getGenericHID(), Button.kY.value) // Xbox kY
             .onTrue(new Cmd_ElevatorGoToPosition(m_elevator, Constants.ElevatorSubsystemConstants.kTopLayerHeight));
 
         // Move elevator to middle layer
-        new JoystickButton(m_operatorController, Button.kB.value) // Xbox kB
+        new JoystickButton(m_operatorController.getGenericHID(), Button.kB.value) // Xbox kB
             .onTrue(new Cmd_ElevatorGoToPosition(m_elevator, Constants.ElevatorSubsystemConstants.kMidLayerHeight));
 
         // Move elevator to bottom layer
-        new JoystickButton(m_operatorController, Button.kA.value) // Xbox kA
+        new JoystickButton(m_operatorController.getGenericHID(), Button.kA.value) // Xbox kA
             .onTrue(new Cmd_ElevatorGoToPosition(m_elevator, Constants.ElevatorSubsystemConstants.kBottomLayerHeight));
 
         ///////////////////////////////////////////////////////
@@ -215,11 +215,11 @@ public class RobotContainer {
         ///////////////////////////////////////////////////////
 
         // Retract arm
-        new JoystickButton(m_operatorController, Button.kLeftStick.value) // Xbox kLeftStick
+        new JoystickButton(m_operatorController.getGenericHID(), Button.kLeftStick.value) // Xbox kLeftStick
             .onTrue(new Cmd_ArmGoToPosition(m_arm, Constants.ArmSubsystemConstants.kMinExtend));
 
         // Extend arm
-        new JoystickButton(m_operatorController, Button.kRightStick.value) // Xbox kRightStick
+        new JoystickButton(m_operatorController.getGenericHID(), Button.kRightStick.value) // Xbox kRightStick
             .onTrue(new Cmd_ArmGoToPosition(m_arm, Constants.ArmSubsystemConstants.kMaxExtend));
 
         ///////////////////////////////////////////////////////
@@ -227,12 +227,12 @@ public class RobotContainer {
         ///////////////////////////////////////////////////////
 
         // Close pivot
-        new JoystickButton(m_operatorController, Button.kLeftBumper.value) // Xbox kLeftBumper
+        new JoystickButton(m_operatorController.getGenericHID(), Button.kLeftBumper.value) // Xbox kLeftBumper
             //.onTrue(new PivotOpen(m_pivot).andThen(()->m_pivot.stop()));
             .onTrue(new Cmd_PivotGoToPosition(m_pivot, 0));
 
         // Open pivot
-        new JoystickButton(m_operatorController, Button.kRightBumper.value) // Xbox kRightBumper
+        new JoystickButton(m_operatorController.getGenericHID(), Button.kRightBumper.value) // Xbox kRightBumper
             .onTrue(new Cmd_PivotGoToPosition(m_pivot, 1.7));
 
         ///////////////////////////////////////////////////////
@@ -244,11 +244,11 @@ public class RobotContainer {
         //     .onTrue(new InstantCommand(() -> m_reach.use()));
 
         // Spin claw motors inwards
-        new JoystickButton(m_operatorController, Button.kBack.value) // Xbox back
+        new JoystickButton(m_operatorController.getGenericHID(), Button.kBack.value) // Xbox back
             .onTrue(new Cmd_ClawIntake(m_claw));
 
         // Spin claw motors outwards
-        new JoystickButton(m_operatorController, Button.kStart.value) // Xbox start
+        new JoystickButton(m_operatorController.getGenericHID(), Button.kStart.value) // Xbox start
             .onTrue(new Cmd_ClawOuttake(m_claw));
     }
 
