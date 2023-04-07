@@ -16,7 +16,12 @@ public class PivotGoToPosition extends CommandBase {
 
     @Override
     public void initialize() {
-        m_pivot.setPosition(m_position);
+        //m_pivot.setPosition(m_position);
+        if (m_pivot.getPosition() > m_position) {
+            m_pivot.setSpeed(-0.4);
+        } else {
+            m_pivot.setSpeed(0.4);
+        }
     }
 
     @Override
@@ -30,6 +35,6 @@ public class PivotGoToPosition extends CommandBase {
 
     @Override
     public void end(boolean bool){
-        m_pivot.setSpeed(0.0);
+        m_pivot.stop();
     }
 }

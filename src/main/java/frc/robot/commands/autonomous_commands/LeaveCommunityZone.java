@@ -10,7 +10,7 @@ public class LeaveCommunityZone extends CommandBase {
 
     public LeaveCommunityZone(DriveSubsystem drive) {
         m_drive = drive;
-        addRequirements(m_drive);
+        addRequirements(drive);
     }
 
     @Override

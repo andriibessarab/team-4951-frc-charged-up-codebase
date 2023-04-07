@@ -33,7 +33,7 @@ public class PivotSubsystem extends SubsystemBase {
         m_motor.setInverted(false);
 
         // m_motor.setIdleMode(CANSparkMax.IdleMode.kCoast);
-        m_motor.setIdleMode(CANSparkMax.IdleMode.kBrake); // #TODO test
+        m_motor.setIdleMode(CANSparkMax.IdleMode.kBrake);
         m_motor.setSmartCurrentLimit(kSmartCurrentLimit);
 
         m_encoder.setPositionConversionFactor(kDistancePerRevolution);
@@ -63,8 +63,9 @@ public class PivotSubsystem extends SubsystemBase {
 
     public void setSpeed(double speed) {
         double clampedSpeed = MathUtil.clamp(speed, kMaxControllerDownSpeed, kMaxControllerUpSpeed);
-        //clampedSpeed = MathUtil.applyDeadband(clampedSpeed, kControllerDeadband);
-        m_pidController.setReference(clampedSpeed, CANSparkMax.ControlType.kDutyCycle, 0, kFeedForwardVelocity);
+        clampedSpeed = MathUtil.applyDeadband(clampedSpeed, kControllerDeadband);
+        //m_pidController.setReference(clampedSpeed, CANSparkMax.ControlType.kDutyCycle, 0, kFeedForwardVelocity);
+        m_motor.set(clampedSpeed);
         updateSmartDashboard();
     }
 
@@ -74,15 +75,17 @@ public class PivotSubsystem extends SubsystemBase {
         updateSmartDashboard();
     }
 
-
-
     public double getPosition() {
         return m_encoder.getPosition();
     }
 
     public void stop() {
-        
-        m_motor.stopMotor();
+        if(getPosition()>2){
+            m_pidController.setReference(-0.1, CANSparkMax.ControlType.kCurrent, 0);
+        } else{
+            m_pidController.setReference(0, CANSparkMax.ControlType.kCurrent, 0);
+        }
+
     }
 
     public void updateSmartDashboard() {

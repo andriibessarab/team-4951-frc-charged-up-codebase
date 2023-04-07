@@ -180,8 +180,8 @@ public static final double BalanceKd = 0.05;
 
   //Claw Stuff
   public static final class ClawSubsystemConstants {
-    public static int forwardChannel = 2;
-    public static int reverseChannel = 1;
+    public static int forwardChannel = 15;
+    public static int reverseChannel = 0;
     public static int kRMotorPort = 9;
     public static int kLMotorPort = 8;
   }

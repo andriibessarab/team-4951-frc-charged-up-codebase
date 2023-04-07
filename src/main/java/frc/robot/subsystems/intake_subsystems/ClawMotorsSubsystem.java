@@ -22,12 +22,12 @@ public class ClawMotorsSubsystem extends SubsystemBase{
         m_motor1.setIdleMode(CANSparkMax.IdleMode.kBrake);
     }
     public void spinIn(){
-        m_motor.set(0.35);
-        m_motor1.set(0.35);
+        m_motor.set(0.25);
+        m_motor1.set(0.25);
     }
     public void spinOut(){
-        m_motor.set(-1);
-        m_motor1.set(-1);
+        m_motor.set(-0.75);
+        m_motor1.set(-0.75);
     }
     public void stop(){
         m_motor.stopMotor();

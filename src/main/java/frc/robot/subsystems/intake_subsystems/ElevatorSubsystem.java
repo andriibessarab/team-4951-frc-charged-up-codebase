@@ -19,7 +19,6 @@ public class ElevatorSubsystem extends SubsystemBase {
     private final SparkMaxPIDController m_pidController = m_motor.getPIDController();
 
     private final int MOVE_UP_PID_SLOT = 0;
-    private final int MOVE_DOWN_PID_SLOT = 1;
 
     public ElevatorSubsystem() {
         m_motor.restoreFactoryDefaults();
@@ -39,13 +38,6 @@ public class ElevatorSubsystem extends SubsystemBase {
         m_pidController.setD(Constants.ElevatorSubsystem.MOVE_UP.kD, MOVE_UP_PID_SLOT);
         m_pidController.setIZone(Constants.ElevatorSubsystem.MOVE_UP.kIZone, MOVE_UP_PID_SLOT);
         m_pidController.setOutputRange(-0.7, 0.7, MOVE_UP_PID_SLOT);
-
-        // Setup PID Slot for moving downwards
-        m_pidController.setP(Constants.ElevatorSubsystem.MOVE_DOWN.kP, MOVE_DOWN_PID_SLOT);
-        m_pidController.setI(Constants.ElevatorSubsystem.MOVE_DOWN.kI, MOVE_DOWN_PID_SLOT);
-        m_pidController.setD(Constants.ElevatorSubsystem.MOVE_DOWN.kD, MOVE_DOWN_PID_SLOT);
-        m_pidController.setIZone(Constants.ElevatorSubsystem.MOVE_DOWN.kIZone, MOVE_DOWN_PID_SLOT);
-        m_pidController.setOutputRange(kMinHeight, kMaxHeight, MOVE_DOWN_PID_SLOT);
 
         m_motor.enableSoftLimit(CANSparkMax.SoftLimitDirection.kForward, true);
         m_motor.enableSoftLimit(CANSparkMax.SoftLimitDirection.kReverse, true);
