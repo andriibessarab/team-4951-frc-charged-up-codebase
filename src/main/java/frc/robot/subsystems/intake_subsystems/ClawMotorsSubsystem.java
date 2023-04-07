@@ -25,9 +25,9 @@ public class ClawMotorsSubsystem extends SubsystemBase{
         m_motor.set(0.25);
         m_motor1.set(0.25);
     }
-    public void spinOut(){
-        m_motor.set(-0.75);
-        m_motor1.set(-0.75);
+    public void spinOut(double speed){
+        m_motor.set(-speed);
+        m_motor1.set(-speed);
     }
     public void stop(){
         m_motor.stopMotor();

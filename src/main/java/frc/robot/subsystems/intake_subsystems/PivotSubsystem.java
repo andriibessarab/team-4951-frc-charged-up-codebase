@@ -47,11 +47,11 @@ public class PivotSubsystem extends SubsystemBase {
         m_pidController.setIZone(kIZone);
         m_pidController.setOutputRange(-1, 1);
 
-        //m_motor.enableSoftLimit(CANSparkMax.SoftLimitDirection.kForward, true);
-        //m_motor.enableSoftLimit(CANSparkMax.SoftLimitDirection.kReverse, true);
+        m_motor.enableSoftLimit(CANSparkMax.SoftLimitDirection.kForward, true);
+        m_motor.enableSoftLimit(CANSparkMax.SoftLimitDirection.kReverse, true);
 
-        //m_motor.setSoftLimit(CANSparkMax.SoftLimitDirection.kForward, (float)kMaxOut);  // Top distance limit
-        //m_motor.setSoftLimit(CANSparkMax.SoftLimitDirection.kReverse, (float)kMinOut);  // Bottom distance limit
+        m_motor.setSoftLimit(CANSparkMax.SoftLimitDirection.kForward, (float)kMaxOut);  // Top distance limit
+        m_motor.setSoftLimit(CANSparkMax.SoftLimitDirection.kReverse, (float)kMinOut);  // Bottom distance limit
 
         resetPosition();  // Assumes that it starts at the LOWEST position
 
@@ -63,8 +63,8 @@ public class PivotSubsystem extends SubsystemBase {
 
     public void setSpeed(double speed) {
         double clampedSpeed = MathUtil.clamp(speed, kMaxControllerDownSpeed, kMaxControllerUpSpeed);
-        clampedSpeed = MathUtil.applyDeadband(clampedSpeed, kControllerDeadband);
-        //m_pidController.setReference(clampedSpeed, CANSparkMax.ControlType.kDutyCycle, 0, kFeedForwardVelocity);
+        // clampedSpeed = MathUtil.applyDeadband(clampedSpeed, kControllerDeadband);
+        // m_pidController.setReference(clampedSpeed, CANSparkMax.ControlType.kDutyCycle, 0, kFeedForwardVelocity);
         m_motor.set(clampedSpeed);
         updateSmartDashboard();
     }
@@ -80,11 +80,7 @@ public class PivotSubsystem extends SubsystemBase {
     }
 
     public void stop() {
-        if(getPosition()>2){
-            m_pidController.setReference(-0.1, CANSparkMax.ControlType.kCurrent, 0);
-        } else{
-            m_pidController.setReference(0, CANSparkMax.ControlType.kCurrent, 0);
-        }
+        m_pidController.setReference(getPosition(), CANSparkMax.ControlType.kPosition, 0, kFeedForwardVelocity);
 
     }
 

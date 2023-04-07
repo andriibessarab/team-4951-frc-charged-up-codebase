@@ -7,9 +7,11 @@ import frc.robot.subsystems.intake_subsystems.ClawMotorsSubsystem;
 public class ClawOutake extends CommandBase{
     private ClawMotorsSubsystem motor;
     Timer time = new Timer();
+    double m_speed;
 
-    public ClawOutake(ClawMotorsSubsystem m){
+    public ClawOutake(ClawMotorsSubsystem m, double speed){
         motor = m;
+        m_speed = speed;
     }
 
     @Override
@@ -20,7 +22,7 @@ public class ClawOutake extends CommandBase{
 
     @Override
     public void execute(){
-        motor.spinOut();
+        motor.spinOut(m_speed);
     }
 
     @Override

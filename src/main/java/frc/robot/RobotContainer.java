@@ -126,20 +126,18 @@ public class RobotContainer {
                 
                 
 
-                //TODO: will override the command above, testing only, allow command above to stay
-                // m_elevator.setDefaultCommand(new RunCommand(
+                // TODO: will override the command above, testing only, allow command above to stay
+                // m_claw.setDefaultCommand(new RunCommand(
                 //                 () -> {
                 //                         var rTrigger = m_operatorController.getRightTriggerAxis();
                 //                         var lTrigger = m_operatorController.getLeftTriggerAxis();
                 //                         if(rTrigger>0.2){
-                //                                 m_elevator.setSpeed(rTrigger/3);
+                //                                 new ClawOutake(m_claw);
                 //                         } else if(lTrigger>0.2){
-                //                                 m_elevator.setSpeed(-lTrigger/3);
-                //                         } else{
-                //                                 m_elevator.stop();
+                //                                 new ClawIntake(m_claw);
                 //                         }
                 //                 },
-                //                 m_elevator));
+                //                 m_claw));
         }
 
         /**
@@ -208,10 +206,16 @@ public class RobotContainer {
 
                 // ARM FIXED POSITIONS
                 new JoystickButton(m_operatorController, Button.kB.value)  // LOWER PIVOT
-                        .onTrue(new PivotGoToPosition(m_pivot, 0));
+                        .whileHeld(new PivotOpen(m_pivot));
 
                 new JoystickButton(m_operatorController, Button.kX.value)  // LOWER PIVOT
-                        .onTrue(new PivotGoToPosition(m_pivot, 2.4));
+                        .whileHeld(new PivotClose(m_pivot));
+
+                // new JoystickButton(m_operatorController, Button.kB.value)  // LOWER PIVOT
+                //         .whileHeld(new PivotGoToPosition(m_pivot, 0));
+
+                // new JoystickButton(m_operatorController, Button.kX.value)  // LOWER PIVOT
+                //         .whileHeld(new PivotGoToPosition(m_pivot, 2.4));
 
                 new JoystickButton(m_operatorController, Button.kStart.value)   // UPPER PIVOT
                         .onTrue(new PivotGoToPosition(m_pivot, 0));

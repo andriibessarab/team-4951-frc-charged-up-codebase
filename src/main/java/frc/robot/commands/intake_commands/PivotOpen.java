@@ -13,6 +13,7 @@ public class PivotOpen extends CommandBase{
 
     public PivotOpen(PivotSubsystem m){
         motor = m;
+        addRequirements(motor);
     }
 
     @Override
@@ -24,14 +25,6 @@ public class PivotOpen extends CommandBase{
     @Override
     public void execute(){
         motor.setSpeed(m_speed);
-    }
-
-    @Override
-    public boolean isFinished() {
-        if (time.get()>m_runTime) {
-            return true;
-        }
-        return false;
     }
 
     @Override

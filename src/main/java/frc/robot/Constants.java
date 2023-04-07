@@ -161,8 +161,8 @@ public static final double BalanceKd = 0.05;
     public static double kDistancePerRevolution = Units.inchesToMeters(28.0/7.0); // measured 7 rotations = 28"
     public static double kVelocityMetersPerSecond = kDistancePerRevolution/60.0;
 
-    public static double kMinOut = 0;
-    public static double kMaxOut = 4; // #TODO value from smart dashboard
+    public static double kMinOut = 0.1;
+    public static double kMaxOut = 3.5; // #TODO value from smart dashboard
 
     public static double kCloseValue = 3;
     public static double kOpenValue = 6; // #TODO value from smart dashboard
@@ -171,7 +171,7 @@ public static final double BalanceKd = 0.05;
     public static double kI = 0.0;
     public static double kD = 0.0;
     public static double kIZone = 0.0;
-    public static double kFeedForwardVelocity = 0.3149;
+    public static double kFeedForwardVelocity = 0.5;
 
     public static double kMaxControllerUpSpeed = 0.5; // #TODO test those
     public static double kMaxControllerDownSpeed = -0.5;
