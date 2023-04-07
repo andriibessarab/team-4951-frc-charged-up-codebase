@@ -105,7 +105,7 @@ public static final double BalanceKd = 0.05;
     public static double kDistancePerRevolution = Units.inchesToMeters(28.0/7.0); // measured 7 rotations = 28"
     public static double kVelocityMetersPerSecond = kDistancePerRevolution/60.0;
 
-    public static double kMinHeight = 0.0;
+    public static double kMinHeight = 0.1;
     public static double kMaxHeight = 9.5; // value from smart dashboard
 
     public static class MOVE_UP {

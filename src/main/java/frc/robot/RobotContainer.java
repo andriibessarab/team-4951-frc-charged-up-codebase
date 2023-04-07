@@ -4,34 +4,26 @@
 
 package frc.robot;
 
-import java.util.ArrayList;
-
+import edu.wpi.first.cameraserver.CameraServer;
+import edu.wpi.first.cscore.HttpCamera;
+import edu.wpi.first.cscore.UsbCamera;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.wpilibj.DoubleSolenoid;
-import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.XboxController.Button;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
-import edu.wpi.first.wpilibj2.command.RepeatCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.Constants.OIConstants;
-import frc.robot.commands.autonomous_commands.BasicAutonomous;
 import frc.robot.commands.autonomous_commands.LeaveCommunityZone;
-import frc.robot.commands.drivetrain_commands.AutoDrivePathPlannerTrajectory;
 import frc.robot.commands.drivetrain_commands.AutoSQ_NewBalance;
-import frc.robot.commands.drivetrain_commands.MecanumDriveExample;
 import frc.robot.commands.intake_commands.*;
 import frc.robot.commands.vision_commands.*;
-import frc.robot.helpers.PathPlannerPath;
 import frc.robot.subsystems.drivetrain_subsystems.*;
 import frc.robot.subsystems.intake_subsystems.*;
 import frc.robot.subsystems.vision_subsystems.*;
@@ -61,6 +53,8 @@ public class RobotContainer {
         XboxController m_driverController = new XboxController(OIConstants.DriverControl.kDriverControllerPort);
         XboxController m_operatorController = new XboxController(OIConstants.OperatorControl.kOperatorControllerPort);
 
+        private final HttpCamera m_limelightCamera;
+
         // // Path planner trajectories
         // PathPlannerPath[] m_pathPlannerPaths = {
         //                 new PathPlannerPath("openSidePreload1", true, 0.4, 0.3),
@@ -76,9 +70,18 @@ public class RobotContainer {
          * The container for the robot. Contains subsystems, OI devices, and commands.
          */
         public RobotContainer() {
+                m_limelightCamera = new HttpCamera("LimelightCamera", "http://10.49.51.11:1181/stream.mjpg");
+                m_limelightCamera.setResolution(400, 400);
+                CameraServer.addCamera(m_limelightCamera);
+                Shuffleboard.getTab("Cameras").add(m_limelightCamera);
+                UsbCamera cam = CameraServer.startAutomaticCapture(0);
+                cam.setResolution(400, 400);
+                // CameraServer.addCamera(cam);
+                Shuffleboard.getTab("Cameras").add(cam);  
+
+
                 configureButtonBindings();
                 //registerAutonomousOperations();
-
                 m_limeLight.setDefaultCommand(new WatchForAprilTagPose(m_limeLight, m_robotDrive));
 
                 // // Configure default commands set the default drive command to split-stick
@@ -115,9 +118,13 @@ public class RobotContainer {
                 // #TODO only for testing
                 m_pivot.setDefaultCommand(new RunCommand(
                                 () -> {
-                                        var controllerRightY = m_operatorController.getRightY()
+                                        var controllerLeftY = m_operatorController.getLeftY()
                                                         + Constants.OIConstants.OperatorControl.kZeroCalibrateLeftY;
-                                        m_pivot.setSpeed(-controllerRightY * 0.2);
+                                        if(Math.abs(controllerLeftY)>0.2){
+                                                m_pivot.setSpeed((Math.abs(controllerLeftY)/-controllerLeftY) * 0.2);
+                                        } else{
+                                                m_pivot.setSpeed(0);
+                                        }
                                 },
                                 m_pivot));
                 
@@ -157,14 +164,14 @@ public class RobotContainer {
                 ///////////////////////////////////////////////////////
 
                 // Drive at half speed when the right bumper is held
-                new JoystickButton(m_driverController, Button.kRightBumper.value)// Xbox kRightBumper
-                                .onTrue(new InstantCommand(() -> m_robotDrive.setMaxOutput(0.5)))
-                                .onFalse(new InstantCommand(() -> m_robotDrive.setMaxOutput(1)));
+                // new JoystickButton(m_driverController, Button.kRightBumper.value)// Xbox kRightBumper
+                //                 .onTrue(new InstantCommand(() -> m_robotDrive.setMaxOutput(0.5)))
+                //                 .onFalse(new InstantCommand(() -> m_robotDrive.setMaxOutput(1)));
 
                 new JoystickButton(m_driverController, Button.kA.value)
                                 .onTrue(new AutoSQ_NewBalance(0, m_robotDrive));
 
-                                // Update smart dashboard values
+                // Update smart dashboard values
                 // new JoystickButton(m_driverController, Button.kLeftBumper.value) // Xbox kA
                 //                 .whenHeld(new RepeatCommand(new InstantCommand(m_robotDrive::strafeLeft)));
 
@@ -198,23 +205,42 @@ public class RobotContainer {
                 ///////////////////////////////////////////////////////
 
                 // Update smart dashboard values
-                new JoystickButton(m_driverController, Button.kA.value) // Xbox kA
-                                .whenHeld(new InstantCommand(m_robotDrive::updateSmartDashboard));
+                // new JoystickButton(m_driverController, Button.kA.value) // Xbox kA
+                //                 .whenHeld(new InstantCommand(m_robotDrive::updateSmartDashboard));
 
-                // Reset gyro heading to zero
-                new JoystickButton(m_driverController, Button.kY.value) // Xbox kY
-                                .whenHeld(new InstantCommand(m_robotDrive::zeroHeading));
+                // // Reset gyro heading to zero
+                // new JoystickButton(m_driverController, Button.kY.value) // Xbox kY
+                //                 .whenHeld(new InstantCommand(m_robotDrive::zeroHeading));
                 
-                // #TODO add command for 180
+
+                ///////////////////////////////////
+                // OPERATOR CONTROLS             //
+                //                               //
+                //  ELEVATOR                     //
+                //    Button Y - Go to Top Level //
+                //    button B - Go to Mid Level //
+                //    Button A - Go to Low Level //
+                //                               //
+                //  ARM                          //
+                //    [to be determined]         //
+                //                               //
+                //  PIVOT                        //
+                //    Left Joystick Y - Manual   //
+                //    Button X - Pivot In        //
+                //    Button Start - Pivot Out   //
+                ///////////////////////////////////
 
                 ///////////////////////////////////////////////////////
                 // ELEVATOR
                 ///////////////////////////////////////////////////////
 
-                new JoystickButton(m_operatorController, Button.kY.value)       // HIGH_ELEVATOR_POSITION
+                new JoystickButton(m_operatorController, Button.kY.value)       // HIGH ELEVATOR POS
                         .onTrue(new InstantCommand(() -> m_elevator.setPosition( Constants.ElevatorSubsystem.kTopLayerHeight) ));
                 
-                new JoystickButton(m_operatorController, Button.kA.value)       // LOW_ELEVATOR_POSITION
+                new JoystickButton(m_operatorController, Button.kB.value)       // MID ELEVATOR POS
+                        .onTrue(new InstantCommand(() -> m_elevator.setPosition( Constants.ElevatorSubsystem.kMidLayerHeight) ));
+
+                new JoystickButton(m_operatorController, Button.kA.value)       // LOW ELEVATOR POS
                         .onTrue(new InstantCommand(() -> m_elevator.setPosition( Constants.ElevatorSubsystem.kBottomLayerHeight ) ));
 
                 ///////////////////////////////////////////////////////
@@ -222,150 +248,35 @@ public class RobotContainer {
                 ///////////////////////////////////////////////////////
 
                 // ARM FIXED POSITIONS
-                new JoystickButton(m_operatorController, Button.kB.value)  // LOWER PIVOT
-                        .whileHeld(new PivotOpen(m_pivot));
-
-                new JoystickButton(m_operatorController, Button.kX.value)  // LOWER PIVOT
-                        .whileHeld(new PivotClose(m_pivot));
-
                 // new JoystickButton(m_operatorController, Button.kB.value)  // LOWER PIVOT
-                //         .whileHeld(new PivotGoToPosition(m_pivot, 0));
+                //         .whileHeld(new PivotOpen(m_pivot));
 
                 // new JoystickButton(m_operatorController, Button.kX.value)  // LOWER PIVOT
-                //         .whileHeld(new PivotGoToPosition(m_pivot, 2.4));
+                        // .whileHeld(new PivotClose(m_pivot));
 
-                new JoystickButton(m_operatorController, Button.kStart.value)   // UPPER PIVOT
-                        .onTrue(new PivotGoToPosition(m_pivot, 0));
+                new JoystickButton(m_operatorController, Button.kX.value) // PIVOT IN
+                        .onTrue(new PivotGoToPosition(m_pivot, 0.2));
 
-                new JoystickButton(m_operatorController, Button.kBack.value)   // UPPER PIVOT
-                        .onTrue(new PivotGoToPosition(m_pivot, 0));
+
+                new JoystickButton(m_operatorController, Button.kStart.value) // PIVOT OUT
+                        .onTrue(new PivotGoToPosition(m_pivot, 3.6));
 
                 ///////////////////////////////////////////////////////
                 // INTAKE
                 ///////////////////////////////////////////////////////
 
-                new JoystickButton(m_operatorController, Button.kRightBumper.value)
+                new JoystickButton(m_operatorController, Button.kRightBumper.value) // INTAKE OUT
                         .onTrue(new ClawOutake(m_claw, 0.75));
 
-                new JoystickButton(m_operatorController, Button.kLeftBumper.value)
+                new JoystickButton(m_operatorController, Button.kLeftBumper.value) // INTAKE IN
                         .whileHeld(new ClawIntake(m_claw));
 
                 ///////////////////////////////////////////////////////
-                // CLAW
+                // CLAW PNEUMATICS
                 ///////////////////////////////////////////////////////
 
-                new JoystickButton(m_operatorController, Button.kLeftStick.value)
-                        .onTrue(new InstantCommand(()->m_reach.use()));
-
-
-
-
-
-
-
-
-
-
-
-        
-        
-        
-        
-                // Operator Controls
-                //
-                //     Lower Right Button onHeld - run OUTTAKE
-                //     Upper Right Button onHeld - Lower ARM
-                //
-                //     Lower Left Button onHeld - run INTAKE
-                //     Upper Left Button onHeld - Raise ARM
-                //
-                //  ELEVATOR FIXED POSITIONS:
-                //     Y Button - HIGH_ELEVATOR_POSITION
-                //     B Button - MIDDLE_ELEVATOR_POSITION
-                //     A Button - LOW_ELEVATOR_POSITION
-                //
-                // ARM FIXED POSITIONS:
-                // //     X Button           - HIGH_ARM_POSITION
-                // //     START (right side) - MIDDLE_ARM_POSITION
-                // //     BACK (left side)   - LOW_ARM_POSITION
-
-                // ///////// ELEVATOR
-                // new JoystickButton(m_operatorController, Button.kY.value)       // HIGH_ELEVATOR_POSITION
-                //         .onTrue(new InstantCommand(() -> m_elevator.setPosition( Constants.ElevatorSubsystem.kTopLayerHeight) ));
-                // new JoystickButton(m_operatorController, Button.kA.value)       // LOW_ELEVATOR_POSITION
-                //         .onTrue(new InstantCommand(() -> m_elevator.setPosition( Constants.ElevatorSubsystem.kBottomLayerHeight ) ));
-                //         new JoystickButton(m_operatorController, Button.kBack.value)
-                //         .onTrue(new ClawOutake(m_claw));
-                // new JoystickButton(m_operatorController, Button.kStart.value)
-                //         .onTrue(new ClawIntake(m_claw));
-
-
-
-                //////////////// STONE's BINDINGS /////////////////////////////
-
-
-                // new JoystickButton(m_operatorController, Button.kBack.value)
-                //         .onTrue(new ClawOutake(m_claw));
-                // new JoystickButton(m_operatorController, Button.kStart.value)
-                //         .onTrue(new ClawIntake(m_claw));
-
-                // new JoystickButton(m_operatorController, Button.kX.value)
-                //         .onTrue(new InstantCommand(()->m_reach.use()));
-
-                // // ELEVATOR FIXED POSITIONS
-                // new JoystickButton(m_operatorController, Button.kY.value)       // HIGH_ELEVATOR_POSITION
-                //         .onTrue(new InstantCommand(() -> m_elevator.setPosition( Constants.ElevatorSubsystem.kTopLayerHeight) ));
-                // new JoystickButton(m_operatorController, Button.kB.value)       // MIDDLE_ELEVATOR_POSITION
-                //         .onTrue(new InstantCommand(() -> m_elevator.setPosition( Constants.ElevatorSubsystem.kMidLayerHeight ) ));
-                // new JoystickButton(m_operatorController, Button.kA.value)       // LOW_ELEVATOR_POSITION
-                //         .onTrue(new InstantCommand(() -> m_elevator.setPosition( Constants.ElevatorSubsystem.kBottomLayerHeight ) ));
-
-                // // ARM FIXED POSITIONS
-                // new JoystickButton(m_operatorController, Button.kRightBumper.value)  // LOWER PIVOT
-                //         .onTrue(new PivotGoToPosition(m_pivot, 0));
-                // new JoystickButton(m_operatorController, Button.kLeftBumper.value)   // UPPER PIVOT
-                //         .onTrue(new PivotGoToPosition(m_pivot, 2.4));
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-                // new JoystickButton(m_operatorController, Button.kX.value)       // HIGH_ARM_POSITION
-                //         .onTrue(new InstantCommand(() -> m_arm.setPosition( 0.0 ) ));
-                // new JoystickButton(m_operatorController, Button.kStart.value)   // MIDDLE_ARM_POSITION
-                //         .onTrue(new InstantCommand(() -> m_arm.setPosition( 0.0 ) ));
-                // new JoystickButton(m_operatorController, Button.kBack.value)    // LOW_ARM_POSITION
-                //         .onTrue(new InstantCommand(() -> m_arm.setPosition( 0.0 ) ));
+                new JoystickButton(m_operatorController, Button.kRightStick.value) // FLIP PNEUMATICS STATE
+                        .onTrue(new InstantCommand(()->m_reach.use())); 
         }
 
         // /**

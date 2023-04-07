@@ -74,10 +74,10 @@ public class DriveSubsystem extends SubsystemBase {
     m_frontRight.setIdleMode(CANSparkMax.IdleMode.kBrake);
     m_rearRight.setIdleMode(CANSparkMax.IdleMode.kBrake);
 
-    m_frontLeft.setSmartCurrentLimit(40);
-    m_rearLeft.setSmartCurrentLimit(40);
-    m_frontRight.setSmartCurrentLimit(40);
-    m_rearRight.setSmartCurrentLimit(40);
+    m_frontLeft.setSmartCurrentLimit(48);
+    m_rearLeft.setSmartCurrentLimit(48);
+    m_frontRight.setSmartCurrentLimit(48);
+    m_rearRight.setSmartCurrentLimit(48);
 
     // Set the distance per pulse for the encoders
     m_frontLeftEncoder.setPositionConversionFactor(DriveConstants.kRotationsToMeterConversionFactor);

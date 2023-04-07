@@ -96,7 +96,7 @@ public class PivotSubsystem extends SubsystemBase {
     }
 
     public final void resetPosition() {
-        m_encoder.setPosition(kMinOut);
+        m_encoder.setPosition(0);
     }
 
     @Override
