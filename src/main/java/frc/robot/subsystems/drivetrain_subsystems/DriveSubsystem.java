@@ -15,6 +15,8 @@ import edu.wpi.first.wpilibj.drive.MecanumDrive;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+
+import com.ctre.phoenix.sensors.PigeonIMU;
 import com.kauailabs.navx.frc.AHRS;
 import frc.robot.Constants.DriveConstants;
 import edu.wpi.first.wpilibj.BuiltInAccelerometer;
@@ -45,7 +47,7 @@ public class DriveSubsystem extends SubsystemBase {
   // Gyro
   //private final ADIS16470_IMU m_gyro = new ADIS16470_IMU();
   // private final AHRS m_gyro = new AHRS(SPI.Port.kMXP);
-  private final BuiltInAccelerometer m_gyro = new BuiltInAccelerometer();
+  private final PigeonIMU m_gyro = new PigeonIMU(40);
   private long m_gyroLastResetTimeMS = 0;
   private double m_gyroYawOffset = 0.0;
   private double m_gyroPitchOffset = 0.0;
@@ -156,6 +158,13 @@ public class DriveSubsystem extends SubsystemBase {
     }
   }
 
+  public void driveMecanumStrafeOnly(double x, double y, double zRot){
+      m_frontLeft.set(-y);
+      m_rearLeft.set(y);
+      m_rearRight.set(-y);
+      m_frontRight.set(y);
+  }
+
   public void driveMecanum(double xSpeed, double ySpeed, double zRot) {
     // Calculate the angle and magnitude of the joystick input
     double theta = Math.atan2(ySpeed, xSpeed);
@@ -193,6 +202,33 @@ public class DriveSubsystem extends SubsystemBase {
     }
   }
 
+  public void strafeLeft() {
+    m_frontLeft.set(-1);
+    m_frontRight.set(1);
+    m_rearLeft.set(1);
+    m_rearRight.set(-1);
+  }
+
+  public void strafeRight() {
+    m_frontLeft.set(1);
+    m_frontRight.set(-1);
+    m_rearLeft.set(-1);
+    m_rearRight.set(1);
+  }
+
+  public void strafeLeftQuarter() {
+    m_frontLeft.set(-0.25);
+    m_frontRight.set(0.25);
+    m_rearLeft.set(0.25);
+    m_rearRight.set(-0.25);
+  }
+
+  public void strafeRighQuarter() {
+    m_frontLeft.set(0.25);
+    m_frontRight.set(-0.25);
+    m_rearLeft.set(-0.25);
+    m_rearRight.set(0.25);
+  }
   /**
    * Sets the drive MotorController to a voltage.
    */
@@ -310,12 +346,15 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
   public double getPitch() {
-    return Math.atan2((-m_gyro.getX()),
-            Math.sqrt(m_gyro.getY() * m_gyro.getY() + m_gyro.getZ() * m_gyro.getZ())) * 57.3;
+    return m_gyro.getPitch();
+  }
+  
+public double getRoll() {
+    return m_gyro.getRoll();
 }
 
-public double getRoll() {
-    return Math.atan2(m_gyro.getY(), m_gyro.getZ()) * 57.3;
+public double getYaw() {
+  return m_gyro.getRoll();
 }
 
 // returns the magnititude of the robot's tilt calculated by the root of

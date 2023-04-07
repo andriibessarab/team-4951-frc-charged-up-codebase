@@ -13,7 +13,7 @@ public class AutoSQ_NewBalance extends SequentialCommandGroup {
         // place the cone
         // new CmdSQ_PlaceConeAuto(Where, driveTrain, Arm, intake),
         // back up 12ft to get out of the community
-        new Cmd_DrivetoCharge(driveTrain),
+        // new Cmd_DrivetoCharge(driveTrain),
         // drive foward onto the charge station 
         //new Cmd_DriveRotate(1, driveTrain),
         //new CmdSQ_PickupConeFromFloor(driveTrain, Arm, intake),

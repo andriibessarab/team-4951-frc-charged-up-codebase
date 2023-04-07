@@ -19,6 +19,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.RepeatCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
@@ -94,7 +95,7 @@ public class RobotContainer {
                                                         m_robotDrive.driveMecanum(
                                                                         MathUtil.applyDeadband(controllerLeftX,
                                                                                         Constants.OIConstants.DriverControl.kDriveDeadband),
-                                                                                        MathUtil.applyDeadband(-controllerLeftY,
+                                                                        MathUtil.applyDeadband(-controllerLeftY,
                                                                                         Constants.OIConstants.DriverControl.kDriveDeadband),
                                                                         MathUtil.applyDeadband(controllerRightX * 0.67,
                                                                                         Constants.OIConstants.DriverControl.kRotationDeadband)
@@ -163,6 +164,22 @@ public class RobotContainer {
                 new JoystickButton(m_driverController, Button.kA.value)
                                 .onTrue(new AutoSQ_NewBalance(0, m_robotDrive));
 
+                                // Update smart dashboard values
+                // new JoystickButton(m_driverController, Button.kLeftBumper.value) // Xbox kA
+                //                 .whenHeld(new RepeatCommand(new InstantCommand(m_robotDrive::strafeLeft)));
+
+                // // Reset gyro heading to zero
+                // new JoystickButton(m_driverController, Button.kRightBumper.value) // Xbox kY
+                //                 .whenHeld(new RepeatCommand(new InstantCommand(m_robotDrive::strafeRight)));
+
+                // // Update smart dashboard values
+                // new JoystickButton(m_driverController, Button.kX.value) // Xbox kA
+                //                 .whenHeld(new RepeatCommand(new InstantCommand(()->{m_robotDrive.strafeLeftQuarter();})));
+                
+                // // Reset gyro heading to zero
+                // new JoystickButton(m_driverController, Button.kB.value) // Xbox kY
+                //                 .whenHeld(new RepeatCommand(new InstantCommand(()->{m_robotDrive.strafeLeftQuarter();})));
+
 
                 ///////////////////////////////////////////////////////
                 // VISION
@@ -228,10 +245,10 @@ public class RobotContainer {
                 ///////////////////////////////////////////////////////
 
                 new JoystickButton(m_operatorController, Button.kRightBumper.value)
-                        .onTrue(new ClawOutake(m_claw));
+                        .onTrue(new ClawOutake(m_claw, 0.75));
 
                 new JoystickButton(m_operatorController, Button.kLeftBumper.value)
-                        .onTrue(new ClawIntake(m_claw));
+                        .whileHeld(new ClawIntake(m_claw));
 
                 ///////////////////////////////////////////////////////
                 // CLAW
@@ -416,7 +433,7 @@ public class RobotContainer {
                                 new ElevatorGotoPosition(m_elevator, Constants.ElevatorSubsystem.kTopLayerHeight),
                                 new PivotGoToPosition(m_pivot, 2.3)
                         ),
-                        new ClawOutake(m_claw),
+                        new ClawOutake(m_claw, 0.75),
                         new ParallelCommandGroup(
                                 new PivotGoToPosition(m_pivot, 0),
                                 new ElevatorGotoPosition(m_elevator, 0)

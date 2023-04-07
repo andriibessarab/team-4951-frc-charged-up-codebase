@@ -36,11 +36,11 @@ public class Cmd_DriveBalance extends CommandBase {
     public void execute() {
         SmartDashboard.putString("Drive Cmd","DriveBalance");
         SmartDashboard.putString("Drive bal","DriveBalance running");
-        if (m_driveTrain.getRoll() > maxAngle )
-            maxAngle = m_driveTrain.getRoll();
+        if (m_driveTrain.getPitch() > maxAngle )
+            maxAngle = m_driveTrain.getPitch();
 //was 0.35
-        double DriveSpeed = 0.15; //BalancePID.calculate(m_driveTrain.getRoll());
-        if ( (maxAngle - m_driveTrain.getRoll())>1)
+        double DriveSpeed =     BalancePID.calculate(m_driveTrain.getPitch());
+        if ( (maxAngle - m_driveTrain.getPitch())>1)
             DriveSpeed =0;
         DriveSpeed = MathUtil.clamp(DriveSpeed, -0.25, 0.25);
         
@@ -62,12 +62,12 @@ public class Cmd_DriveBalance extends CommandBase {
     // Returns true when the command should end.
     @Override
     public boolean isFinished() {
-        if (maxAngle - m_driveTrain.getRoll()>1)
+        if (maxAngle - m_driveTrain.getPitch()>1)
         {
             SmartDashboard.putString("Drive bal","DriveBalance finishe");
             return true;
         }
-        if (m_driveTrain.getRoll() < -2)
+        if (m_driveTrain.getPitch() < -2)
             return true;
         return false;
     }
