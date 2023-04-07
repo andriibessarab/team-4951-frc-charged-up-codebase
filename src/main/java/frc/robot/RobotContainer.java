@@ -74,7 +74,6 @@ public class RobotContainer {
         /**
          * The container for the robot. Contains subsystems, OI devices, and commands.
          */
-
         public RobotContainer() {
                 configureButtonBindings();
                 //registerAutonomousOperations();
@@ -86,32 +85,31 @@ public class RobotContainer {
                 m_robotDrive.setDefaultCommand(
                                 // A split-stick arcade command, with forward/backward controlled by the left
                                 // hand, and turning controlled by the right.
-                                new RunCommand(
+                                new InstantCommand(
                                                 () -> {                                                    
                                                         var controllerLeftX = m_driverController.getLeftX();
                                                         var controllerLeftY = m_driverController.getLeftY();
                                                         var controllerRightX = m_driverController.getRightX();
 
-                                                        m_robotDrive.drive(
-                                                                MathUtil.applyDeadband(-controllerLeftY,
-                                                                Constants.OIConstants.DriverControl.kDriveDeadband),
+                                                        m_robotDrive.driveMecanum(
                                                                         MathUtil.applyDeadband(controllerLeftX,
                                                                                         Constants.OIConstants.DriverControl.kDriveDeadband),
-
+                                                                                        MathUtil.applyDeadband(-controllerLeftY,
+                                                                                        Constants.OIConstants.DriverControl.kDriveDeadband),
                                                                         MathUtil.applyDeadband(controllerRightX * 0.67,
-                                                                                        Constants.OIConstants.DriverControl.kRotationDeadband), false
+                                                                                        Constants.OIConstants.DriverControl.kRotationDeadband)
                                                         );
                                                 },
                                                 m_robotDrive));
 
                 // #TODO only for testing
-                m_arm.setDefaultCommand(new RunCommand(
-                                () -> {
-                                        var controllerLeftY = m_operatorController.getLeftY()
-                                                        + Constants.OIConstants.OperatorControl.kZeroCalibrateLeftY;
-                                        m_arm.setSpeed(controllerLeftY);
-                                },
-                                m_arm));
+                // m_arm.setDefaultCommand(new RunCommand(
+                //                 () -> {
+                //                         var controllerLeftY = m_operatorController.getLeftY()
+                //                                         + Constants.OIConstants.OperatorControl.kZeroCalibrateLeftY;
+                //                         m_arm.setSpeed(controllerLeftY);
+                //                 },
+                //                 m_arm));
 
                 // #TODO only for testing
                 m_pivot.setDefaultCommand(new RunCommand(
@@ -123,19 +121,7 @@ public class RobotContainer {
                                 m_pivot));
                 
                 //TODO: test to see if work, might keep for actual use
-                m_claw.setDefaultCommand(new RunCommand(
-                                () -> {
-                                        var rTrigger = m_operatorController.getRightTriggerAxis();
-                                        var lTrigger = m_operatorController.getLeftTriggerAxis();
-                                        if(rTrigger>0.2){
-                                                m_claw.spinOut(); //RT2 out
-                                        } else if(lTrigger>0.2){
-                                                m_claw.spinIn(); //LT2 in
-                                        } else{
-                                                m_claw.stop();
-                                        }
-                                },
-                                m_claw));
+                // m_claw.setDefaultCommand(new Cmd_defaultClawCommand(m_claw, m_driverController));
 
                 
                 
@@ -184,13 +170,13 @@ public class RobotContainer {
                 // VISION
                 ///////////////////////////////////////////////////////
 
-                // Align robot with detected retro tape
-                new JoystickButton(m_driverController, Button.kLeftBumper.value) // Xbox kLeftBumper
-                                .whenHeld(new AutoAlignWithRetroTape(m_limeLight, m_robotDrive));
+                // // Align robot with detected retro tape
+                // new JoystickButton(m_driverController, Button.kLeftBumper.value) // Xbox kLeftBumper
+                //                 .whenHeld(new AutoAlignWithRetroTape(m_limeLight, m_robotDrive));
 
-                // Align robot with detected april tag
-                new JoystickButton(m_driverController, Button.kX.value) // Xbox kX
-                                .whenHeld(new AutoAlignWithAprilTag(m_limeLight, m_robotDrive));
+                // // Align robot with detected april tag
+                // new JoystickButton(m_driverController, Button.kX.value) // Xbox kX
+                //                 .whenHeld(new AutoAlignWithAprilTag(m_limeLight, m_robotDrive));
 
                 ///////////////////////////////////////////////////////
                 // DRIVE MISC
@@ -205,6 +191,61 @@ public class RobotContainer {
                                 .whenHeld(new InstantCommand(m_robotDrive::zeroHeading));
                 
                 // #TODO add command for 180
+
+                ///////////////////////////////////////////////////////
+                // ELEVATOR
+                ///////////////////////////////////////////////////////
+
+                new JoystickButton(m_operatorController, Button.kY.value)       // HIGH_ELEVATOR_POSITION
+                        .onTrue(new InstantCommand(() -> m_elevator.setPosition( Constants.ElevatorSubsystem.kTopLayerHeight) ));
+                
+                new JoystickButton(m_operatorController, Button.kA.value)       // LOW_ELEVATOR_POSITION
+                        .onTrue(new InstantCommand(() -> m_elevator.setPosition( Constants.ElevatorSubsystem.kBottomLayerHeight ) ));
+
+                ///////////////////////////////////////////////////////
+                // PIVOT
+                ///////////////////////////////////////////////////////
+
+                // ARM FIXED POSITIONS
+                new JoystickButton(m_operatorController, Button.kB.value)  // LOWER PIVOT
+                        .onTrue(new PivotGoToPosition(m_pivot, 0));
+
+                new JoystickButton(m_operatorController, Button.kX.value)  // LOWER PIVOT
+                        .onTrue(new PivotGoToPosition(m_pivot, 2.4));
+
+                new JoystickButton(m_operatorController, Button.kStart.value)   // UPPER PIVOT
+                        .onTrue(new PivotGoToPosition(m_pivot, 0));
+
+                new JoystickButton(m_operatorController, Button.kBack.value)   // UPPER PIVOT
+                        .onTrue(new PivotGoToPosition(m_pivot, 0));
+
+                ///////////////////////////////////////////////////////
+                // INTAKE
+                ///////////////////////////////////////////////////////
+
+                new JoystickButton(m_operatorController, Button.kRightBumper.value)
+                        .onTrue(new ClawOutake(m_claw));
+
+                new JoystickButton(m_operatorController, Button.kLeftBumper.value)
+                        .onTrue(new ClawIntake(m_claw));
+
+                ///////////////////////////////////////////////////////
+                // CLAW
+                ///////////////////////////////////////////////////////
+
+                new JoystickButton(m_operatorController, Button.kLeftStick.value)
+                        .onTrue(new InstantCommand(()->m_reach.use()));
+
+
+
+
+
+
+
+
+
+
+
         
         
         
@@ -223,31 +264,87 @@ public class RobotContainer {
                 //     A Button - LOW_ELEVATOR_POSITION
                 //
                 // ARM FIXED POSITIONS:
-                //     X Button           - HIGH_ARM_POSITION
-                //     START (right side) - MIDDLE_ARM_POSITION
-                //     BACK (left side)   - LOW_ARM_POSITION
+                // //     X Button           - HIGH_ARM_POSITION
+                // //     START (right side) - MIDDLE_ARM_POSITION
+                // //     BACK (left side)   - LOW_ARM_POSITION
+
+                // ///////// ELEVATOR
+                // new JoystickButton(m_operatorController, Button.kY.value)       // HIGH_ELEVATOR_POSITION
+                //         .onTrue(new InstantCommand(() -> m_elevator.setPosition( Constants.ElevatorSubsystem.kTopLayerHeight) ));
+                // new JoystickButton(m_operatorController, Button.kA.value)       // LOW_ELEVATOR_POSITION
+                //         .onTrue(new InstantCommand(() -> m_elevator.setPosition( Constants.ElevatorSubsystem.kBottomLayerHeight ) ));
+                //         new JoystickButton(m_operatorController, Button.kBack.value)
+                //         .onTrue(new ClawOutake(m_claw));
+                // new JoystickButton(m_operatorController, Button.kStart.value)
+                //         .onTrue(new ClawIntake(m_claw));
 
 
-                new JoystickButton(m_operatorController, Button.kRightBumper.value)  // LOWER PIVOT
-                        .onTrue(new InstantCommand(() -> {} ));
-                new JoystickButton(m_operatorController, Button.kLeftBumper.value)   // UPPER PIVOT
-                        .onTrue(new InstantCommand(() -> {} ));
 
-                // ELEVATOR FIXED POSITIONS
-                new JoystickButton(m_operatorController, Button.kY.value)       // HIGH_ELEVATOR_POSITION
-                        .onTrue(new InstantCommand(() -> m_elevator.setPosition( Constants.ElevatorSubsystem.kTopLayerHeight) ));
-                new JoystickButton(m_operatorController, Button.kB.value)       // MIDDLE_ELEVATOR_POSITION
-                        .onTrue(new InstantCommand(() -> m_elevator.setPosition( Constants.ElevatorSubsystem.kMidLayerHeight ) ));
-                new JoystickButton(m_operatorController, Button.kA.value)       // LOW_ELEVATOR_POSITION
-                        .onTrue(new InstantCommand(() -> m_elevator.setPosition( Constants.ElevatorSubsystem.kBottomLayerHeight ) ));
+                //////////////// STONE's BINDINGS /////////////////////////////
 
-                // ARM FIXED POSITIONS
-                new JoystickButton(m_operatorController, Button.kX.value)       // HIGH_ARM_POSITION
-                        .onTrue(new InstantCommand(() -> m_arm.setPosition( 0.0 ) ));
-                new JoystickButton(m_operatorController, Button.kStart.value)   // MIDDLE_ARM_POSITION
-                        .onTrue(new InstantCommand(() -> m_arm.setPosition( 0.0 ) ));
-                new JoystickButton(m_operatorController, Button.kBack.value)    // LOW_ARM_POSITION
-                        .onTrue(new InstantCommand(() -> m_arm.setPosition( 0.0 ) ));
+
+                // new JoystickButton(m_operatorController, Button.kBack.value)
+                //         .onTrue(new ClawOutake(m_claw));
+                // new JoystickButton(m_operatorController, Button.kStart.value)
+                //         .onTrue(new ClawIntake(m_claw));
+
+                // new JoystickButton(m_operatorController, Button.kX.value)
+                //         .onTrue(new InstantCommand(()->m_reach.use()));
+
+                // // ELEVATOR FIXED POSITIONS
+                // new JoystickButton(m_operatorController, Button.kY.value)       // HIGH_ELEVATOR_POSITION
+                //         .onTrue(new InstantCommand(() -> m_elevator.setPosition( Constants.ElevatorSubsystem.kTopLayerHeight) ));
+                // new JoystickButton(m_operatorController, Button.kB.value)       // MIDDLE_ELEVATOR_POSITION
+                //         .onTrue(new InstantCommand(() -> m_elevator.setPosition( Constants.ElevatorSubsystem.kMidLayerHeight ) ));
+                // new JoystickButton(m_operatorController, Button.kA.value)       // LOW_ELEVATOR_POSITION
+                //         .onTrue(new InstantCommand(() -> m_elevator.setPosition( Constants.ElevatorSubsystem.kBottomLayerHeight ) ));
+
+                // // ARM FIXED POSITIONS
+                // new JoystickButton(m_operatorController, Button.kRightBumper.value)  // LOWER PIVOT
+                //         .onTrue(new PivotGoToPosition(m_pivot, 0));
+                // new JoystickButton(m_operatorController, Button.kLeftBumper.value)   // UPPER PIVOT
+                //         .onTrue(new PivotGoToPosition(m_pivot, 2.4));
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                // new JoystickButton(m_operatorController, Button.kX.value)       // HIGH_ARM_POSITION
+                //         .onTrue(new InstantCommand(() -> m_arm.setPosition( 0.0 ) ));
+                // new JoystickButton(m_operatorController, Button.kStart.value)   // MIDDLE_ARM_POSITION
+                //         .onTrue(new InstantCommand(() -> m_arm.setPosition( 0.0 ) ));
+                // new JoystickButton(m_operatorController, Button.kBack.value)    // LOW_ARM_POSITION
+                //         .onTrue(new InstantCommand(() -> m_arm.setPosition( 0.0 ) ));
         }
 
         // /**
