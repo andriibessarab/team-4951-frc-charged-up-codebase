@@ -247,19 +247,12 @@ public class RobotContainer {
                 // PIVOT
                 ///////////////////////////////////////////////////////
 
-                // ARM FIXED POSITIONS
-                // new JoystickButton(m_operatorController, Button.kB.value)  // LOWER PIVOT
-                //         .whileHeld(new PivotOpen(m_pivot));
-
-                // new JoystickButton(m_operatorController, Button.kX.value)  // LOWER PIVOT
-                        // .whileHeld(new PivotClose(m_pivot));
-
-                new JoystickButton(m_operatorController, Button.kX.value) // PIVOT IN
-                        .onTrue(new PivotGoToPosition(m_pivot, 0.2));
+                // new JoystickButton(m_operatorController, Button.kX.value) // PIVOT IN
+                //         .onTrue(new PivotGoToPosition(m_pivot, 0.1));
 
 
-                new JoystickButton(m_operatorController, Button.kStart.value) // PIVOT OUT
-                        .onTrue(new PivotGoToPosition(m_pivot, 3.6));
+                // new JoystickButton(m_operatorController, Button.kStart.value) // PIVOT OUT
+                //         .onTrue(new PivotGoToPosition(m_pivot, 3.6));
 
                 ///////////////////////////////////////////////////////
                 // INTAKE
@@ -320,36 +313,16 @@ public class RobotContainer {
 
         public Command getAutonomousCommand() {
                 return new SequentialCommandGroup(
-                          /////////////////////////////////////////
-                         // DRIVE BACK PUT CUBE LEAVE COM ZONE  //
-                        /////////////////////////////////////////
-                        // new BasicAutonomous(m_robotDrive),
-                        // new InstantCommand(()->m_robotDrive.driveMecanum(0, 0, 0))
-
-                          /////////////////////////////////////////
-                         //              DO NOTHING             //
-                        /////////////////////////////////////////
-
-                        // new InstantCommand(()->m_robotDrive.driveMecanum(0, 0, 0))
-
-                          /////////////////////////////////////////
-                         // PUT CUBE W/ INTAKE, LEAVE COM ZONE  //
-                        // /////////////////////////////////////////
-                        // new PivotOpen(m_pivot).andThen(()->m_pivot.stop(), m_pivot),
-                        // new ClawOutake(m_claw).andThen(()->m_claw.stop(), m_claw),
-                        // new PivotClose(m_pivot).andThen(()->m_pivot.stop(), m_pivot),
-                        // new LeaveCommunityZone(m_robotDrive).andThen(()->m_robotDrive.driveMecanum(0, 0, 0), m_robotDrive)
-
                         new ParallelCommandGroup(
                                 new ElevatorGotoPosition(m_elevator, Constants.ElevatorSubsystem.kTopLayerHeight),
-                                new PivotGoToPosition(m_pivot, 2.3)
+                                new PivotGoToPositionAuto(m_pivot, 2.3)
                         ),
-                        new ClawOutake(m_claw, 0.75),
+                        new ClawOutake(m_claw, 0.6),
                         new ParallelCommandGroup(
-                                new PivotGoToPosition(m_pivot, 0),
+                                new LeaveCommunityZone(m_robotDrive),
+                                new PivotGoToPositionAuto(m_pivot, 0),
                                 new ElevatorGotoPosition(m_elevator, 0)
-                        ),
-                        new LeaveCommunityZone(m_robotDrive)
+                        )
 
                 );
         }

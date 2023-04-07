@@ -21,7 +21,7 @@ public class ElevatorGotoPosition extends CommandBase {
     @Override
     public boolean isFinished() {
         double current = m_elevator.getPosition();
-        if (Math.abs(current-m_position) < 0.1) {
+        if (Math.abs(current-m_position) < 0.2) {
             return true;
         }
         return false;

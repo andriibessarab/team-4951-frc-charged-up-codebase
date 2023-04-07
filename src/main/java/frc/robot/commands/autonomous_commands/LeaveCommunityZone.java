@@ -21,12 +21,17 @@ public class LeaveCommunityZone extends CommandBase {
 
     @Override
     public void execute() {
-        m_drive.driveMecanum(0, -0.3, 0);
+
+        if(m_timer.get()<2){
+            m_drive.driveMecanum(0, 0, 0);
+        } else{
+            m_drive.driveMecanum(0, -0.3, 0);
+        }
     }
 
     @Override
     public boolean isFinished() {
-        if (m_timer.get() > 2.2) {
+        if (m_timer.get() > 4.2) {
             return true;
         }
         return false;
