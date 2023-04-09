@@ -1,7 +1,5 @@
 package frc.robot;
 
-import com.revrobotics.CANSparkMax;
-
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.MecanumDriveKinematics;
@@ -17,26 +15,22 @@ import edu.wpi.first.math.util.Units;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
-    public static final double BalanceKp = 0.5;
-    public static final double BalanceKi = 0.0;
-    public static final double BalanceKd = 0.05;
-
-    // Operator Input Constants (Joystick)
     public static final class OIConstants {
+        // Controller for driving
         public static final class DriverControl {
             public static final int kDriverControllerPort = 0;
-            public static double kDriveDeadband = 0.2;
-            public static double kRotationDeadband = 0.1;
-            public static double kZeroCalibrateLeftY = 0.0;
-            public static double kZeroCalibrateRightX = 0.0;
-            public static double kZeroCalibrateLeftX = 0.0;
+            public static final double kDriveDeadband = 0.2;
+            public static final double kRotationDeadband = 0.1;
+            public static final double kZeroCalibrateLeftY = 0.0;
+            public static final double kZeroCalibrateRightX = 0.0;
+            public static final double kZeroCalibrateLeftX = 0.0;
         }
 
+        // Controller for operating intake
         public static final class OperatorControl {
-            public static int kOperatorControllerPort = 1;
-
-            public static double kZeroCalibrateLeftY = 0.0;
-            public static double kZeroCalibrateRightX = 0.0;
+            public static final int kOperatorControllerPort = 1;
+            public static final double kZeroCalibrateLeftY = 0.0;
+            public static final double kZeroCalibrateRightX = 0.0;
         }
     }
 
@@ -71,7 +65,7 @@ public final class Constants {
 
         // Using tough box micros installed with the standard gear ratio of 8.45 : 1
         public static final double kGearRatio = 8.45; // For every 8.45 encoder rotations, 1 wheel rotation
-        public static final double kWheelRadiusMeters = Units.inchesToMeters(8.0 / 2.0); // #TODO 8" diameter wheels
+        public static final double kWheelRadiusMeters = Units.inchesToMeters(8.0 / 2.0); // 8" diameter wheels
         public static final double kRotationsToMeterConversionFactor = (1.0 / kGearRatio) * 2.0 * Math.PI * kWheelRadiusMeters;
         public static final double kRpmToMeterPerSecondConversionFactor = kRotationsToMeterConversionFactor / 60.0;
 
@@ -107,140 +101,115 @@ public final class Constants {
 
     public static final class ElevatorSubsystemConstants {
         // Motor constants
-        public static int kMotorPort = 5;
-        public static int kSmartCurrentLimit = 20;
-        public static CANSparkMax.IdleMode kMotorMode = CANSparkMax.IdleMode.kBrake;
-        public static boolean kMotorInverted = true;
+        public static final int kMotorPort = 5;
+        public static final int kSmartCurrentLimit = 20;
 
         // Encoder constants
-        public static double kDistancePerRevolution = Units.inchesToMeters(28.0 / 7.0); // measured 7 rotations = 28"
-        public static double kVelocityMetersPerSecond = kDistancePerRevolution / 60.0;
-
+        public static final double kDistancePerRevolution = Units.inchesToMeters(28.0/7.0); // measured 7 rotations = 28"
+        public static final double kVelocityMetersPerSecond = kDistancePerRevolution/60.0;
+    
         // Soft limit constants
-        public static double kMinHeight = 0.0;
-        public static double kMaxHeight = 8; // value from smart dashboard
-
-        // PID for moving up constants
-        public static class ElevatorPIDConstants {
-            public static double kP = 1.0;
-            public static double kI = 0.0;
-            public static double kD = 0.0;
-            public static double kIZone = 0.0;
-            public static double kFeedForwardVelocity = 0.3149; // Input to keep it from falling
-        }
-
+        public static final double kMinHeight = 0.1;
+        public static final double kMaxHeight = 9.5;
+    
+        // PID controller constants
+        public static final double kP = 1.0;
+        public static final double kI = 0.0;
+        public static final double kD = 0.0;
+        public static final double kIZone = 0.0;
+        public static final double kFeedForwardVelocity = 0.3149; // input to keep it from falling
+    
         // Controller constants
-        public static double kMaxControllerUpSpeed = 0.6;
-        public static double kMaxControllerDownSpeed = -0.6;
-        public static double kControllerDeadband = 0.1;
-
-        // Links heights
-        public static double kTopLayerHeight = 7.45;
-        public static double kMidLayerHeight = 5.54;
-        public static double kBottomLayerHeight = kMinHeight;
+        public static final double kMaxControllerUpSpeed = 0.6;
+        public static final double kMaxControllerDownSpeed = -0.6;
+        public static final double kControllerDeadband = 0.1;
+    
+        // Field heights constants
+        public static final double kTopLayerHeight = 7.45;
+        public static final double kMidLayerHeight = 5.74;
+        public static final double kBottomLayerHeight = 0.1;;
 
     }
 
     public static final class ArmSubsystemConstants {
-        // Motor Constants
-        public static int kMotorPort = 6;
-        public static int kSmartCurrentLimit = 20;
-        public static CANSparkMax.IdleMode kMotorMode = CANSparkMax.IdleMode.kBrake;
-        public static boolean kMotorInverted = true;
+        // Motor constants
+        public static final int kMotorPort = 6;
+        public static final int kSmartCurrentLimit = 20;
 
         // Encoder constants
-        public static double kDistancePerRevolution = Units.inchesToMeters(28.0 / 7.0); // measured 7 rotations = 28"
-        public static double kVelocityMetersPerSecond = kDistancePerRevolution / 60.0;
+        public static final double kDistancePerRevolution = Units.inchesToMeters(28.0/7.0);
+        public static final double kVelocityMetersPerSecond = kDistancePerRevolution/60.0;
 
         // Soft limit constants
-        public static double kMinExtend = 0.0;
-        public static double kMaxExtend = 11.0;
-
+        public static final double kMinExtend = 0.0;
+        public static final double kMaxExtend = 11;
+    
         // PID controller constants
-        public static double kP = 0.1;
-        public static double kI = 0.0;
-        public static double kD = 0.0;
-        public static double kIZone = 0.0;
-        public static double kFeedForwardVelocity = 0.3;
-
-        // Controller settings
-        public static double kMaxControllerUpSpeed = 0.6;
-        public static double kMaxControllerDownSpeed = -0.6;
-        public static double kControllerDeadband = 0.1;
+        public static final double kP = 0.1;
+        public static final double kI = 0.0;
+        public static final double kD = 0.0;
+        public static final double kIZone = 0.0;
+        public static final double kFeedForwardVelocity = 0;
+    
+        // Controller constants
+        public static final double kMaxControllerUpSpeed = 0.6;
+        public static final double kMaxControllerDownSpeed = -0.6;
+        public static final double kControllerDeadband = 0.1;
     }
+    
+    public static final class PivotSubsystem {
+        // Motor constants
+        public static final int kMotorPort = 7;
+        public static final int kSmartCurrentLimit = 80;
 
-    public static final class PivotSubsystemConstants {
-        // Motor Constants
-        public static int kMotorPort = 7;
-        public static int kSmartCurrentLimit = 80;
-        public static CANSparkMax.IdleMode kMotorMode = CANSparkMax.IdleMode.kBrake;
-        public static boolean kMotorInverted = true;
-        
         // Encoder constants
-        public static double kDistancePerRevolution = Units.inchesToMeters(28.0 / 7.0); // measured 7 rotations = 28"
-        public static double kVelocityMetersPerSecond = kDistancePerRevolution / 60.0;
-
+        public static final double kDistancePerRevolution = Units.inchesToMeters(28.0/7.0);
+        public static final double kVelocityMetersPerSecond = kDistancePerRevolution/60.0;
+    
         // Soft limit constants
-        public static double kMinOut = 0.0;
-        public static double kMaxOut = 4.0;
-
+        public static final double kMinOut = 0.1;
+        public static final double kMaxOut = 3.5;
+    
         // PID controller constants
-        public static double kP = 0.1;
-        public static double kI = 0.0;
-        public static double kD = 0.0;
-        public static double kIZone = 0.0;
-        public static double kFeedForwardVelocity = 0.3149;
-        
-        // Controller settings
-        public static double kMaxControllerUpSpeed = 0.5;
-        public static double kMaxControllerDownSpeed = -0.5;
-        public static double kControllerDeadband = 0.1;
-    }
+        public static final double kP = 0.1;
+        public static final double kI = 0.0;
+        public static final double kD = 0.0;
+        public static final double kIZone = 0.0;
+        public static final double kFeedForwardVelocity = 0.5;
+    
+        // Controller constants
+        public static final double kMaxControllerUpSpeed = 0.5;
+        public static final double kMaxControllerDownSpeed = -0.5;
+        public static final double kControllerDeadband = 0.1;
+  }
 
     public static final class ClawSubsystemConstants {
-        // Motor ports
-        public static int kRMotorPort = 9;
-        public static int kLMotorPort = 8;
+    public static final int kForwardChannel = 15;
+    public static final int kReverseChannel = 0;
+    public static final int kRMotorPort = 9;
+    public static final int kLMotorPort = 8;
+  }
 
-        // Motor inversions
-        public static boolean kLeftMotorInverted = true;
-        public static boolean kRightMotorInverted = false;
-
-        // Motor spin speeds
-        public static double kMotorsSpinInSpeed = 0.35;
-        public static double kMotorsSpinOutSpeed = -1.00;
-
-        // Pneumatics
-        public static int forwardChannel = 2;
-        public static int reverseChannel = 1;
-
-
-    }
-
-    // Limelight configuration: http://10.49.51.11:5801/
     public static final class LimelightSubsystem {
+        // Limelight configuration: http://10.49.51.11:5801/
+
+        // Limelight names
         public static String kLimelightName = "limelight"; // Default name, may change to support multiple limelight
 
+        // Pipelines
         public static int kAprilTagsWatchPosePipelineID = 0;
-
         public static int kRetroTapePostAlignmentPipelineID = 1;
-
         public static int kAprilTagsPostAlignmentPipelineID = 2;
     }
 
     public static final class Vision {
         public static double kAlignmentKP = 0.05; // P factor to use for auto alignment routines
-
         public static double kSpinClockwiseSearchRate = 0.05; // Missing target spin rate for search during alignment
     }
 
     public static final class BalancePID {
-        public static double kPosKP = 0.05;
-        public static double kPosKI = 0.05;
-        public static double kPosKD = 0.05;
-
-        public static double kYawKP = 0.05;
-        public static double kYawKI = 0.05;
-        public static double kYawKD = 0.05;
+        public static final double BalanceKp = 0.5;
+        public static final double BalanceKi = 0.0;
+        public static final double BalanceKd = 0.05;
     }
 }

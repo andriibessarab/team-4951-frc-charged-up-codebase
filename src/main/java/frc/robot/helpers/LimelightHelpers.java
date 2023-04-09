@@ -1,6 +1,6 @@
 //LimelightHelpers v1.2.1 (March 1, 2023)
 // Source: https://raw.githubusercontent.com/LimelightVision/limelightlib-wpijava/main/LimelightHelpers.java
-package frc.robot.helpers;
+package frc.robot.Helpers;
 
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;

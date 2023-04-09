@@ -4,7 +4,7 @@
 
 package frc.robot;
 
-import edu.wpi.first.wpilibj.*;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -16,10 +16,8 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
  * project.
  */
 public class Robot extends TimedRobot {
-    private Command m_autonomousCommand;
-    Timer timer = new Timer();
-
     private RobotContainer m_robotContainer;
+    private Command m_autonomousCommand;
 
     /**
      * This function is run when the robot is first started up and should be used for any
@@ -48,46 +46,37 @@ public class Robot extends TimedRobot {
         CommandScheduler.getInstance().run();
     }
 
-    /** This function is called once each time the robot enters Disabled mode. */
+    /**
+     * This function is called once each time the robot enters Disabled mode.
+     */
     @Override
     public void disabledInit() {}
 
     @Override
     public void disabledPeriodic() {}
 
-    /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
+    /**
+     * This autonomous runs the autonomous command selected by your {@link RobotContainer} class.
+     */
     @Override
     public void autonomousInit() {
-        timer.reset();
-        timer.start();
         m_autonomousCommand = m_robotContainer.getAutonomousCommand();
 
-        /*
-         * String autoSelected = SmartDashboard.getString("Auto Selector",
-         * "Default"); switch(autoSelected) { case "My Auto": autonomousCommand
-         * = new MyAutoCommand(); break; case "Default Auto": default:
-         * autonomousCommand = new ExampleCommand(); break; }
-         */
-
-        // schedule the autonomous command (example)
+        // schedule the autonomous command
         if (m_autonomousCommand != null) {
             m_autonomousCommand.schedule();
         }
     }
 
-    /** This function is called periodically during autonomous. */
+    /**
+     * This function is called periodically during autonomous.
+     */
     @Override
-    public void autonomousPeriodic() {
-        // //m_robotContainer.m_robotDrive.driveMecanum(0.4, 0, 0);
-        // if (timer.get() < 0.5) {
-        //   m_robotContainer.m_robotDrive.driveMecanum(0, -0.75, 0);
-        // } else if(timer.get() < 1.25) {
-        //   m_robotContainer.m_robotDrive.driveMecanum(0, 0.75, 0);
-        // } else {
-        //   m_robotContainer.m_robotDrive.driveMecanum(0, 0, 0);
-        // }
-    }
+    public void autonomousPeriodic() {}
 
+    /**
+     * This function is called once when operator control enabled.
+     */
     @Override
     public void teleopInit() {
         boolean isBlueAlliance = DriverStation.getAlliance() == DriverStation.Alliance.Blue;
@@ -115,17 +104,24 @@ public class Robot extends TimedRobot {
         }
     }
 
-    /** This function is called periodically during operator control. */
+    /**
+     * This function is called periodically during operator control.
+     */
     @Override
     public void teleopPeriodic() {}
 
+    /**
+     * This function is called once when test mode enabled.
+     */
     @Override
     public void testInit() {
         // Cancels all running commands at the start of test mode.
         CommandScheduler.getInstance().cancelAll();
     }
 
-    /** This function is called periodically during test mode. */
+    /** 
+     * This function is called periodically during test mode.
+     */
     @Override
     public void testPeriodic() {}
 }

@@ -1,4 +1,4 @@
-package frc.robot.helpers;
+package frc.robot.Helpers;
 
 public class PathPlannerPath {
     public PathPlannerPath(String name, boolean resetOdometry, double maxVelocity, double maxAcceleration) {
