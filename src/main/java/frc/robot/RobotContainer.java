@@ -33,6 +33,7 @@ public class RobotContainer {
     private final Subsys_Pivot m_pivot = new Subsys_Pivot();
     private final Subsys_Claw m_reach = new Subsys_Claw();
     private final Subsys_Intake m_claw = new Subsys_Intake();
+    private final Subsys_Gyro m_gyro = new Subsys_Gyro();
     // private final LimelightSubsystem m_limeLight = new LimelightSubsystem(Constants.LimelightSubsystem.kLimelightName);
 
     // Declare input controllers
