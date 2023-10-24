@@ -10,6 +10,8 @@ public class CmdAutonDrive_BalanceOnChargeStation extends CommandBase {
     
     private final Subsys_Drive m_driveTrain;
     double pitchAngleDegrees;
+    static double kOffBalanceAngleThresholdDegrees = 0;
+    static double kOonBalanceAngleThresholdDegrees = 0;
 
     public CmdAutonDrive_BalanceOnChargeStation(Subsys_Drive drive) {
         m_driveTrain = drive;
@@ -26,6 +28,20 @@ public class CmdAutonDrive_BalanceOnChargeStation extends CommandBase {
     public void execute() {
         pitchAngleDegrees = m_driveTrain.getPitch();
         double velo = Math.sin(pitchAngleDegrees * (Math.PI / 180.0)) * 1;
+
+        if(Math.abs(kOffBalanceAngleThresholdDegrees) < pitchAngleDegrees){
+            kOffBalanceAngleThresholdDegrees=pitchAngleDegrees;
+        } else{
+            velo=0;
+        }
+
+        // if (xAxisRate > 0) {
+        //     xAxisRate = 0.2;
+        // } else if (xAxisRate < 0) {
+        //     xAxisRate = -0.2;
+        // } else {
+        //     xAxisRate = 0;
+        // }
 
         m_driveTrain.driveMecanum(0, velo, 0);
     }
