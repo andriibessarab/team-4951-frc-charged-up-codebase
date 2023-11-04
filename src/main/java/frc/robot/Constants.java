@@ -216,7 +216,7 @@ public final class Constants {
     public static final class ScoringConstants {
         public static final double kElevatorTopLevel = 7.45;
         public static final double kElevatorMidLevel = 5.74;
-        public static final double kElevatorBottomLevel = 0.1;
+        public static final double kElevatorBottomLevel = 0.0; // previously was 0.1
 
         public static final double kPivotIn = 0.1;
         public static final double kPivotOut = 2.3;

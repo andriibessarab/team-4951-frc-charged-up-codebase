@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import frc.robot.CommandSequences.CmdSeq_Autonomous;
 import frc.robot.CommandSequences.CmdSeq_LowIn;
 import frc.robot.CommandSequences.CmdSeq_LowOut;
 import frc.robot.CommandSequences.CmdSeq_ScoreMid;
@@ -177,19 +178,7 @@ public class RobotContainer {
      * @return the command to run in autonomous
      */
     public Command getAutonomousCommand() {
-        return new SequentialCommandGroup(
-            new ParallelCommandGroup(
-                new CmdHybridManip_ElevatorGoToPosition(m_elevator, Constants.ElevatorSubsystemConstants.kTopLayerHeight),
-                new CmdHybridManip_PivotGoToPosition(m_pivot, 2.3)
-            ),
-            new CmdHybridManipTimed_Outtake(m_claw, 0.6),
-            new ParallelCommandGroup(
-                new CmdAutonDrive_LeaveCommZone(m_robotDrive),
-                new CmdHybridManip_PivotGoToPosition(m_pivot, 0),
-                new CmdHybridManip_ElevatorGoToPosition(m_elevator, 0)
-            )
-
-        );
+        return new CmdSeq_Autonomous(m_robotDrive, m_elevator, m_pivot, m_claw);
     }
 
     /**
