@@ -25,7 +25,7 @@ import frc.robot.Subsystems.*;
  */
 public class RobotContainer {
     // Declare robot subsystems
-    public final Subsys_Drive m_robotDrive = new Subsys_Drive();
+    private final Subsys_Drive m_robotDrive = new Subsys_Drive();
     private final Subsys_Elevator m_elevator = new Subsys_Elevator();
     private final Subsys_Arm m_arm = new Subsys_Arm();
     private final Subsys_Pivot m_pivot = new Subsys_Pivot();
