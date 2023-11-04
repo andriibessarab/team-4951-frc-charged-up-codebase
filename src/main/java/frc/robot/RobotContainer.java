@@ -14,10 +14,8 @@ import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
-
-
-import frc.robot.Subsystems.*;
 import frc.robot.Commands.*;
+import frc.robot.Subsystems.*;
 
 /*
  * This class is where the bulk of the robot should be declared.  Since Command-based is a
@@ -39,6 +37,7 @@ public class RobotContainer {
     // Declare input controllers
     XboxController m_driverController = new XboxController(Constants.OIConstants.DriverControl.kDriverControllerPort);
     XboxController m_operatorController = new XboxController(Constants.OIConstants.OperatorControl.kOperatorControllerPort);
+    // XboxController m_backupOperatorController = new XboxController(2);
 
     /**
      * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -72,25 +71,46 @@ public class RobotContainer {
                 }, m_robotDrive));
         
         // Pivot set to constant speed if input provided
-        m_pivot.setDefaultCommand(new RunCommand(()-> {
-                var controllerLeftY = m_operatorController.getLeftY() +
-                    Constants.OIConstants.OperatorControl.kZeroCalibrateLeftY;
-                if (Math.abs(controllerLeftY) > 0.2) {
-                    m_pivot.setSpeed((Math.abs(controllerLeftY) / -controllerLeftY) * 0.2);
-                } else {
-                    m_pivot.setSpeed(0);
-                }
-            }, m_pivot));
+        // m_pivot.setDefaultCommand(new RunCommand(()-> {
+        //         var controllerLeftY = m_backupOperatorController.getLeftY() +
+        //             Constants.OIConstants.OperatorControl.kZeroCalibrateLeftY;
+        //         if (Math.abs(controllerLeftY) > 0.2) {
+        //             m_pivot.setSpeed((Math.abs(controllerLeftY) / -controllerLeftY) * 0.2);
+        //         } else {
+        //             m_pivot.setSpeed(0);
+        //         }
+        //     }, m_pivot));
         
+        // // Arm set to constant speed if input provided
+        // m_arm.setDefaultCommand(new RunCommand(()-> {
+        //         var controllerRightY = m_backupOperatorController.getRightY();
+        //         if (Math.abs(controllerRightY) > 0.2) {
+        //             m_arm.setSpeed((Math.abs(controllerRightY) / -controllerRightY) * 0.4);
+        //         } else {
+        //             m_arm.setSpeed(0);
+        //         }
+        //     }, m_arm));
+
+        // Pivot set to constant speed if input provided
+        m_pivot.setDefaultCommand(new RunCommand(()-> {
+            var controllerLeftY = m_operatorController.getLeftY() +
+                Constants.OIConstants.OperatorControl.kZeroCalibrateLeftY;
+            if (Math.abs(controllerLeftY) > 0.2) {
+                m_pivot.setSpeed((Math.abs(controllerLeftY) / -controllerLeftY) * 0.2);
+            } else {
+                m_pivot.setSpeed(0);
+            }
+        }, m_pivot));
+
         // Arm set to constant speed if input provided
         m_arm.setDefaultCommand(new RunCommand(()-> {
-                var controllerRightY = m_operatorController.getRightY();
-                if (Math.abs(controllerRightY) > 0.2) {
-                    m_arm.setSpeed((Math.abs(controllerRightY) / -controllerRightY) * 0.4);
-                } else {
-                    m_arm.setSpeed(0);
-                }
-            }, m_arm));
+            var controllerRightY = m_operatorController.getRightY();
+            if (Math.abs(controllerRightY) > 0.2) {
+                m_arm.setSpeed((Math.abs(controllerRightY) / -controllerRightY) * 0.4);
+            } else {
+                m_arm.setSpeed(0);
+            }
+        }, m_arm));
     }
 
     /**
@@ -103,37 +123,100 @@ public class RobotContainer {
      * {@link JoystickButton}.
      */
     private void configureButtonBindings() {
-        // Elevator high position
-        new JoystickButton(m_operatorController, Button.kY.value)
-            .onTrue(new InstantCommand(()-> m_elevator.setPosition(Constants.ElevatorSubsystemConstants.kTopLayerHeight)));
+        // Top shoot
+        new JoystickButton(m_operatorController, Button.kY.value).onTrue(
+                new SequentialCommandGroup(
+                    new ParallelCommandGroup(
+                        new CmdHybridManip_ElevatorGoToPosition(m_elevator, Constants.ElevatorSubsystemConstants.kTopLayerHeight),
+                        new CmdHybridManip_PivotGoToPosition(m_pivot, 2.3)
+                    ),
+                    new CmdHybridManipTimed_Outtake(m_claw, 0.6),
+                    new ParallelCommandGroup(
+                        new CmdHybridManip_PivotGoToPosition(m_pivot, 0.2),
+                        new CmdHybridManip_ElevatorGoToPosition(m_elevator, 0)
+                    )
+        
+                )
+        );
 
-        // Elevator mid position
-        new JoystickButton(m_operatorController, Button.kB.value)
-            .onTrue(new InstantCommand(()-> m_elevator.setPosition(Constants.ElevatorSubsystemConstants.kMidLayerHeight)));
+        // Middle shoot
+        new JoystickButton(m_operatorController, Button.kB.value).onTrue(
+                new SequentialCommandGroup(
+                    new ParallelCommandGroup(
+                        new CmdHybridManip_ElevatorGoToPosition(m_elevator, Constants.ElevatorSubsystemConstants.kMidLayerHeight),
+                        new CmdHybridManip_PivotGoToPosition(m_pivot, 2.3)
+                    ),
+                    new CmdHybridManipTimed_Outtake(m_claw, 0.2),
+                    new ParallelCommandGroup(
+                        new CmdHybridManip_PivotGoToPosition(m_pivot, 0.2),
+                        new CmdHybridManip_ElevatorGoToPosition(m_elevator, 0)
+                    )
+        
+                )
+        );
 
-        // Elevator low position
-        new JoystickButton(m_operatorController, Button.kA.value)
-            .onTrue(new InstantCommand(()-> m_elevator.setPosition(Constants.ElevatorSubsystemConstants.kBottomLayerHeight)));
+        // Low out
+        new JoystickButton(m_operatorController, Button.kA.value).onTrue(
+            new SequentialCommandGroup(
+                new ParallelCommandGroup(
+                    new CmdHybridManip_ElevatorGoToPosition(m_elevator, Constants.ElevatorSubsystemConstants.kBottomLayerHeight),
+                    new CmdHybridManip_PivotGoToPosition(m_pivot, 3.6) // was 2.3
+                )
+            )
+        );
 
-        // Pivot position closed
-        new JoystickButton(m_operatorController, Button.kX.value)
-            .onTrue(new CmdHybridManip_PivotGoToPosition(m_pivot, 0.1));
+        // Low in
+        new JoystickButton(m_operatorController, Button.kX.value).onTrue(
+            new SequentialCommandGroup(
+                new ParallelCommandGroup(
+                    new CmdHybridManip_ElevatorGoToPosition(m_elevator, Constants.ElevatorSubsystemConstants.kBottomLayerHeight),
+                    new CmdHybridManip_PivotGoToPosition(m_pivot, 0.2) // was 2.3
+                )
+            )
+        );
 
-        // Pivot position open
-        new JoystickButton(m_operatorController, Button.kStart.value)
-            .onTrue(new CmdHybridManip_PivotGoToPosition(m_pivot, 3.6));
+        // Home position
+        // new JoystickButton(m_operatorController, Button.kX.value).onTrue(
+        //         new SequentialCommandGroup(
+        //             new ParallelCommandGroup(
+        //                 new CmdHybridManip_PivotGoToPosition(m_pivot, 0),
+        //                 new CmdHybridManip_ElevatorGoToPosition(m_elevator, 0)
+        //             )
+        //         )
+        // );
 
         // Intake spin out
         new JoystickButton(m_operatorController, Button.kRightBumper.value) 
-            .onTrue(new CmdHybridManipTimed_Outtake(m_claw, 0.75));
-
+            .onTrue(new CmdHybridManipTimed_Outtake(m_claw, 0.5));
+    
         // Intake spin in
         new JoystickButton(m_operatorController, Button.kLeftBumper.value)
             .whileHeld(new CmdHybridManip_Intake(m_claw));
 
-        // Claw switch state of solenoid
-        new JoystickButton(m_operatorController, Button.kRightStick.value) // FLIP PNEUMATICS STATE
-            .onTrue(new InstantCommand(()-> m_reach.use()));
+
+        // // Elevator mid position    
+        // new JoystickButton(m_backupOperatorController, Button.kB.value)
+        //     .onTrue(new InstantCommand(()-> m_elevator.setPosition(Constants.ElevatorSubsystemConstants.kMidLayerHeight)));
+
+        // // Elevator high position
+        // new JoystickButton(m_backupOperatorController, Button.kY.value)
+        //     .onTrue(new InstantCommand(()-> m_elevator.setPosition(Constants.ElevatorSubsystemConstants.kTopLayerHeight)));
+
+        // // Elevator low position
+        // new JoystickButton(m_backupOperatorController, Button.kA.value)
+        //     .onTrue(new InstantCommand(()-> m_elevator.setPosition(Constants.ElevatorSubsystemConstants.kBottomLayerHeight)));
+
+        // // Intake spin out
+        // new JoystickButton(m_backupOperatorController, Button.kRightBumper.value) 
+        //     .onTrue(new CmdHybridManipTimed_Outtake(m_claw, 0.75));
+
+        // // Intake spin in
+        // new JoystickButton(m_backupOperatorController, Button.kLeftBumper.value)
+        //     .whileHeld(new CmdHybridManip_Intake(m_claw));
+
+        // // Claw switch state of solenoid
+        // new JoystickButton(m_backupOperatorController, Button.kRightStick.value) // FLIP PNEUMATICS STATE
+        //     .onTrue(new InstantCommand(()-> m_reach.use()));
     }
 
     /**
