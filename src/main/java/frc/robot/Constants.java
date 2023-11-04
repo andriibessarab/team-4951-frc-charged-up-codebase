@@ -127,7 +127,7 @@ public final class Constants {
         // Field heights constants
         public static final double kTopLayerHeight = 7.45;
         public static final double kMidLayerHeight = 5.74;
-        public static final double kBottomLayerHeight = 0.1;;
+        public static final double kBottomLayerHeight = 0.1;
 
     }
 
@@ -211,5 +211,18 @@ public final class Constants {
         public static final double BalanceKp = 0.5;
         public static final double BalanceKi = 0.0;
         public static final double BalanceKd = 0.05;
+    }
+
+    public static final class ScoringConstants {
+        public static final double kElevatorTopLevel = 7.45;
+        public static final double kElevatorMidLevel = 5.74;
+        public static final double kElevatorBottomLevel = 0.1;
+
+        public static final double kPivotIn = 0.1;
+        public static final double kPivotOut = 2.3;
+
+        public static final double kOuttakeSpeedTopLevel = 0.6;
+        public static final double kouttakeSpeedrMidLevel = 0.2;
+        public static final double kOuttakeSpeedManual = 0.1;
     }
 }

@@ -14,6 +14,10 @@ import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import frc.robot.CommandSequences.CmdSeq_LowIn;
+import frc.robot.CommandSequences.CmdSeq_LowOut;
+import frc.robot.CommandSequences.CmdSeq_ScoreMid;
+import frc.robot.CommandSequences.CmdSeq_ScoreTop;
 import frc.robot.Commands.*;
 import frc.robot.Subsystems.*;
 
@@ -123,58 +127,15 @@ public class RobotContainer {
      * {@link JoystickButton}.
      */
     private void configureButtonBindings() {
-        // Top shoot
-        new JoystickButton(m_operatorController, Button.kY.value).onTrue(
-                new SequentialCommandGroup(
-                    new ParallelCommandGroup(
-                        new CmdHybridManip_ElevatorGoToPosition(m_elevator, Constants.ElevatorSubsystemConstants.kTopLayerHeight),
-                        new CmdHybridManip_PivotGoToPosition(m_pivot, 2.3)
-                    ),
-                    new CmdHybridManipTimed_Outtake(m_claw, 0.6),
-                    new ParallelCommandGroup(
-                        new CmdHybridManip_PivotGoToPosition(m_pivot, 0.2),
-                        new CmdHybridManip_ElevatorGoToPosition(m_elevator, 0)
-                    )
-        
-                )
-        );
-
-        // Middle shoot
-        new JoystickButton(m_operatorController, Button.kB.value).onTrue(
-                new SequentialCommandGroup(
-                    new ParallelCommandGroup(
-                        new CmdHybridManip_ElevatorGoToPosition(m_elevator, Constants.ElevatorSubsystemConstants.kMidLayerHeight),
-                        new CmdHybridManip_PivotGoToPosition(m_pivot, 2.3)
-                    ),
-                    new CmdHybridManipTimed_Outtake(m_claw, 0.2),
-                    new ParallelCommandGroup(
-                        new CmdHybridManip_PivotGoToPosition(m_pivot, 0.2),
-                        new CmdHybridManip_ElevatorGoToPosition(m_elevator, 0)
-                    )
-        
-                )
-        );
-
-        // Low out
-        new JoystickButton(m_operatorController, Button.kA.value).onTrue(
-            new SequentialCommandGroup(
-                new ParallelCommandGroup(
-                    new CmdHybridManip_ElevatorGoToPosition(m_elevator, Constants.ElevatorSubsystemConstants.kBottomLayerHeight),
-                    new CmdHybridManip_PivotGoToPosition(m_pivot, 3.6) // was 2.3
-                )
-            )
-        );
-
-        // Low in
-        new JoystickButton(m_operatorController, Button.kX.value).onTrue(
-            new SequentialCommandGroup(
-                new ParallelCommandGroup(
-                    new CmdHybridManip_ElevatorGoToPosition(m_elevator, Constants.ElevatorSubsystemConstants.kBottomLayerHeight),
-                    new CmdHybridManip_PivotGoToPosition(m_pivot, 0.2) // was 2.3
-                )
-            )
-        );
-
+        new JoystickButton(m_operatorController, Button.kY.value).onTrue(new CmdSeq_ScoreTop(m_elevator, m_pivot, m_claw));
+        new JoystickButton(m_operatorController, Button.kB.value).onTrue(new CmdSeq_ScoreMid(m_elevator, m_pivot, m_claw));
+        new JoystickButton(m_operatorController, Button.kA.value).onTrue(new CmdSeq_LowOut(m_elevator, m_pivot));
+        new JoystickButton(m_operatorController, Button.kX.value).onTrue(new CmdSeq_LowIn(m_elevator, m_pivot, m_claw));
+        new JoystickButton(m_operatorController, Button.kRightBumper.value) 
+            .onTrue(new CmdHybridManipTimed_Outtake(m_claw, 0.5));
+        new JoystickButton(m_operatorController, Button.kLeftBumper.value)
+            .whileHeld(new CmdHybridManip_Intake(m_claw));
+            
         // Home position
         // new JoystickButton(m_operatorController, Button.kX.value).onTrue(
         //         new SequentialCommandGroup(
@@ -184,15 +145,6 @@ public class RobotContainer {
         //             )
         //         )
         // );
-
-        // Intake spin out
-        new JoystickButton(m_operatorController, Button.kRightBumper.value) 
-            .onTrue(new CmdHybridManipTimed_Outtake(m_claw, 0.5));
-    
-        // Intake spin in
-        new JoystickButton(m_operatorController, Button.kLeftBumper.value)
-            .whileHeld(new CmdHybridManip_Intake(m_claw));
-
 
         // // Elevator mid position    
         // new JoystickButton(m_backupOperatorController, Button.kB.value)
