@@ -223,6 +223,6 @@ public final class Constants {
 
         public static final double kOuttakeSpeedTopLevel = 0.6;
         public static final double kouttakeSpeedrMidLevel = 0.2;
-        public static final double kOuttakeSpeedManual = 0.1;
+        public static final double kOuttakeSpeedManual = 0.5;
     }
 }
