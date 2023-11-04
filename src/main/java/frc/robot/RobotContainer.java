@@ -132,10 +132,10 @@ public class RobotContainer {
         new JoystickButton(m_operatorController, Button.kA.value).onTrue(new CmdSeq_LowOut(m_elevator, m_pivot));
         new JoystickButton(m_operatorController, Button.kX.value).onTrue(new CmdSeq_LowIn(m_elevator, m_pivot, m_claw));
         new JoystickButton(m_operatorController, Button.kRightBumper.value) 
-            .onTrue(new CmdHybridManipTimed_Outtake(m_claw, 0.5));
+            .onTrue(new CmdHybridManipTimed_Outtake(m_claw, Constants.ScoringConstants.kOuttakeSpeedManual));
         new JoystickButton(m_operatorController, Button.kLeftBumper.value)
             .whileHeld(new CmdHybridManip_Intake(m_claw));
-            
+
         // Home position
         // new JoystickButton(m_operatorController, Button.kX.value).onTrue(
         //         new SequentialCommandGroup(
