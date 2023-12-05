@@ -45,10 +45,10 @@ public class CmdAlignWithLLTurning extends CommandBase{
         // SmartDashboard.putNumber("rX", r2d.getDegrees());
         if(targetDetected) {
             switch (caseNumber){
-                case 1: //rotate to face april tag, use rx value
+                case 1: //rotate to face april tag, use rx
                     caseNumber = 2;
                     break;
-                case 2:
+                case 2: //strafe to be infront of april tag, use tx
                     if(tx>1){
                         m_driveTrain.driveMecanum(0.3, 0, 0);
                     } else if(tx<-1){
@@ -58,7 +58,7 @@ public class CmdAlignWithLLTurning extends CommandBase{
                         caseNumber=3;
                     }
                     break;
-                case 3:
+                case 3: //drive to be at right distance, use ta(or something better)
                     if(ta<10){ //play with this value
                         m_driveTrain.driveMecanum(0, 0.3, 0);
                     } else{
