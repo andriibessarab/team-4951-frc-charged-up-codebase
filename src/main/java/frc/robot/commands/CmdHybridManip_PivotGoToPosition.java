@@ -24,7 +24,7 @@ public class CmdHybridManip_PivotGoToPosition extends CommandBase {
     @Override
     public boolean isFinished() {
         double current = m_pivot.getPosition();
-        return Math.abs(current-m_position) < 0.1 || m_timer.get() > 2;
+        return Math.abs(current-m_position) < 0.3;
     }
 
     @Override

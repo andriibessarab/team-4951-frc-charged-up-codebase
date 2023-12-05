@@ -18,7 +18,7 @@ public class CmdSeq_LowOut extends ParallelCommandGroup {
     public CmdSeq_LowOut(Subsys_Elevator m_elevator, Subsys_Pivot m_pivot) {
         addCommands(
             new CmdHybridManip_ElevatorGoToPosition(m_elevator, Constants.ScoringConstants.kElevatorBottomLevel),
-            new CmdHybridManip_PivotGoToPosition(m_pivot, Constants.ScoringConstants.kPivotOut)
+            new CmdHybridManip_PivotGoToPosition(m_pivot, 3.6)
         );
     }
 }

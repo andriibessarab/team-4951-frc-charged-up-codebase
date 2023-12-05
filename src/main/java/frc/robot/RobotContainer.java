@@ -3,6 +3,12 @@
 // the WPILib BSD license file in the root directory of this project.
 
 package frc.robot;
+
+import edu.wpi.first.cameraserver.CameraServer;
+import edu.wpi.first.cscore.HttpCamera;
+import edu.wpi.first.cscore.MjpegServer;
+import edu.wpi.first.cscore.UsbCamera;
+import edu.wpi.first.cscore.HttpCamera.HttpCameraKind;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -20,6 +26,7 @@ import frc.robot.CommandSequences.CmdSeq_LowOut;
 import frc.robot.CommandSequences.CmdSeq_ScoreMid;
 import frc.robot.CommandSequences.CmdSeq_ScoreTop;
 import frc.robot.Commands.*;
+import frc.robot.Helpers.*;
 import frc.robot.Subsystems.*;
 
 /*
@@ -37,6 +44,10 @@ public class RobotContainer {
     private final Subsys_Claw m_reach = new Subsys_Claw();
     private final Subsys_Intake m_claw = new Subsys_Intake();
     private final Subsys_Gyro m_gyro = new Subsys_Gyro();
+    HttpCamera limelight = new HttpCamera("limelight", "http://10.49.51.11:5800/stream.mjpg", HttpCameraKind.kMJPGStreamer);
+    private final Subsys_Limelight m_LL = new Subsys_Limelight("limelight");
+    MjpegServer llcam;
+    UsbCamera cam;
     // private final LimelightSubsystem m_limeLight = new LimelightSubsystem(Constants.LimelightSubsystem.kLimelightName);
 
     // Declare input controllers
@@ -53,6 +64,10 @@ public class RobotContainer {
 
         // Configure button bindings
         configureButtonBindings();
+
+        llcam = CameraServer.startAutomaticCapture(limelight);
+        cam = CameraServer.startAutomaticCapture(0);
+        cam.setResolution(283, 160);
     }
 
     /**
@@ -178,7 +193,9 @@ public class RobotContainer {
      * @return the command to run in autonomous
      */
     public Command getAutonomousCommand() {
-        return new CmdSeq_Autonomous(m_robotDrive, m_elevator, m_pivot, m_claw);
+        return new CmdAlignWithLLTurning(m_robotDrive, "limelight");
+        // return new CmdAlignWithLLHorizontalOnly(m_robotDrive, "limelight");
+        // return new CmdSeq_Autonomous(m_robotDrive, m_elevator, m_pivot, m_claw);
     }
 
     /**
