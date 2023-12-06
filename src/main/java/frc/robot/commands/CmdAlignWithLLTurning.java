@@ -1,5 +1,6 @@
 package frc.robot.Commands;
 
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Helpers.LimelightHelpers;
@@ -30,36 +31,55 @@ public class CmdAlignWithLLTurning extends CommandBase{
         boolean targetDetected = LimelightHelpers.getTV(limelightName);
         SmartDashboard.putBoolean("detected", targetDetected);
 
-
-        // double[] botPose = LimelightHelpers.getBotPose(limelightName);
-        // Translation2d tran2d = new Translation2d(botPose[0], botPose[1]);
-        // Rotation2d r2d = new Rotation2d(Units.degreesToRadians(botPose[5]));
-
-        // Pose3d botPose = LimelightHelpers.getCameraPose3d_TargetSpace(limelightName);
-
+        Pose3d botPose = LimelightHelpers.getTargetPose3d_RobotSpace(limelightName);
 
         tx = LimelightHelpers.getTX(limelightName);
         ta = LimelightHelpers.getTA(limelightName);
-        // rx = botPose.getRotation().getX();
+        rx = botPose.getRotation().getY()*45;
         SmartDashboard.putNumber("X", LimelightHelpers.getTX(limelightName));
-        // SmartDashboard.putNumber("rX", r2d.getDegrees());
+        SmartDashboard.putNumber("A", LimelightHelpers.getTA(limelightName));
+        SmartDashboard.putNumber("rX", botPose.getRotation().getY()*45);
         if(targetDetected) {
             switch (caseNumber){
                 case 1: //rotate to face april tag, use rx
-                    caseNumber = 2;
+                    if(rx>10){
+                        SmartDashboard.putString("driving", "turning right");
+                        m_driveTrain.driveMecanum(0, 0, 0.3);
+                    } else if(rx<-10){
+                        m_driveTrain.driveMecanum(0, 0, -0.3);
+                        SmartDashboard.putString("driving", "turning left");
+                    } else{
+                        m_driveTrain.driveMecanum(0, 0, 0);
+                        caseNumber=2;
+                    }
                     break;
                 case 2: //strafe to be infront of april tag, use tx
-                    if(tx>1){
+                    if(Math.abs(rx)>10){
+                        caseNumber = 1;
+                        break;
+                    }
+                    if(tx>3){
+                        SmartDashboard.putString("driving", "right");
                         m_driveTrain.driveMecanum(0.3, 0, 0);
-                    } else if(tx<-1){
+                    } else if(tx<-3){
                         m_driveTrain.driveMecanum(-0.3, 0, 0);
+                        SmartDashboard.putString("driving", "left");
                     } else{
                         m_driveTrain.driveMecanum(0, 0, 0);
                         caseNumber=3;
                     }
                     break;
                 case 3: //drive to be at right distance, use ta(or something better)
-                    if(ta<10){ //play with this value
+                    SmartDashboard.putString("driving", "forward");
+                    if(Math.abs(rx)>10){
+                        caseNumber = 1;
+                        break;
+                    }
+                    if(Math.abs(tx)>3){
+                        caseNumber = 2;
+                        break;
+                    }
+                    if(ta<1.5){ //play with this value
                         m_driveTrain.driveMecanum(0, 0.3, 0);
                     } else{
                         m_driveTrain.driveMecanum(0, 0, 0);
