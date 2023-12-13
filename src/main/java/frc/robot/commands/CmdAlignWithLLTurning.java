@@ -42,10 +42,10 @@ public class CmdAlignWithLLTurning extends CommandBase{
         if(targetDetected) {
             switch (caseNumber){
                 case 1: //rotate to face april tag, use rx
-                    if(rx>10){
+                    if(rx>5){
                         SmartDashboard.putString("driving", "turning right");
                         m_driveTrain.driveMecanum(0, 0, 0.3);
-                    } else if(rx<-10){
+                    } else if(rx<-5){
                         m_driveTrain.driveMecanum(0, 0, -0.3);
                         SmartDashboard.putString("driving", "turning left");
                     } else{
@@ -54,14 +54,14 @@ public class CmdAlignWithLLTurning extends CommandBase{
                     }
                     break;
                 case 2: //strafe to be infront of april tag, use tx
-                    if(Math.abs(rx)>10){
+                    if(Math.abs(rx)>5){
                         caseNumber = 1;
                         break;
                     }
-                    if(tx>3){
+                    if(tx>2){
                         SmartDashboard.putString("driving", "right");
                         m_driveTrain.driveMecanum(0.3, 0, 0);
-                    } else if(tx<-3){
+                    } else if(tx<-2){
                         m_driveTrain.driveMecanum(-0.3, 0, 0);
                         SmartDashboard.putString("driving", "left");
                     } else{
@@ -71,15 +71,15 @@ public class CmdAlignWithLLTurning extends CommandBase{
                     break;
                 case 3: //drive to be at right distance, use ta(or something better)
                     SmartDashboard.putString("driving", "forward");
-                    if(Math.abs(rx)>10){
+                    if(Math.abs(rx)>5){
                         caseNumber = 1;
                         break;
                     }
-                    if(Math.abs(tx)>3){
+                    if(Math.abs(tx)>2){
                         caseNumber = 2;
                         break;
                     }
-                    if(ta<1.5){ //play with this value
+                    if(ta<1.3){ //play with this value
                         m_driveTrain.driveMecanum(0, 0.3, 0);
                     } else{
                         m_driveTrain.driveMecanum(0, 0, 0);

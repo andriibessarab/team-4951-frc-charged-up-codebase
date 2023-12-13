@@ -55,6 +55,8 @@ public class RobotContainer {
     XboxController m_operatorController = new XboxController(Constants.OIConstants.OperatorControl.kOperatorControllerPort);
     // XboxController m_backupOperatorController = new XboxController(2);
 
+    double yawVal;
+
     /**
      * The container for the robot. Contains subsystems, OI devices, and commands.
      */
@@ -86,7 +88,8 @@ public class RobotContainer {
                         MathUtil.applyDeadband(-controllerLeftY,
                             Constants.OIConstants.DriverControl.kDriveDeadband),
                         MathUtil.applyDeadband(controllerRightX * 0.67,
-                            Constants.OIConstants.DriverControl.kRotationDeadband)
+                            Constants.OIConstants.DriverControl.kRotationDeadband),
+                        m_driverController.getAButton()
                     );
                 }, m_robotDrive));
         
@@ -151,7 +154,12 @@ public class RobotContainer {
             .onTrue(new CmdHybridManipTimed_Outtake(m_claw, Constants.ScoringConstants.kOuttakeSpeedManual));
         new JoystickButton(m_operatorController, Button.kLeftBumper.value)
             .whileHeld(new CmdHybridManip_Intake(m_claw));
-
+        new JoystickButton(m_driverController, Button.kA.value)
+            .whileHeld(new CmdAlignWithLLTurning(m_robotDrive,"limelight"));
+        new JoystickButton(m_driverController, Button.kY.value) 
+            .onTrue(new InstantCommand(()-> {
+                yawVal = m_robotDrive.getYaw();
+            }));
         // Home position
         // new JoystickButton(m_operatorController, Button.kX.value).onTrue(
         //         new SequentialCommandGroup(
